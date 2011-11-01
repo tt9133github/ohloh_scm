@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'open4'
 
 class BzrPipeClient
   def initialize(repository_url)
@@ -8,7 +7,7 @@ class BzrPipeClient
   end
   
   def start
-    @pid, @stdin, @stdout, @stderr = Open4::popen4 "python #{@py_script}"
+    @stdin, @stdout, @stderr = Open3::popen3 "python #{@py_script}"
     open_repository
   end
 
@@ -46,7 +45,6 @@ class BzrPipeClient
 
   def shutdown
     send_command("QUIT")
-    Process.waitpid(@pid, Process::WNOHANG)
   end
 end
 
