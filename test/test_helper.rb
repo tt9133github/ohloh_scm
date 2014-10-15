@@ -119,6 +119,7 @@ class Scm::Test < Test::Unit::TestCase
 
 	def with_bzrlib_repository(name)
 		with_repository(Scm::Adapters::BzrlibAdapter, name) { |bzr| yield bzr }
+  end
 
 	def with_darcs_repository(name)
 		with_repository(Scm::Adapters::DarcsAdapter, name) { |darcs| yield darcs }
