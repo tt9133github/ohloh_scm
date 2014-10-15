@@ -2,7 +2,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class BzrMiscTest < Scm::Test
+	class BzrMiscTest < OhlohScm::Test
 
 		def test_exist
 			save_bzr = nil

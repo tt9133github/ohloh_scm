@@ -2,7 +2,7 @@ require_relative '../test_helper'
 require 'socket'
 
 module OhlohScm::Adapters
-	class SvnPullTest < Scm::Test
+	class SvnPullTest < OhlohScm::Test
 
 		def test_svnadmin_create
 			Scm::ScratchDir.new do |dir|

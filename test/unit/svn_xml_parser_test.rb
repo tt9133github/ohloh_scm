@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Parsers
-	class SvnXmlParserTest < Scm::Test
+	class SvnXmlParserTest < OhlohScm::Test
 
 		def test_basic
 			assert_convert(SvnXmlParser, DATA_DIR + '/simple.svn_xml_log', DATA_DIR + '/simple.ohlog')

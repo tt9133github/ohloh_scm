@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class HgMiscTest < Scm::Test
+	class HgMiscTest < OhlohScm::Test
 
 		def test_exist
 			save_hg = nil

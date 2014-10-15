@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class SvnMiscTest < Scm::Test
+	class SvnMiscTest < OhlohScm::Test
 
 		def test_export
 			with_svn_repository('svn') do |svn|

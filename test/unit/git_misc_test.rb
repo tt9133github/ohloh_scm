@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitMiscTest < Scm::Test
+	class GitMiscTest < OhlohScm::Test
 
 		def test_export
 			with_git_repository('git') do |git|

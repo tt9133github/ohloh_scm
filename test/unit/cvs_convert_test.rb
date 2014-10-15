@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class CvsConvertTest < Scm::Test
+	class CvsConvertTest < OhlohScm::Test
 
 		def test_basic_convert
 			with_cvs_repository('cvs', 'simple') do |src|

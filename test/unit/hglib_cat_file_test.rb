@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class HglibCatFileTest < Scm::Test
+	class HglibCatFileTest < OhlohScm::Test
 
 		def test_cat_file
 			with_hglib_repository('hg') do |hg|

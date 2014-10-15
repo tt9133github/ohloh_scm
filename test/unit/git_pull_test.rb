@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitPullTest < Scm::Test
+	class GitPullTest < OhlohScm::Test
 
 		def test_basic_pull
 			with_git_repository('git') do |src|

@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class SvnValidationTest < Scm::Test
+	class SvnValidationTest < OhlohScm::Test
 		def test_valid_usernames
 			[nil,'','joe_36','a'*32,'robin@ohloh.net'].each do |username|
 				assert !SvnAdapter.new(:username => username).validate_username

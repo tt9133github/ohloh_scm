@@ -2,7 +2,7 @@ require_relative '../test_helper'
 require 'date'
 
 module OhlohScm::Parsers
-	class GitStyledParserTest < Scm::Test
+	class GitStyledParserTest < OhlohScm::Test
 
 		def test_basic
 			commits = []

@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class BzrCommitsTest < Scm::Test
+	class BzrCommitsTest < OhlohScm::Test
 
 		def test_commit_count
 			with_bzr_repository('bzr') do |bzr|

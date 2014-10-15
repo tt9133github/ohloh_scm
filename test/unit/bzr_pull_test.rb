@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class BzrPullTest < Scm::Test
+	class BzrPullTest < OhlohScm::Test
 
 		def test_pull
 			with_bzr_repository('bzr') do |src|

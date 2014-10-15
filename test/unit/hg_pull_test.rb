@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class HgPullTest < Scm::Test
+	class HgPullTest < OhlohScm::Test
 
 		def test_pull
 			with_hg_repository('hg') do |src|

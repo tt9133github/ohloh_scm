@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class AbstractAdapterTest < Scm::Test
+	class AbstractAdapterTest < OhlohScm::Test
 		def test_simple_validation
 			scm = AbstractAdapter.new()
 			assert !scm.valid?

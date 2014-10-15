@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitCatFileTest < Scm::Test
+	class GitCatFileTest < OhlohScm::Test
 
 		def test_cat_file
 			with_git_repository('git') do |git|

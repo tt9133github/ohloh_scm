@@ -2,7 +2,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class BzrCatFileTest < Scm::Test
+	class BzrCatFileTest < OhlohScm::Test
 
 		def test_cat_file
 			with_bzr_repository('bzr') do |bzr|

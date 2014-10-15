@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Parsers
-	class BzrParserTest < Scm::Test
+	class BzrParserTest < OhlohScm::Test
 
 		def test_empty_array
 			assert_equal([], BzrParser.parse(''))

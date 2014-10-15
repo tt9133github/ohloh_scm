@@ -2,7 +2,7 @@ require_relative '../test_helper'
 require 'socket'
 
 module OhlohScm::Adapters
-	class SvnPushTest < Scm::Test
+	class SvnPushTest < OhlohScm::Test
 
 		def test_basic_push_using_svnsync
 			with_svn_repository('svn') do |src|

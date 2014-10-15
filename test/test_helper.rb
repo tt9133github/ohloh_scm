@@ -17,7 +17,7 @@ unless defined?(DATA_DIR)
 	DATA_DIR = File.expand_path(File.join(TEST_DIR, 'data'))
 end
 
-class Scm::Test < Test::Unit::TestCase
+class OhlohScm::Test < Test::Unit::TestCase
 	# For reasons unknown, the base class defines a default_test method to throw a failure.
 	# We override it with a no-op to prevent this 'helpful' feature.
 	def default_test
@@ -118,10 +118,10 @@ class Scm::Test < Test::Unit::TestCase
 	end
 
 	def with_bzrlib_repository(name)
-		with_repository(Scm::Adapters::BzrlibAdapter, name) { |bzr| yield bzr }
+		with_repository(OhlohScm::Adapters::BzrlibAdapter, name) { |bzr| yield bzr }
   end
 
 	def with_darcs_repository(name)
-		with_repository(Scm::Adapters::DarcsAdapter, name) { |darcs| yield darcs }
+		with_repository(OhlohScm::Adapters::DarcsAdapter, name) { |darcs| yield darcs }
 	end
 end

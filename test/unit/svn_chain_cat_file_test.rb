@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class SvnChainCatFileTest < Scm::Test
+	class SvnChainCatFileTest < OhlohScm::Test
 
 		def test_cat_file_with_chaining
 goodbye = <<-EXPECTED

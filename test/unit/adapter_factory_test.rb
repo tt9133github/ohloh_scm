@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class FactoryTest < Scm::Test
+	class FactoryTest < OhlohScm::Test
 
 		def test_factory_darcs
 			Scm::ScratchDir.new do |path|

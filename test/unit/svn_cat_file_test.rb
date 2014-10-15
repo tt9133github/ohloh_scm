@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class SvnCatFileTest < Scm::Test
+	class SvnCatFileTest < OhlohScm::Test
 
 		def test_cat_file
 			with_svn_repository('svn') do |svn|

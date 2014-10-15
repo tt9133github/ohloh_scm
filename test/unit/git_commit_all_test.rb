@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitCommitAllTest < Scm::Test
+	class GitCommitAllTest < OhlohScm::Test
 
 		def test_commit_all
 			Scm::ScratchDir.new do |dir|

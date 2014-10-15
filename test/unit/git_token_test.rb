@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitTokenTest < Scm::Test
+	class GitTokenTest < OhlohScm::Test
 
 		def test_no_token_returns_nil
 			Scm::ScratchDir.new do |dir|

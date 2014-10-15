@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class GitPushTest < Scm::Test
+	class GitPushTest < OhlohScm::Test
 
 		def test_hostname
 			assert_equal "foo", GitAdapter.new(:url => 'foo:/bar').hostname

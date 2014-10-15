@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class HgPushTest < Scm::Test
+	class HgPushTest < OhlohScm::Test
 
 		def test_hostname
 			assert !HgAdapter.new.hostname

@@ -1,7 +1,7 @@
 require_relative '../test_helper'
 
 module OhlohScm::Adapters
-	class SvnCommitsTest < Scm::Test
+	class SvnCommitsTest < OhlohScm::Test
 
 		def test_commits
 			with_svn_repository('svn') do |svn|
