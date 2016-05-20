@@ -1,17 +1,17 @@
 require 'rubygems'
 require 'stringio'
-require 'posix/spawn'
+require 'open3'
 
 class Shellout
 
   def self.relay src, dst
-    while((buf = src.read(8192))); dst << buf; end 
-  end 
+    while((buf = src.read(8192))); dst << buf; end
+  end
 
   def self.execute(cmd)
-    posix_spawn = POSIX::Spawn::Child.new(cmd)
+    out, err, exit_status = Open3.capture3(cmd)
 
-    return posix_spawn.status, posix_spawn.out, posix_spawn.err
+    return exit_status, out, err
   end
 
   def run(cmd)

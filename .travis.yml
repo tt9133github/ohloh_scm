@@ -1,4 +1,0 @@
-language: ruby
-install:
-  - gem install posix-spawn
-  - sh .install_dependencies.sh

@@ -1,14 +1,14 @@
 require 'rubygems'
-require 'posix/spawn'
+require 'open4'
 
 class BzrPipeClient
   def initialize(repository_url)
     @repository_url = repository_url
     @py_script = File.dirname(__FILE__) + '/bzrlib_pipe_server.py'
   end
-  
+
   def start
-    @pid, @stdin, @stdout, @stderr = POSIX::Spawn::popen4 "python #{@py_script}"
+    @pid, @stdin, @stdout, @stderr = Open4::popen4 "python #{@py_script}"
     open_repository
   end
 
@@ -28,7 +28,7 @@ class BzrPipeClient
     @stdin.puts cmd
     @stdin.flush
 
-    # get status on stderr, first letter indicates state, 
+    # get status on stderr, first letter indicates state,
     # remaing value indicates length of the file content
     status = @stderr.read(10)
     flag = status[0,1]
