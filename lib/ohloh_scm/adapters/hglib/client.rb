@@ -1,5 +1,5 @@
-require 'rubygems'
-require 'posix/spawn'
+# require 'rubygems'
+# require 'posix/spawn'
 
 class HglibClient
   def initialize(repository_url)

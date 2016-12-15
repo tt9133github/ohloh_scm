@@ -3,7 +3,7 @@ require 'digest/sha1'
 NULL_SHA1 = '0000000000000000000000000000000000000000' unless defined?(NULL_SHA1)
 
 module OhlohScm::Adapters
-	class AbstractAdapter
+   module SHA1 
 
 		# This file provides SHA1 computation helpers for source control systems that
 		# don't have them natively (that is, everyone except Git!).

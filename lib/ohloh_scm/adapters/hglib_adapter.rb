@@ -1,5 +1,7 @@
-require 'rubygems'
+#E require 'rubygems'
 require_relative 'hglib/client'
+require_relative 'hglib/head'
+require_relative 'hglib/cat_file'
 
 module OhlohScm::Adapters
 	class HglibAdapter < HgAdapter
@@ -21,5 +23,3 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative 'hglib/head'
-require_relative 'hglib/cat_file'

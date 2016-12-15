@@ -1,9 +1,20 @@
+require_relative 'abstract/system'
+require_relative 'abstract/validation'
+require_relative 'abstract/sha1'
+require_relative 'abstract/misc'
+
 module OhlohScm::Adapters
 	class AbstractAdapter
 		attr_accessor :url, :branch_name, :username, :password, :errors, :public_urls_only
     attr_writer :temp_folder
 
+    include System
+    include Validation
+    include SHA1
+    include Misc
+
 		def initialize(params={})
+      @url = @branch_name= @username= @password = @errors = @public_urls_only = @temp_folder = nil
 			params.each { |k,v| send(k.to_s + '=', v) if respond_to?(k.to_s + '=') }
 		end
 
@@ -26,7 +37,3 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative 'abstract/system'
-require_relative 'abstract/validation'
-require_relative 'abstract/sha1'
-require_relative 'abstract/misc'

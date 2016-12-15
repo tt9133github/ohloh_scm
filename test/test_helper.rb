@@ -1,21 +1,13 @@
+# require 'find'
+# require 'fileutils'
 require 'test/unit'
-require 'fileutils'
-require 'find'
-
-unless defined?(TEST_DIR)
-	TEST_DIR = File.dirname(__FILE__)
-end
 require_relative '../lib/ohloh_scm'
 
+TEST_DIR ||= File.dirname(__FILE__)
+REPO_DIR ||= File.expand_path(File.join(TEST_DIR, 'repositories'))
+DATA_DIR ||= File.expand_path(File.join(TEST_DIR, 'data'))
+
 OhlohScm::Adapters::AbstractAdapter.logger = Logger.new(File.open('log/test.log','a'))
-
-unless defined?(REPO_DIR)
-	REPO_DIR = File.expand_path(File.join(TEST_DIR, 'repositories'))
-end
-
-unless defined?(DATA_DIR)
-	DATA_DIR = File.expand_path(File.join(TEST_DIR, 'data'))
-end
 
 class OhlohScm::Test < Test::Unit::TestCase
 	# For reasons unknown, the base class defines a default_test method to throw a failure.

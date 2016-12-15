@@ -1,5 +1,5 @@
 module OhlohScm::Adapters
-	class BzrAdapter < AbstractAdapter
+  class BzrAdapter < AbstractAdapter
 
 		# Return the number of commits in the repository following +after+.
 		def commit_count(opts={})
@@ -95,6 +95,5 @@ module OhlohScm::Adapters
 			trunk_only = opts[:trunk_only] ? '--levels=1' : '--include-merges'
 			"cd '#{self.url}' && bzr xmllog --show-id --forward #{trunk_only} -r #{to_rev_param(after)}.."
 		end
-	
   end
 end

@@ -1,9 +1,8 @@
-module OhlohScm
-end
+require 'rubygems'
+require 'bundler/setup'
 
-#require 'rbconfig'
-
-#$: << File.join(File.dirname(__FILE__),"..")
+ # module OhlohScm
+ # end
 
 require_relative 'ohloh_scm/shellout'
 require_relative 'ohloh_scm/scratch_dir'

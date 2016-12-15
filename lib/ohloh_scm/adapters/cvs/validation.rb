@@ -1,11 +1,11 @@
 module OhlohScm::Adapters
 	class CvsAdapter
 		def self.url_regex
-			/^(:(pserver|ext):[\w\-\+\_]*(:[\w\-\+\_]*)?@[A-Za-z0-9_\-\+\.]+:[0-9]*)?\/[A-Za-z0-9_\-\+\.\/]*$/
+			/^(:(pserver|ext):[\w\-\+]*(:[\w\-\+]*)?@[A-Za-z0-9_\-\+\.]+:[0-9]*)?\/[A-Za-z0-9_\-\+\.\/]*$/
 		end
 
 		def self.public_url_regex
-			/^:(pserver|ext):[\w\-\+\_]*(:[\w\-\+\_]*)?@[A-Za-z0-9_\-\+\.]+:[0-9]*\/[A-Za-z0-9_\-\+\.\/]*$/
+			/^:(pserver|ext):[\w\-\+]*(:[\w\-\+]*)?@[A-Za-z0-9_\-\+\.]+:[0-9]*\/[A-Za-z0-9_\-\+\.\/]*$/
 		end
 
 		def validate
@@ -50,7 +50,7 @@ module OhlohScm::Adapters
 		# found in the :pserver: url is assigned to both.
 		def sync_pserver_username_password
 			# Do nothing unless pserver connection string is well-formed.
-			return unless self.url =~ /:pserver:([\w\-\_]*)(:([\w\-\_]*))?@(.*)$/
+			return unless self.url =~ /:pserver:([\w\-]*)(:([\w\-]*))?@(.*)$/
 
 			pserver_username = $1
 			pserver_password = $3

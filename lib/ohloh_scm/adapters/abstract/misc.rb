@@ -1,5 +1,5 @@
 module OhlohScm::Adapters
-	class AbstractAdapter
+	module Misc 
 
 		def is_merge_commit?(commit)
 			false

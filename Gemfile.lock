@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (9.0.6)
+    posix-spawn (0.3.12)
+    power_assert (0.2.2)
+    rake (12.0.0)
+    test-unit (3.0.8)
+      power_assert
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  posix-spawn (~> 0.3.11)
+  rake (~> 12.0)
+  test-unit
+
+BUNDLED WITH
+   1.13.6

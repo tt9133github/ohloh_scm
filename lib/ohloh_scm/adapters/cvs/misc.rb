@@ -188,7 +188,7 @@ module OhlohScm::Adapters
       if self.protocol == :ext
         ensure_key_file = File.dirname(__FILE__) + "/../../../../bin/ensure_key"
         cmd = "#{ensure_key_file} '#{ self.host }'"
-			  stdout, stderr = run_with_err(cmd)
+			  run_with_err(cmd)
       end
     end
 

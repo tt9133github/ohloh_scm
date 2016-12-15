@@ -5,9 +5,9 @@ require 'ohloh_scm/version'
 Gem::Specification.new do |gem|
   gem.name          = 'ohloh_scm'
   gem.version       = OhlohScm::Version::STRING
-  gem.authors       = ["BlackDuck Software"]
+  gem.authors       = ["Black Duck Software"]
   gem.email         = ["info@openhub.net"]
-  gem.summary       = %[Source Control Management]
+  gem.summary       = %[Source Control Management Access Library]
   gem.description   = %[The Ohloh source control management library for interacting with Git, SVN, CVS, Hg and Bzr repositories.]
   gem.homepage      = %[https://github.com/blackducksw/ohloh_scm/]
   gem.license       = %[GPL v2.0]

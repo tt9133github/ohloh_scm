@@ -1,5 +1,5 @@
-require 'rubygems'
-require 'posix/spawn'
+# require 'rubygems'
+# require 'posix/spawn'
 
 class BzrPipeClient
   def initialize(repository_url)
