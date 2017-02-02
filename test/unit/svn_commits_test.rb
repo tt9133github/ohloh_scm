@@ -109,7 +109,7 @@ module OhlohScm::Adapters
         def test_remove_dupes_with_sql_acii_encoding
            #Note: If there are two files that are identical except for the encoding, ohloh_scm should only keep one.
            svn = SvnAdapter.new
-		   c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "R", :path => "foo"),
+		   c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "A", :path => "foo"),
 																			OhlohScm::Diff.new(:action => "A", :path => "foo") ])
 
            svn.remove_dupes(c)
