@@ -109,10 +109,12 @@ module OhlohScm::Adapters
         def test_remove_dupes_with_sql_acii_encoding
            #Note: If there are two files that are identical except for the encoding, ohloh_scm should only keep one.
            svn = SvnAdapter.new
-		   c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "A", :path => "/FritzBoxDial/FritzBoxDial/formWählbox.vb"),
-																			OhlohScm::Diff.new(:action => "A", :path => "/FritzBoxDial/FritzBoxDial/formW\xC3\xA4hlbox.vb") ])
-
+           diff_1 = OhlohScm::Diff.new(:action => "A", :path => "/FritzBoxDial/FritzBoxDial/formWählbox.vb")
+           diff_2 = OhlohScm::Diff.new(:action => "A", :path => "/FritzBoxDial/FritzBoxDial/formW\xC3\xA4hlbox.vb".force_encoding('ASCII'))
+		   c = OhlohScm::Commit.new(:diffs => [diff_1 ,diff_2])
+																			
            svn.remove_dupes(c)
+           puts c.diffs.count
            assert_equal 1, c.diffs.size
            assert_equal 'A', c.diffs.first.action
         end
