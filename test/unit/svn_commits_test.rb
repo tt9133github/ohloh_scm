@@ -110,7 +110,7 @@ module OhlohScm::Adapters
            #Note: If there are two files that are identical except for the encoding, ohloh_scm should only keep one.
            svn = SvnAdapter.new
 		   c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "A", :path => "foo"),
-																			OhlohScm::Diff.new(:action => "A", :path => "foo") ])
+																			OhlohScm::Diff.new(:action => "A", :path => "foo".force_encoding('ASCII') ])
 
            svn.remove_dupes(c)
            assert_equal 1, c.diffs.size
