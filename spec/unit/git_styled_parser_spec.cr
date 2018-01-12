@@ -1,31 +1,30 @@
 require "../test_helper"
 
-module OhlohScm::Parsers
-	class GitStyledParserTest < OhlohScm::Test
+describe "GitStyledParser" do
 
-		def test_empty_array
-			assert_equal([], GitStyledParser.parse(""))
-		end
+  it "empty_array" do
+    assert_equal([], GitStyledParser.parse(""))
+  end
 
-    def test_log_parser_nil_date
+  it "log_parser_nil_date" do
 sample_log = <<-SAMPLE
 __BEGIN_COMMIT__
 Commit: 1df547800dcd168e589bb9b26b4039bff3a7f7e4
 Author: Jason Allen
 AuthorEmail: jason@ohloh.net
-Date: 
+Date:
 __BEGIN_COMMENT__
-    moving COPYING
+  moving COPYING
 
 __END_COMMENT__
 SAMPLE
 
-			commits = GitStyledParser.parse(sample_log)
-			assert_equal 1, commits.size
-			assert_equal Time.utc(1970,1,1,0,0,0), commits[0].author_date
-    end
+    commits = GitStyledParser.parse(sample_log)
+    assert_equal 1, commits.size
+    assert_equal Time.utc(1970,1,1,0,0,0), commits[0].author_date
+  end
 
-    def test_log_parser_bogus_date
+  it "log_parser_bogus_date" do
 sample_log = <<-SAMPLE
 __BEGIN_COMMIT__
 Commit: 1df547800dcd168e589bb9b26b4039bff3a7f7e4
@@ -33,17 +32,17 @@ Author: Jason Allen
 AuthorEmail: jason@ohloh.net
 Date: Mon, Jan 01 2012 05:00:00 -0500
 __BEGIN_COMMENT__
-    moving COPYING
+  moving COPYING
 
 __END_COMMENT__
 SAMPLE
 
-			commits = GitStyledParser.parse(sample_log)
-			assert_equal 1, commits.size
-			assert_equal Time.utc(1970,1,1,0,0,0), commits[0].author_date
-    end
+    commits = GitStyledParser.parse(sample_log)
+    assert_equal 1, commits.size
+    assert_equal Time.utc(1970,1,1,0,0,0), commits[0].author_date
+  end
 
-		def test_log_parser_default
+  it "log_parser_default" do
 sample_log = <<SAMPLE
 __BEGIN_COMMIT__
 Commit: 1df547800dcd168e589bb9b26b4039bff3a7f7e4
@@ -71,33 +70,32 @@ __END_COMMENT__
 :100644 000000 41dc0d12cb9eaa30e57aa7126b1227ba320ad297 0000000000000000000000000000000000000000 D	helloworld.c
 SAMPLE
 
-			commits = GitStyledParser.parse(sample_log)
+    commits = GitStyledParser.parse(sample_log)
 
-			assert commits
-			assert_equal 2, commits.size
+    assert commits
+    assert_equal 2, commits.size
 
-			assert_equal "1df547800dcd168e589bb9b26b4039bff3a7f7e4", commits[0].token
-			assert_equal "Jason Allen", commits[0].author_name
-			assert_equal "jason@ohloh.net", commits[0].author_email
-			assert_equal "moving COPYING\n", commits[0].message
-			assert_equal Time.utc(2006,7,14,23,7,15), commits[0].author_date
-			assert_equal 1, commits[0].diffs.size
+    assert_equal "1df547800dcd168e589bb9b26b4039bff3a7f7e4", commits[0].token
+    assert_equal "Jason Allen", commits[0].author_name
+    assert_equal "jason@ohloh.net", commits[0].author_email
+    assert_equal "moving COPYING\n", commits[0].message
+    assert_equal Time.utc(2006,7,14,23,7,15), commits[0].author_date
+    assert_equal 1, commits[0].diffs.size
 
-			assert_equal "A", commits[0].diffs[0].action
-			assert_equal "COPYING", commits[0].diffs[0].path
+    assert_equal "A", commits[0].diffs[0].action
+    assert_equal "COPYING", commits[0].diffs[0].path
 
-			assert_equal "2e9366dd7a786fdb35f211fff1c8ea05c51968b1", commits[1].token
-			assert_equal "Robin Luckey", commits[1].author_name
-			assert_equal "robin@ohloh.net", commits[1].author_email
-			assert_equal "added some documentation and licensing info\n", commits[1].message # Note \n at end of comment
-			assert_equal Time.utc(2006,6,11,18,34,17), commits[1].author_date
-			assert_equal 2, commits[1].diffs.size
+    assert_equal "2e9366dd7a786fdb35f211fff1c8ea05c51968b1", commits[1].token
+    assert_equal "Robin Luckey", commits[1].author_name
+    assert_equal "robin@ohloh.net", commits[1].author_email
+    assert_equal "added some documentation and licensing info\n", commits[1].message # Note \n at end of comment
+    assert_equal Time.utc(2006,6,11,18,34,17), commits[1].author_date
+    assert_equal 2, commits[1].diffs.size
 
-			assert_equal "M", commits[1].diffs[0].action
-			assert_equal "README", commits[1].diffs[0].path
-			assert_equal "D", commits[1].diffs[1].action
-			assert_equal "helloworld.c", commits[1].diffs[1].path
-		end
+    assert_equal "M", commits[1].diffs[0].action
+    assert_equal "README", commits[1].diffs[0].path
+    assert_equal "D", commits[1].diffs[1].action
+    assert_equal "helloworld.c", commits[1].diffs[1].path
+  end
 
-	end
 end

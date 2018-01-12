@@ -1,13 +1,12 @@
 require "../test_helper"
 
-module OhlohScm::Parsers
-	class HgParserTest < OhlohScm::Test
+describe "HgParser" do
 
-		def test_empty_array
-			assert_equal([], HgParser.parse(""))
-		end
+  it "empty_array" do
+    assert_equal([], HgParser.parse(""))
+  end
 
-		def test_log_parser_default
+  it "log_parser_default" do
 sample_log = <<SAMPLE
 changeset:   1:b14fa4692f94
 user:        Jason Allen <jason@ohloh.net>
@@ -22,27 +21,27 @@ summary:     Initial Checkin
 
 SAMPLE
 
-			commits = HgParser.parse(sample_log)
+    commits = HgParser.parse(sample_log)
 
-			assert commits
-			assert_equal 2, commits.size
+    assert commits
+    assert_equal 2, commits.size
 
-			assert_equal "b14fa4692f94", commits[0].token
-			assert_equal "Jason Allen", commits[0].committer_name
-			assert_equal "jason@ohloh.net", commits[0].committer_email
-			assert_equal "added makefile", commits[0].message # Note \n at end of comment
-			assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
-			assert_equal 0, commits[0].diffs.size
+    assert_equal "b14fa4692f94", commits[0].token
+    assert_equal "Jason Allen", commits[0].committer_name
+    assert_equal "jason@ohloh.net", commits[0].committer_email
+    assert_equal "added makefile", commits[0].message # Note \n at end of comment
+    assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
+    assert_equal 0, commits[0].diffs.size
 
-			assert_equal "01101d8ef3ce", commits[1].token
-			assert_equal "Robin Luckey", commits[1].committer_name
-			assert_equal "robin@ohloh.net", commits[1].committer_email
-			assert_equal "Initial Checkin", commits[1].message # Note \n at end of comment
-			assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
-			assert_equal 0, commits[1].diffs.size
-		end
+    assert_equal "01101d8ef3ce", commits[1].token
+    assert_equal "Robin Luckey", commits[1].committer_name
+    assert_equal "robin@ohloh.net", commits[1].committer_email
+    assert_equal "Initial Checkin", commits[1].message # Note \n at end of comment
+    assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
+    assert_equal 0, commits[1].diffs.size
+  end
 
-		def test_log_parser_default_partial_user_name
+  it "log_parser_default_partial_user_name" do
 sample_log = <<SAMPLE
 changeset:   259:45c293b71341
 user:        robin@ohloh.net
@@ -51,18 +50,18 @@ summary:     fix addremove
 
 SAMPLE
 
-			commits = HgParser.parse(sample_log)
+    commits = HgParser.parse(sample_log)
 
-			assert commits
-			assert_equal 1, commits.size
+    assert commits
+    assert_equal 1, commits.size
 
-			assert_equal "45c293b71341", commits[0].token
-			assert_equal "robin@ohloh.net", commits[0].committer_name
-			assert !commits[0].committer_email
-		end
+    assert_equal "45c293b71341", commits[0].token
+    assert_equal "robin@ohloh.net", commits[0].committer_name
+    assert !commits[0].committer_email
+  end
 
-		# Sometimes the log does not include a summary
-		def test_log_parser_default_no_summary
+  # Sometimes the log does not include a summary
+  it "log_parser_default_no_summary" do
 sample_log = <<SAMPLE
 changeset:   1:b14fa4692f94
 user:        Jason Allen <jason@ohloh.net>
@@ -74,25 +73,25 @@ user:        Robin Luckey <robin@ohloh.net>
 date:        Tue, Jan 20 2009 11:32:54 -0800
 
 SAMPLE
-			commits = HgParser.parse(sample_log)
+    commits = HgParser.parse(sample_log)
 
-			assert commits
-			assert_equal 2, commits.size
+    assert commits
+    assert_equal 2, commits.size
 
-			assert_equal "b14fa4692f94", commits[0].token
-			assert_equal "Jason Allen", commits[0].committer_name
-			assert_equal "jason@ohloh.net", commits[0].committer_email
-			assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
-			assert_equal 0, commits[0].diffs.size
+    assert_equal "b14fa4692f94", commits[0].token
+    assert_equal "Jason Allen", commits[0].committer_name
+    assert_equal "jason@ohloh.net", commits[0].committer_email
+    assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
+    assert_equal 0, commits[0].diffs.size
 
-			assert_equal "01101d8ef3ce", commits[1].token
-			assert_equal "Robin Luckey", commits[1].committer_name
-			assert_equal "robin@ohloh.net", commits[1].committer_email
-			assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
-			assert_equal 0, commits[1].diffs.size
-		end
+    assert_equal "01101d8ef3ce", commits[1].token
+    assert_equal "Robin Luckey", commits[1].committer_name
+    assert_equal "robin@ohloh.net", commits[1].committer_email
+    assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
+    assert_equal 0, commits[1].diffs.size
+  end
 
-		def test_log_parser_verbose
+  it "log_parser_verbose" do
 sample_log = <<SAMPLE
 changeset:   1:b14fa4692f94
 user:        Jason Allen <jason@ohloh.net>
@@ -112,73 +111,72 @@ Initial Checkin
 
 SAMPLE
 
-			commits = HgParser.parse(sample_log)
+    commits = HgParser.parse(sample_log)
 
-			assert commits
-			assert_equal 2, commits.size
+    assert commits
+    assert_equal 2, commits.size
 
-			assert_equal "b14fa4692f94", commits[0].token
-			assert_equal "Jason Allen", commits[0].committer_name
-			assert_equal "jason@ohloh.net", commits[0].committer_email
-			assert_equal "added makefile\n", commits[0].message # Note \n at end of comment
-			assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
-			assert_equal 1, commits[0].diffs.size
-			assert_equal "makefile", commits[0].diffs[0].path
+    assert_equal "b14fa4692f94", commits[0].token
+    assert_equal "Jason Allen", commits[0].committer_name
+    assert_equal "jason@ohloh.net", commits[0].committer_email
+    assert_equal "added makefile\n", commits[0].message # Note \n at end of comment
+    assert_equal Time.utc(2009,1,20,19,33,17), commits[0].committer_date
+    assert_equal 1, commits[0].diffs.size
+    assert_equal "makefile", commits[0].diffs[0].path
 
-			assert_equal "01101d8ef3ce", commits[1].token
-			assert_equal "Robin Luckey", commits[1].committer_name
-			assert_equal "robin@ohloh.net", commits[1].committer_email
-			assert_equal "Initial Checkin\n", commits[1].message # Note \n at end of comment
-			assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
-			assert_equal 1, commits[1].diffs.size
-			assert_equal "helloworld.c", commits[1].diffs[0].path
-		end
+    assert_equal "01101d8ef3ce", commits[1].token
+    assert_equal "Robin Luckey", commits[1].committer_name
+    assert_equal "robin@ohloh.net", commits[1].committer_email
+    assert_equal "Initial Checkin\n", commits[1].message # Note \n at end of comment
+    assert_equal Time.utc(2009,1,20,19,32,54), commits[1].committer_date
+    assert_equal 1, commits[1].diffs.size
+    assert_equal "helloworld.c", commits[1].diffs[0].path
+  end
 
-		def test_styled_parser
-			with_hg_repository("hg") do |hg|
-				assert FileTest.exist?(HgStyledParser.style_path)
-				log = hg.run("cd #{hg.url} && hg log -f --style #{OhlohScm::Parsers::HgStyledParser.style_path}")
-				commits = OhlohScm::Parsers::HgStyledParser.parse(log)
-				assert_styled_commits(commits, false)
+  it "styled_parser" do
+    with_hg_repository("hg") do |hg|
+      assert FileTest.exist?(HgStyledParser.style_path)
+      log = hg.run("cd #{hg.url} && hg log -f --style #{OhlohScm::Parsers::HgStyledParser.style_path}")
+      commits = OhlohScm::Parsers::HgStyledParser.parse(log)
+      assert_styled_commits(commits, false)
 
-				assert FileTest.exist?(HgStyledParser.verbose_style_path)
-				log = hg.run("cd #{hg.url} && hg log -f --style #{OhlohScm::Parsers::HgStyledParser.verbose_style_path}")
-				commits = OhlohScm::Parsers::HgStyledParser.parse(log)
-				assert_styled_commits(commits, true)
-			end
-		end
+      assert FileTest.exist?(HgStyledParser.verbose_style_path)
+      log = hg.run("cd #{hg.url} && hg log -f --style #{OhlohScm::Parsers::HgStyledParser.verbose_style_path}")
+      commits = OhlohScm::Parsers::HgStyledParser.parse(log)
+      assert_styled_commits(commits, true)
+    end
+  end
 
-		protected
+  protected
 
-		def assert_styled_commits(commits, with_diffs=false)
-			assert_equal 5, commits.size
+  def assert_styled_commits(commits, with_diffs=false)
+    assert_equal 5, commits.size
 
-			assert_equal "75532c1e1f1de55c2271f6fd29d98efbe35397c4", commits[1].token
-			assert_equal "Robin Luckey", commits[1].committer_name
-			assert_equal "robin@ohloh.net", commits[1].committer_email
-			assert Time.utc(2009,1,20,19,34,53) - commits[1].committer_date < 1 # Don"t care about milliseconds
-			assert_equal "deleted helloworld.c\n", commits[1].message
+    assert_equal "75532c1e1f1de55c2271f6fd29d98efbe35397c4", commits[1].token
+    assert_equal "Robin Luckey", commits[1].committer_name
+    assert_equal "robin@ohloh.net", commits[1].committer_email
+    assert Time.utc(2009,1,20,19,34,53) - commits[1].committer_date < 1 # Don"t care about milliseconds
+    assert_equal "deleted helloworld.c\n", commits[1].message
 
-			if with_diffs
-				assert_equal 1, commits[1].diffs.size
-				assert_equal "D", commits[1].diffs[0].action
-				assert_equal "helloworld.c", commits[1].diffs[0].path
-			else
-				assert_equal [], commits[1].diffs
-			end
+    if with_diffs
+      assert_equal 1, commits[1].diffs.size
+      assert_equal "D", commits[1].diffs[0].action
+      assert_equal "helloworld.c", commits[1].diffs[0].path
+    else
+      assert_equal [], commits[1].diffs
+    end
 
-			assert_equal "468336c6671cbc58237a259d1b7326866afc2817", commits[2].token
-			assert Time.utc(2009, 1,20,19,34,04) - commits[2].committer_date < 1
+    assert_equal "468336c6671cbc58237a259d1b7326866afc2817", commits[2].token
+    assert Time.utc(2009, 1,20,19,34,04) - commits[2].committer_date < 1
 
-			if with_diffs
-				assert_equal 2, commits[2].diffs.size
-				assert_equal "M", commits[2].diffs[0].action
-				assert_equal "helloworld.c", commits[2].diffs[0].path
-				assert_equal "A", commits[2].diffs[1].action
-				assert_equal "README", commits[2].diffs[1].path
-			else
-				assert_equal [], commits[0].diffs
-			end
-		end
-	end
+    if with_diffs
+      assert_equal 2, commits[2].diffs.size
+      assert_equal "M", commits[2].diffs[0].action
+      assert_equal "helloworld.c", commits[2].diffs[0].path
+      assert_equal "A", commits[2].diffs[1].action
+      assert_equal "README", commits[2].diffs[1].path
+    else
+      assert_equal [], commits[0].diffs
+    end
+  end
 end
