@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class GitCommitAllTest < OhlohScm::Test
@@ -10,7 +10,7 @@ module OhlohScm::Adapters
 				git.init_db
 				assert !git.anything_to_commit?
 
-				File.open(File.join(dir, 'README'), 'w') {}
+				File.open(File.join(dir, "README"), "w") {}
 				assert git.anything_to_commit?
 
 				c = OhlohScm::Commit.new
@@ -23,10 +23,10 @@ module OhlohScm::Adapters
 
 				assert_equal c.author_name, git.commits.first.author_name
 				# Depending on version of Git used, we may or may not have trailing \n.
-				# We don't really care, so just compare the stripped versions.
+				# We don"t really care, so just compare the stripped versions.
 				assert_equal c.message.strip, git.commits.first.message.strip
 
-				assert_equal ['.gitignore', 'README'], git.commits.first.diffs.collect { |d| d.path }.sort
+				assert_equal [".gitignore", "README"], git.commits.first.diffs.collect { |d| d.path }.sort
 			end
 		end
 

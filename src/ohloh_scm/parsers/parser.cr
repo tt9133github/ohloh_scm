@@ -1,8 +1,8 @@
-require 'stringio'
+require "stringio"
 
 module OhlohScm::Parsers
 	class Parser
-		def self.parse(buffer='', opts={})
+		def self.parse(buffer="", opts={})
 			buffer = StringIO.new(buffer) if buffer.is_a? String
 			opts = opts.merge(:scm => self.scm)
 

@@ -1,15 +1,15 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class GitPushTest < OhlohScm::Test
 
 		def test_hostname
-			assert_equal "foo", GitAdapter.new(:url => 'foo:/bar').hostname
-			assert_equal "/bar", GitAdapter.new(:url => 'foo:/bar').path
+			assert_equal "foo", GitAdapter.new(:url => "foo:/bar").hostname
+			assert_equal "/bar", GitAdapter.new(:url => "foo:/bar").path
 
 			assert !GitAdapter.new.hostname
-			assert !GitAdapter.new(:url => '/bar').hostname
-			assert_equal 'http', GitAdapter.new(:url => 'http://www.ohloh.net/bar').hostname
+			assert !GitAdapter.new(:url => "/bar").hostname
+			assert_equal "http", GitAdapter.new(:url => "http://www.ohloh.net/bar").hostname
 		end
 
 		def test_local
@@ -22,7 +22,7 @@ module OhlohScm::Adapters
 		end
 
 		def test_basic_push
-			with_git_repository('git') do |src|
+			with_git_repository("git") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 					dest = GitAdapter.new(:url => dest_dir).normalize
 					assert !dest.exist?
@@ -32,7 +32,7 @@ module OhlohScm::Adapters
 					assert_equal src.log, dest.log
 
 					# Now push again. This tests a different code path!
-					File.open(File.join(src.url, 'foo'), 'w') { }
+					File.open(File.join(src.url, "foo"), "w") { }
 					src.commit_all(OhlohScm::Commit.new)
 
           system("cd #{ dest_dir } && git config --bool core.bare true && git config receive.denyCurrentBranch refuse")

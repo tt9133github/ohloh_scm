@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class AbstractAdapterTest < OhlohScm::Test
@@ -13,49 +13,49 @@ module OhlohScm::Adapters
 		end
 
 		def test_valid_urls
-			['http://www.ohloh.net'].each do |url|
+			["http://www.ohloh.net"].each do |url|
 				assert !AbstractAdapter.new(:url => url).validate_url
 			end
 		end
 
 		def test_invalid_urls
-			[nil, '', '*' * 121].each do |url|
+			[nil, "", "*" * 121].each do |url|
 				assert AbstractAdapter.new(:url => url).validate_url.any?
 			end
 		end
 
 		def test_invalid_usernames
-			['no spaces allowed', '/', ':', 'a'*33].each do |username|
+			["no spaces allowed", "/", ":", "a"*33].each do |username|
 				assert AbstractAdapter.new(:username => username).validate_username.any?
 			end
 		end
 
 		def test_valid_usernames
-			[nil,'','joe_36','a'*32].each do |username|
+			[nil,"","joe_36","a"*32].each do |username|
 				assert !AbstractAdapter.new(:username => username).validate_username
 			end
 		end
 
 		def test_invalid_passwords
-			['no spaces allowed', 'a'*33].each do |password|
+			["no spaces allowed", "a"*33].each do |password|
 				assert AbstractAdapter.new(:password => password).validate_password.any?
 			end
 		end
 
 		def test_valid_passwords
-			[nil,'','abc','a'*32].each do |password|
+			[nil,"","abc","a"*32].each do |password|
 				assert !AbstractAdapter.new(:password => password).validate_password
 			end
 		end
 
 		def test_invalid_branch_names
-			['%','a'*81].each do |branch_name|
+			["%","a"*81].each do |branch_name|
 				assert AbstractAdapter.new(:branch_name => branch_name).validate_branch_name.any?
 			end
 		end
 
 		def test_valid_branch_names
-			[nil,'','/trunk','_','a'*80].each do |branch_name|
+			[nil,"","/trunk","_","a"*80].each do |branch_name|
 				assert !AbstractAdapter.new(:branch_name => branch_name).validate_branch_name
 			end
 		end
@@ -84,7 +84,7 @@ module OhlohScm::Adapters
     end
 
     def test_shellout_large_output
-      cat = 'ruby -e"  puts Array.new(65536){ 42 }  "'
+      cat = %(ruby -e"  puts Array.new(65536){ 42 }  ")
       stdout = AbstractAdapter.run(cat)
       assert_equal Array.new(65536){ 42 }.join("\n").concat("\n"), stdout
     end
@@ -97,7 +97,7 @@ module OhlohScm::Adapters
     end
 
     def test_string_encoder_must_return_path_to_script
-      string_encoder_path = File.expand_path('../../../bin/string_encoder', __FILE__)
+      string_encoder_path = File.expand_path("../../../bin/string_encoder", __FILE__)
 
       assert_equal string_encoder_path, AbstractAdapter.new.string_encoder
     end

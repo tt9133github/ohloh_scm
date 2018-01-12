@@ -1,7 +1,7 @@
 module OhlohScm::Parsers
 	class BranchNumber
 		def initialize(s)
-			@a = s.split('.').collect { |i| i.to_i }
+			@a = s.split(".").collect { |i| i.to_i }
 			# Accomodate CVS magic branch numbers by swapping the magic zero
 			# That is, 1.1.0.2 => 1.1.2.0
 			if @a.size > 2 and @a[-2]==0
@@ -10,7 +10,7 @@ module OhlohScm::Parsers
 		end
 
 		def to_s
-			@a.join('.')
+			@a.join(".")
 		end
 
 		def to_a

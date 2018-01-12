@@ -45,7 +45,7 @@ module OhlohScm::Adapters
 		end
 
 		def bzr_path
-			path && File.join(path, '.bzr')
+			path && File.join(path, ".bzr")
 		end
 	end
 end

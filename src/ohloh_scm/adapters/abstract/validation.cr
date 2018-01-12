@@ -29,7 +29,7 @@ module OhlohScm::Adapters
 		end
 
 		def validate_branch_name
-			return nil if @branch_name.to_s == ''
+			return nil if @branch_name.to_s == ""
 			return [:branch_name, "The branch name must not be longer than 80 characters."] unless @branch_name.length <= 80
 			return [:branch_name, "The branch name may contain only letters, numbers, spaces, and the special characters '_', '-', '+', '/', '^', and '.'"] unless @branch_name =~ /^[A-Za-z0-9_^\-\+\.\/\ ]+$/
 		end

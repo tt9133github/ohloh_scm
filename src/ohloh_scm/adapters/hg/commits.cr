@@ -75,18 +75,18 @@ module OhlohScm::Adapters
 			begin
 				if after == head_token # There are no new commits
 					# As a time optimization, just create an empty file rather than fetch a log we know will be empty.
-					File.open(log_filename, 'w') { }
+					File.open(log_filename, "w") { }
 				else
 					run "cd '#{url}' && #{ hg_log_with_opts } --style #{OhlohScm::Parsers::HgStyledParser.verbose_style_path} | #{ string_encoder } > #{log_filename}"
 				end
-				File.open(log_filename, 'r') { |io| yield io }
+				File.open(log_filename, "r") { |io| yield io }
 			ensure
 				File.delete(log_filename) if FileTest.exist?(log_filename)
 			end
 		end
 
 		def log_filename
-		  File.join(temp_folder, (self.url).gsub(/\W/,'') + '.log')
+		  File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
 		end
 
     private
@@ -98,7 +98,7 @@ module OhlohScm::Adapters
       options = if opts[:trunk_only]
         "--follow-first -r #{ up_to }:#{ after }"
       else
-        query = "and (branch(#{ branch_name }) or ancestors(#{ branch_name }))" if branch_name && branch_name != 'default'
+        query = "and (branch(#{ branch_name }) or ancestors(#{ branch_name }))" if branch_name && branch_name != "default"
         "-r '#{ up_to }:#{ after } #{ query }'"
       end
 

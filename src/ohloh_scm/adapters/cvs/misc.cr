@@ -19,7 +19,7 @@ module OhlohScm::Adapters
 			files = []
 			stdout.each_line do |s|
 				s.strip!
-				s = $1 + '/' if s =~ /^D\/(.*)\/\/\/\/$/
+				s = $1 + "/" if s =~ /^D\/(.*)\/\/\/\/$/
 				s = $1 if s =~ /^\/(.*)\/.*\/.*\/.*\/$/
 				next if s == "CVSROOT/"
 				files << s if s and s.length > 0
@@ -70,7 +70,7 @@ module OhlohScm::Adapters
 			run "cvsnt -d #{self.url} rlog #{opt_branch} #{opt_time(most_recent_token)} '#{self.module_name}' | #{ string_encoder }"
 		end
 
-    def export_tag(dest_dir, tag_name = 'HEAD')
+    def export_tag(dest_dir, tag_name = "HEAD")
       run "cvsnt -d #{self.url} export -d'#{dest_dir}' -r #{tag_name} '#{self.module_name}'"
     end
 
@@ -78,7 +78,7 @@ module OhlohScm::Adapters
 			opt_D = r.token ? "-D'#{r.token}Z'" : ""
 
       ensure_host_key
-			if FileTest.exists?(local_directory + '/CVS/Root')
+			if FileTest.exists?(local_directory + "/CVS/Root")
 				# We already have a local enlistment, so do a quick update.
 				if r.directories.size > 0
 					build_ordered_directory_list(r.directories).each do |d|
@@ -110,7 +110,7 @@ module OhlohScm::Adapters
 			# using cvs modules that are only a single directory deep when testing.
 			# We'll check if the url begins with '/' to detect an integration test,
 			# then return an empty string (ie, the default root directory) if so.
-			return [''] if self.url =~ /^\//
+			return [""] if self.url =~ /^\//
 
 				list = []
 			directories.collect{ |a| trim_directory(a.to_s).to_s }.each do |d|
@@ -118,15 +118,15 @@ module OhlohScm::Adapters
 				# Update the parent directory of the Attic instead.
 				if d =~ /^(.*)Attic$/
 					d = $1
-					d = d[0..-2] if d.length > 0 and d[-1,1]=='/'
+					d = d[0..-2] if d.length > 0 and d[-1,1]=="/"
 				end
 
 				unless list.include? d
 					list << d
 					# We also need to include every parent directory of the directory
 					# we are interested in, all the way up to the root.
-					while d.rindex('/') and d.rindex('/') > 0 do
-						d = d[0..(d.rindex('/')-1)]
+					while d.rindex("/") and d.rindex("/") > 0 do
+						d = d[0..(d.rindex("/")-1)]
 						if list.include? d
 							break
 						else
@@ -158,7 +158,7 @@ module OhlohScm::Adapters
 		end
 
 		def opt_branch
-			if branch_name != nil and branch_name.length > 0 and branch_name != 'HEAD'
+			if branch_name != nil and branch_name.length > 0 and branch_name != "HEAD"
 		"-r'#{branch_name}'"
 			else
 		"-b -r1:"
@@ -195,8 +195,8 @@ module OhlohScm::Adapters
     def tags
       tag_strings = run("cvs -Q -d #{ url } rlog -h #{ module_name } | awk -F\"[.:]\" '/^\\t/&&$(NF-1)!=0'").split(/\n/)
       tag_strings.map do |tag_string|
-        tag_name, version = tag_string.split(':')
-        [tag_name.gsub(/\t/, ''), version.strip]
+        tag_name, version = tag_string.split(":")
+        [tag_name.gsub(/\t/, ""), version.strip]
       end
     end
 	end

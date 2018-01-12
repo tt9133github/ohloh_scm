@@ -1,15 +1,15 @@
-require 'socket'
+require "socket"
 
 module OhlohScm::Adapters
 	class GitAdapter < AbstractAdapter
 
-		COMMITTER_NAME = 'ohloh_slave' unless defined?(COMMITTER_NAME)
+		COMMITTER_NAME = "ohloh_slave" unless defined?(COMMITTER_NAME)
 
 		def push(to)
 			logger.info { "Pushing to #{to.url}" }
 
 			if to.exist?
-				ENV['GIT_COMMITTER_NAME'] = COMMITTER_NAME
+				ENV["GIT_COMMITTER_NAME"] = COMMITTER_NAME
 				run "cd '#{self.url}' && git push '#{to.url}' #{self.branch_name}:#{to.branch_name}"
 			else
 				if to.local?

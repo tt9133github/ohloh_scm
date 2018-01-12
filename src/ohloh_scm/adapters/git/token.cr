@@ -13,7 +13,7 @@ module OhlohScm::Adapters
 		#---------------------------------------------------------------------------
 
 		def token_filename
-			'ohloh_token'
+			"ohloh_token"
 		end
 
 		def token_path
@@ -30,7 +30,7 @@ module OhlohScm::Adapters
 				rescue RuntimeError => e
 					# If the git repository doesn't have a token file yet, it will error out.
 					# We want to just quietly return nil.
-					if e.message =~ /pathspec '#{token_filename}' did not match any file\(s\) known to git/
+					if e.message =~ /pathspec "#{token_filename}" did not match any file\(s\) known to git/
 						return nil
 					else
 						raise
@@ -44,7 +44,7 @@ module OhlohScm::Adapters
 		# If the passed token is empty, this method silently does nothing.
 		def write_token(token)
 			if token and token.to_s.length > 0
-				File.open(token_path, 'w') do |f|
+				File.open(token_path, "w") do |f|
 					f.write token.to_s
 				end
 			end

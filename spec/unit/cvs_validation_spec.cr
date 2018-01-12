@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class CvsValidationTest < OhlohScm::Test
@@ -20,7 +20,7 @@ module OhlohScm::Adapters
 				"file:///home/robin/cvs", # file protocol is not allowed
 				"http://svn.sourceforge.net", # http protocol is not allowed
 				"git://kernel.org/whatever/linux.git", # git protocol is not allowed
-				"ext@kernel.org/whatever/linux.git" # ext protocol allowed, but starts with ':'
+				"ext@kernel.org/whatever/linux.git" # ext protocol allowed, but starts with ":"
 			].each do |url|
 				# Rejected for both internal and public use
 				[true, false].each do |p|
@@ -99,30 +99,30 @@ module OhlohScm::Adapters
 			# Pull username only from url
 			cvs = CvsAdapter.new(:url => ":pserver:guest:@ohloh.net:/test")
 			cvs.normalize
-			assert_equal ':pserver:guest:@ohloh.net:/test', cvs.url
-			assert_equal 'guest', cvs.username
-			assert_equal '', cvs.password
+			assert_equal ":pserver:guest:@ohloh.net:/test", cvs.url
+			assert_equal "guest", cvs.username
+			assert_equal "", cvs.password
 
 			# Pull username and password from url
 			cvs = CvsAdapter.new(:url => ":pserver:guest:secret@ohloh.net:/test")
 			cvs.normalize
-			assert_equal ':pserver:guest:secret@ohloh.net:/test', cvs.url
-			assert_equal 'guest', cvs.username
-			assert_equal 'secret', cvs.password
+			assert_equal ":pserver:guest:secret@ohloh.net:/test", cvs.url
+			assert_equal "guest", cvs.username
+			assert_equal "secret", cvs.password
 
 			# Apply username and password to url
 			cvs = CvsAdapter.new(:url => ":pserver::@ohloh.net:/test", :username => "guest", :password => "secret")
 			cvs.normalize
-			assert_equal ':pserver:guest:secret@ohloh.net:/test', cvs.url
-			assert_equal 'guest', cvs.username
-			assert_equal 'secret', cvs.password
+			assert_equal ":pserver:guest:secret@ohloh.net:/test", cvs.url
+			assert_equal "guest", cvs.username
+			assert_equal "secret", cvs.password
 
 			# Passwords disagree, use :password attribute
 			cvs = CvsAdapter.new(:url => ":pserver:guest:old@ohloh.net:/test", :username => "guest", :password => "new")
 			cvs.normalize
-			assert_equal ':pserver:guest:new@ohloh.net:/test', cvs.url
-			assert_equal 'guest', cvs.username
-			assert_equal 'new', cvs.password
+			assert_equal ":pserver:guest:new@ohloh.net:/test", cvs.url
+			assert_equal "guest", cvs.username
+			assert_equal "new", cvs.password
 		end
 
 		def test_guess_forge
@@ -132,17 +132,17 @@ module OhlohScm::Adapters
 			cvs = CvsAdapter.new(:url => "garbage_in_garbage_out")
 			assert_equal nil, cvs.guess_forge
 
-			cvs = CvsAdapter.new(:url => ':pserver:anonymous:@boost.cvs.sourceforge.net:/cvsroot/boost')
-			assert_equal 'sourceforge.net', cvs.guess_forge
+			cvs = CvsAdapter.new(:url => ":pserver:anonymous:@boost.cvs.sourceforge.net:/cvsroot/boost")
+			assert_equal "sourceforge.net", cvs.guess_forge
 
-			cvs = CvsAdapter.new(:url => ':pserver:guest:@cvs.dev.java.net:/cvs')
-			assert_equal 'java.net', cvs.guess_forge
+			cvs = CvsAdapter.new(:url => ":pserver:guest:@cvs.dev.java.net:/cvs")
+			assert_equal "java.net", cvs.guess_forge
 
 			cvs = CvsAdapter.new(:url => ":PSERVER:ANONCVS:@CVS.DEV.JAVA.NET:/cvs")
-			assert_equal 'java.net', cvs.guess_forge
+			assert_equal "java.net", cvs.guess_forge
 
 			cvs = CvsAdapter.new(:url => ":pserver:guest:@colorchooser.dev.java.net:/cvs")
-			assert_equal 'java.net', cvs.guess_forge
+			assert_equal "java.net", cvs.guess_forge
 		end
 	end
 end

@@ -13,10 +13,10 @@ module OhlohScm::Adapters
 			run("cd '#{path}' && hg manifest -r #{token} | #{ string_encoder }").split("\n")
 		end
 
-		def export(dest_dir, token='tip')
+		def export(dest_dir, token="tip")
 			run("cd '#{path}' && hg archive -r #{token} '#{dest_dir}'")
 			# Hg leaves a little cookie crumb in the export directory. Remove it.
-			File.delete(File.join(dest_dir, '.hg_archival.txt')) if File.exist?(File.join(dest_dir, '.hg_archival.txt'))
+			File.delete(File.join(dest_dir, ".hg_archival.txt")) if File.exist?(File.join(dest_dir, ".hg_archival.txt"))
 		end
 
     def tags

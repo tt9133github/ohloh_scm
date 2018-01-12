@@ -1,5 +1,5 @@
-require_relative '../test_helper'
-require 'date'
+require_relative "../test_helper"
+require "date"
 
 module OhlohScm::Parsers
 	class GitStyledParserTest < OhlohScm::Test
@@ -7,7 +7,7 @@ module OhlohScm::Parsers
 		def test_basic
 			commits = []
 
-			helloworld = File.new(File.dirname(__FILE__) + '/../data/helloworld.log').read
+			helloworld = File.new(File.dirname(__FILE__) + "/../data/helloworld.log").read
 
 			GitStyledParser.parse( helloworld ) do |commit|
 				commits << commit
@@ -41,24 +41,24 @@ module OhlohScm::Parsers
 			assert_equal "added makefile", commits[1].message
 			assert_equal "added some documentation and licensing info", commits[2].message
 
-			assert_equal '.gitignore', commits[0].diffs[0].path
-			assert_equal 'A', commits[0].diffs[0].action
-			assert_equal 'helloworld.c', commits[0].diffs[1].path
-			assert_equal 'A', commits[0].diffs[1].action
-			assert_equal 'ohloh_token', commits[0].diffs[2].path
-			assert_equal 'A', commits[0].diffs[2].action
+			assert_equal ".gitignore", commits[0].diffs[0].path
+			assert_equal "A", commits[0].diffs[0].action
+			assert_equal "helloworld.c", commits[0].diffs[1].path
+			assert_equal "A", commits[0].diffs[1].action
+			assert_equal "ohloh_token", commits[0].diffs[2].path
+			assert_equal "A", commits[0].diffs[2].action
 
-			assert_equal 'makefile', commits[1].diffs[0].path
-			assert_equal 'A', commits[1].diffs[0].action
-			assert_equal 'ohloh_token', commits[1].diffs[1].path
-			assert_equal 'M', commits[1].diffs[1].action
+			assert_equal "makefile", commits[1].diffs[0].path
+			assert_equal "A", commits[1].diffs[0].action
+			assert_equal "ohloh_token", commits[1].diffs[1].path
+			assert_equal "M", commits[1].diffs[1].action
 
-			assert_equal 'README', commits[2].diffs[0].path
-			assert_equal 'A', commits[2].diffs[0].action
-			assert_equal 'helloworld.c', commits[2].diffs[1].path
-			assert_equal 'M', commits[2].diffs[1].action
-			assert_equal 'ohloh_token', commits[2].diffs[2].path
-			assert_equal 'M', commits[2].diffs[2].action
+			assert_equal "README", commits[2].diffs[0].path
+			assert_equal "A", commits[2].diffs[0].action
+			assert_equal "helloworld.c", commits[2].diffs[1].path
+			assert_equal "M", commits[2].diffs[1].action
+			assert_equal "ohloh_token", commits[2].diffs[2].path
+			assert_equal "M", commits[2].diffs[2].action
 		end
 
 		# If the filename includes non-ASCII characters, the filename is in double quotes.
@@ -126,7 +126,7 @@ __END_COMMENT__
 
 		assert_equal "Remove reference to avr-gcc in depend rule (cut & paste error).", commits[0].message
 		assert_equal "Test commit in new public repository.  Before this time this repo\n"+
-							    "existed on a private system.  Commits made by 'bsd' on the old system\n"+
+							    "existed on a private system.  Commits made by "bsd" on the old system\n"+
 							    "were made by Brian Dean (bdean on the current system).", commits[1].message
 
 		assert_equal "The last part of that last commit message should read:\n\nAll others - modify program description.\n", commits[2].message
@@ -203,16 +203,16 @@ __END_COMMENT__
 			assert commits
 			assert_equal 2, commits.size
 
-			assert_equal 'mickeyl', commits.first.author_name # Use name when present
-			assert_equal 'mickeyl@openembedded.org', commits.last.author_name # Else use email
+			assert_equal "mickeyl", commits.first.author_name # Use name when present
+			assert_equal "mickeyl@openembedded.org", commits.last.author_name # Else use email
 		end
 
     # Verifies OTWO-443
     def test_empty_merge
-      with_git_repository('git_with_empty_merge') do |git|
+      with_git_repository("git_with_empty_merge") do |git|
         assert_equal 5, git.commit_count
         assert_equal 5, git.commits.size
-        c = git.verbose_commit('ff13970b54e5bc373abf932f0708b89e75c842b4')
+        c = git.verbose_commit("ff13970b54e5bc373abf932f0708b89e75c842b4")
         assert_equal "Merge branch 'feature'\n", c.message
         assert_equal 0, c.diffs.size
       end

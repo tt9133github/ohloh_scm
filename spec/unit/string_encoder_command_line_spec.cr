@@ -1,9 +1,9 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
   class StringEncoderCommandLineTest < OhlohScm::Test
     def test_length_of_content_unchanged
-      file_path = File.expand_path('../../data/sample-content', __FILE__)
+      file_path = File.expand_path("../../data/sample-content", __FILE__)
       original_content_length = File.size(file_path)
       original_content_lines = File.readlines(file_path).size
 
@@ -16,7 +16,7 @@ module OhlohScm::Parsers
 
     def test_encoding_invalid_characters
       invalid_utf8_word_path =
-        File.expand_path('../../data/invalid-utf-word', __FILE__)
+        File.expand_path("../../data/invalid-utf-word", __FILE__)
 
       string = %x[cat #{ invalid_utf8_word_path } \
         | #{ OhlohScm::Adapters::AbstractAdapter.new.string_encoder } ]

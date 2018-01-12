@@ -1,10 +1,10 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class HglibCatFileTest < OhlohScm::Test
 
 		def test_cat_file
-			with_hglib_repository('hg') do |hg|
+			with_hglib_repository("hg") do |hg|
 expected = <<-EXPECTED
 /* Hello, World! */
 
@@ -21,9 +21,9 @@ main()
 EXPECTED
 
 				# The file was deleted in revision 468336c6671c. Check that it does not exist now, but existed in parent.
-				assert_equal nil, hg.cat_file(OhlohScm::Commit.new(:token => '75532c1e1f1d'), OhlohScm::Diff.new(:path => 'helloworld.c'))
-				assert_equal expected, hg.cat_file_parent(OhlohScm::Commit.new(:token => '75532c1e1f1d'), OhlohScm::Diff.new(:path => 'helloworld.c'))
-				assert_equal expected, hg.cat_file(OhlohScm::Commit.new(:token => '468336c6671c'), OhlohScm::Diff.new(:path => 'helloworld.c'))
+				assert_equal nil, hg.cat_file(OhlohScm::Commit.new(:token => "75532c1e1f1d"), OhlohScm::Diff.new(:path => "helloworld.c"))
+				assert_equal expected, hg.cat_file_parent(OhlohScm::Commit.new(:token => "75532c1e1f1d"), OhlohScm::Diff.new(:path => "helloworld.c"))
+				assert_equal expected, hg.cat_file(OhlohScm::Commit.new(:token => "468336c6671c"), OhlohScm::Diff.new(:path => "helloworld.c"))
 			end
 		end
 
@@ -31,8 +31,8 @@ EXPECTED
 		def test_funny_file_name_chars
 			OhlohScm::ScratchDir.new do |dir|
 				# Make a file with a problematic filename
-				funny_name = '#|file_name` $(&\'")#'
-				File.open(File.join(dir, funny_name), 'w') { |f| f.write "contents" }
+				funny_name = "#|file_name` $(&'\")#"
+				File.open(File.join(dir, funny_name), "w") { |f| f.write "contents" }
 
 				# Add it to an hg repository
 				`cd #{dir} && hg init && hg add * && hg commit -u tester -m test`

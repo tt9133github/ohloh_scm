@@ -1,10 +1,10 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class GitStyledParserTest < OhlohScm::Test
 
 		def test_empty_array
-			assert_equal([], GitStyledParser.parse(''))
+			assert_equal([], GitStyledParser.parse(""))
 		end
 
     def test_log_parser_nil_date
@@ -76,9 +76,9 @@ SAMPLE
 			assert commits
 			assert_equal 2, commits.size
 
-			assert_equal '1df547800dcd168e589bb9b26b4039bff3a7f7e4', commits[0].token
-			assert_equal 'Jason Allen', commits[0].author_name
-			assert_equal 'jason@ohloh.net', commits[0].author_email
+			assert_equal "1df547800dcd168e589bb9b26b4039bff3a7f7e4", commits[0].token
+			assert_equal "Jason Allen", commits[0].author_name
+			assert_equal "jason@ohloh.net", commits[0].author_email
 			assert_equal "moving COPYING\n", commits[0].message
 			assert_equal Time.utc(2006,7,14,23,7,15), commits[0].author_date
 			assert_equal 1, commits[0].diffs.size
@@ -86,9 +86,9 @@ SAMPLE
 			assert_equal "A", commits[0].diffs[0].action
 			assert_equal "COPYING", commits[0].diffs[0].path
 
-			assert_equal '2e9366dd7a786fdb35f211fff1c8ea05c51968b1', commits[1].token
-			assert_equal 'Robin Luckey', commits[1].author_name
-			assert_equal 'robin@ohloh.net', commits[1].author_email
+			assert_equal "2e9366dd7a786fdb35f211fff1c8ea05c51968b1", commits[1].token
+			assert_equal "Robin Luckey", commits[1].author_name
+			assert_equal "robin@ohloh.net", commits[1].author_email
 			assert_equal "added some documentation and licensing info\n", commits[1].message # Note \n at end of comment
 			assert_equal Time.utc(2006,6,11,18,34,17), commits[1].author_date
 			assert_equal 2, commits[1].diffs.size

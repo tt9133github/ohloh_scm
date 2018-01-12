@@ -1,7 +1,7 @@
 module OhlohScm::Parsers
 	class SvnParser < Parser
 		def self.scm
-			'svn'
+			"svn"
 		end
 
 		def self.internal_parse(buffer, opts)

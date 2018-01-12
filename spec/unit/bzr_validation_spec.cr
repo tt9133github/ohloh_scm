@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class BzrValidationTest < OhlohScm::Test
@@ -51,11 +51,11 @@ module OhlohScm::Adapters
 			bzr = BzrAdapter.new(:url => "/home/test/bzr")
 			assert_equal nil, bzr.guess_forge
 
-			bzr = BzrAdapter.new( :url => 'bzr://www.selenic.com/repo/hello')
-			assert_equal 'www.selenic.com', bzr.guess_forge
+			bzr = BzrAdapter.new( :url => "bzr://www.selenic.com/repo/hello")
+			assert_equal "www.selenic.com", bzr.guess_forge
 
-			bzr = BzrAdapter.new( :url => 'http://www.selenic.com/repo/hello')
-			assert_equal 'www.selenic.com', bzr.guess_forge
+			bzr = BzrAdapter.new( :url => "http://www.selenic.com/repo/hello")
+			assert_equal "www.selenic.com", bzr.guess_forge
 		end
 	end
 end

@@ -4,7 +4,7 @@ module OhlohScm::Parsers
 		# the << operator works on both File and String objects.
 
 		attr_accessor :buffer
-		def initialize(buffer='')
+		def initialize(buffer="")
 			@buffer = buffer
 		end
 
@@ -12,7 +12,7 @@ module OhlohScm::Parsers
 		end
 
 		def write_commit(commit)
-			@buffer << "--------------- #{'-' * 40}\n"
+			@buffer << %(--------------- #{"-" * 40}\n)
 			@buffer << "token:          #{commit.token.to_s}\n"
 
 			@buffer << "committer name: #{commit.committer_name}\n" if commit.committer_name

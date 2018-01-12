@@ -4,7 +4,7 @@ module OhlohScm::Parsers
 	# See the HgStyledParser.
 	class HgParser < Parser
 		def self.scm
-			'hg'
+			"hg"
 		end
 
 		def self.internal_parse(buffer, opts)
@@ -26,8 +26,8 @@ module OhlohScm::Parsers
 					when /^date:\s+(.+)/
 						e.committer_date = Time.parse($1).utc
 					when /^files:\s+(.+)/
-						($1 || '').split(' ').each do |file|
-							e.diffs << OhlohScm::Diff.new(:action => '?', :path => file)
+						($1 || "").split(" ").each do |file|
+							e.diffs << OhlohScm::Diff.new(:action => "?", :path => file)
 						end
 					when /^summary:\s+(.+)/
 						e.message = $1
@@ -39,7 +39,7 @@ module OhlohScm::Parsers
 					if l == "\n"
 						next_state = :long_comment_following_blank
 					else
-						e.message ||= ''
+						e.message ||= ""
 						e.message << l
 					end
 

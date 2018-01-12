@@ -1,4 +1,4 @@
-require 'fileutils'
+require "fileutils"
 
 # A utility class to manage the creation and automatic cleanup of temporary directories.
 module OhlohScm
@@ -15,7 +15,7 @@ module OhlohScm
     #
     #   ScratchDir.new do |path|
     #     # Do some work in the new directory
-    #     File.new( path + '/foobaz', 'w' ) do
+    #     File.new( path + "/foobaz", "w" ) do
     #       # ...
     #     end
     #   end # Scratch directory is deleted here

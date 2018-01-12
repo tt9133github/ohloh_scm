@@ -1,7 +1,7 @@
 module OhlohScm::Adapters
 	class GitAdapter < AbstractAdapter
 		def git_path
-			File.join(self.url, '/.git')
+			File.join(self.url, "/.git")
 		end
 
 		def exist?
@@ -13,16 +13,16 @@ module OhlohScm::Adapters
 			end
 		end
 
-		def export(dest_dir, commit_id = 'HEAD')
+		def export(dest_dir, commit_id = "HEAD")
 			run "cd #{url} && git archive #{commit_id} | tar -C #{ dest_dir } -x"
 		end
 
-		def ls_tree(token='HEAD')
+		def ls_tree(token="HEAD")
 			run("cd #{url} && git ls-tree -r #{token} | cut -f 2 -d '\t'").split("\n")
 		end
 
     # For a given commit ID, returns the SHA1 hash of its tree
-    def get_commit_tree(token='HEAD')
+    def get_commit_tree(token="HEAD")
       run("cd #{url} && git cat-file commit #{token} | grep '^tree' | cut -d ' ' -f 2").strip
     end
 
@@ -48,7 +48,7 @@ module OhlohScm::Adapters
 
 		# Returns an array of all branch names
 		def branches
-			run("cd '#{self.url}' && git branch | #{ string_encoder }").split.collect { |b| b =~ /\b(.+)$/ ; $1 }.compact
+			run("cd '#{self.url}' && git branch | #{ string_encoder }" ).split.collect { |b| b =~ /\b(.+)$/ ; $1 }.compact
 		end
 
 		def has_branch?(name=self.branch_name)
@@ -59,7 +59,7 @@ module OhlohScm::Adapters
 		# Create a new local branch to mirror the remote one
 		# If a branch of this name already exist, nothing happens.
 		def create_tracking_branch(name)
-			return if name.to_s == ''
+			return if name.to_s == ""
 
 			unless self.branches.include? name
 				run "cd '#{self.url}' && git branch -f #{name} origin/#{name}"
@@ -100,7 +100,7 @@ module OhlohScm::Adapters
     end
 
     def time_object(timestamp_string)
-      timestamp_string = '1970-01-01' if timestamp_string.strip.empty?
+      timestamp_string = "1970-01-01" if timestamp_string.strip.empty?
       timestamp = Time.parse(timestamp_string)
     end
   end

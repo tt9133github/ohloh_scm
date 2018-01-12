@@ -1,20 +1,20 @@
-require 'test/unit'
-require 'fileutils'
-require 'find'
+require "test/unit"
+require "fileutils"
+require "find"
 
 unless defined?(TEST_DIR)
 	TEST_DIR = File.dirname(__FILE__)
 end
-require_relative '../lib/ohloh_scm'
+require_relative "../lib/ohloh_scm"
 
-OhlohScm::Adapters::AbstractAdapter.logger = Logger.new(File.open('log/test.log','a'))
+OhlohScm::Adapters::AbstractAdapter.logger = Logger.new(File.open("log/test.log","a"))
 
 unless defined?(REPO_DIR)
-	REPO_DIR = File.expand_path(File.join(TEST_DIR, 'repositories'))
+	REPO_DIR = File.expand_path(File.join(TEST_DIR, "repositories"))
 end
 
 unless defined?(DATA_DIR)
-	DATA_DIR = File.expand_path(File.join(TEST_DIR, 'data'))
+	DATA_DIR = File.expand_path(File.join(TEST_DIR, "data"))
 end
 
 class OhlohScm::Test < Test::Unit::TestCase
@@ -24,7 +24,7 @@ class OhlohScm::Test < Test::Unit::TestCase
 	end
 
 	def assert_convert(parser, log, expected)
-		result = ''
+		result = ""
 		parser.parse File.new(log), :writer => OhlohScm::Parsers::XmlWriter.new(result)
 		assert_buffers_equal File.read(expected), result
 	end
@@ -51,8 +51,8 @@ class OhlohScm::Test < Test::Unit::TestCase
 		OhlohScm::ScratchDir.new do |dir|
 			if Dir.entries(REPO_DIR).include?(name)
 				`cp -R #{File.join(REPO_DIR, name)} #{dir}`
-			elsif Dir.entries(REPO_DIR).include?(name + '.tgz')
-				`tar xzf #{File.join(REPO_DIR, name + '.tgz')} --directory #{dir}`
+			elsif Dir.entries(REPO_DIR).include?(name + ".tgz")
+				`tar xzf #{File.join(REPO_DIR, name + ".tgz")} --directory #{dir}`
 			else
 				raise RuntimeError.new("Repository archive #{File.join(REPO_DIR, name)} not found.")
 			end
@@ -65,36 +65,36 @@ class OhlohScm::Test < Test::Unit::TestCase
   #   an xml log with invalid characters in it.
   # We prepend our custom svn's location to $PATH to make it available during our tests.
   def with_invalid_encoded_svn_repository
-    with_repository(OhlohScm::Adapters::SvnChainAdapter, 'svn_with_invalid_encoding') do |svn|
-      original_env_path = ENV['PATH']
-      custom_svn_path = File.expand_path('../bin/', __FILE__)
-      ENV['PATH'] = custom_svn_path + ':' + ENV['PATH']
+    with_repository(OhlohScm::Adapters::SvnChainAdapter, "svn_with_invalid_encoding") do |svn|
+      original_env_path = ENV["PATH"]
+      custom_svn_path = File.expand_path("../bin/", __FILE__)
+      ENV["PATH"] = custom_svn_path + ":" + ENV["PATH"]
 
       yield svn
 
-      ENV['PATH'] = original_env_path
+      ENV["PATH"] = original_env_path
     end
   end
 
-	def with_svn_repository(name, branch_name='')
+	def with_svn_repository(name, branch_name="")
 		with_repository(OhlohScm::Adapters::SvnAdapter, name) do |svn|
 			svn.branch_name = branch_name
 			svn.url = File.join(svn.root, svn.branch_name)
-			svn.url = svn.url[0..-2] if svn.url[-1..-1] == '/' # Strip trailing /
+			svn.url = svn.url[0..-2] if svn.url[-1..-1] == "/" # Strip trailing /
 			yield svn
 		end
 	end
 
-	def with_svn_chain_repository(name, branch_name='')
+	def with_svn_chain_repository(name, branch_name="")
 		with_repository(OhlohScm::Adapters::SvnChainAdapter, name) do |svn|
 			svn.branch_name = branch_name
 			svn.url = File.join(svn.root, svn.branch_name)
-			svn.url = svn.url[0..-2] if svn.url[-1..-1] == '/' # Strip trailing /
+			svn.url = svn.url[0..-2] if svn.url[-1..-1] == "/" # Strip trailing /
 			yield svn
 		end
 	end
 
-	def with_cvs_repository(name, module_name='')
+	def with_cvs_repository(name, module_name="")
 		with_repository(OhlohScm::Adapters::CvsAdapter, name) do |cvs|
 			cvs.module_name = module_name
 			yield cvs

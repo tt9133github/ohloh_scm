@@ -1,12 +1,12 @@
-require 'rubygems'
-require 'stringio'
-require 'posix/spawn'
+require "rubygems"
+require "stringio"
+require "posix/spawn"
 
 class Shellout
 
   def self.relay src, dst
-    while((buf = src.read(8192))); dst << buf; end 
-  end 
+    while((buf = src.read(8192))); dst << buf; end
+  end
 
   def self.execute(cmd)
     posix_spawn = POSIX::Spawn::Child.new(cmd)
@@ -30,11 +30,11 @@ if $0 == __FILE__
   status, stdout, stderr = shell.run(sleep)
   p [status.exitstatus, stdout, stderr]
 
-  cat = 'ruby -e"  puts Array.new(65536){ 42 }  "'
+  cat = %(ruby -e"  puts Array.new(65536){ 42 }  ")
   status, stdout, stderr = shell.run(cat)
   p [status.exitstatus, stdout, stderr]
 
-  status, stdout, stderr = shell.run('osiudfoisynajtet32')
+  status, stdout, stderr = shell.run("osiudfoisynajtet32")
   p [status.exitstatus, stdout, stderr]
 
 end

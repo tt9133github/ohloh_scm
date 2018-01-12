@@ -1,11 +1,11 @@
-require_relative '../test_helper'
-require 'socket'
+require_relative "../test_helper"
+require "socket"
 
 module OhlohScm::Adapters
 	class SvnPushTest < OhlohScm::Test
 
 		def test_basic_push_using_svnsync
-			with_svn_repository('svn') do |src|
+			with_svn_repository("svn") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 
 					dest = SvnAdapter.new(:url => dest_dir).normalize
@@ -22,7 +22,7 @@ module OhlohScm::Adapters
 		# Triggers the "ssh" code path by using svn+ssh:// protocol instead of file:// protocol.
 		# Simulates pushing to another server in our cluster.
 		def test_ssh_push_using_svnsync
-			with_svn_repository('svn') do |src|
+			with_svn_repository("svn") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 
 					dest = SvnAdapter.new(:url => "svn+ssh://#{Socket.gethostname}#{File.expand_path(dest_dir)}").normalize

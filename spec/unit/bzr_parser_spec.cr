@@ -1,10 +1,10 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class BzrParserTest < OhlohScm::Test
 
 		def test_empty_array
-			assert_equal([], BzrParser.parse(''))
+			assert_equal([], BzrParser.parse(""))
 		end
 
 		def test_default_log_parser
@@ -30,16 +30,16 @@ SAMPLE
 			assert commits
 			assert_equal 2, commits.size
 
-			assert_equal '2', commits[0].token
-			assert_equal 'Robin', commits[0].committer_name
-			assert_equal 'robin@ohloh.net', commits[0].committer_email
+			assert_equal "2", commits[0].token
+			assert_equal "Robin", commits[0].committer_name
+			assert_equal "robin@ohloh.net", commits[0].committer_email
 			assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
 			assert_equal 0, commits[0].diffs.size
 
-			assert_equal '1', commits[1].token
-			assert_equal 'Jason', commits[1].committer_name
-			assert_equal 'jason@ohloh.net', commits[1].committer_email
+			assert_equal "1", commits[1].token
+			assert_equal "Jason", commits[1].committer_name
+			assert_equal "jason@ohloh.net", commits[1].committer_email
 			assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
 			assert_equal 0, commits[1].diffs.size
@@ -75,29 +75,29 @@ SAMPLE
 			assert commits
 			assert_equal 2, commits.size
 
-			assert_equal '2', commits[0].token
-			assert_equal 'Robin', commits[0].committer_name
-			assert_equal 'robin@ohloh.net', commits[0].committer_email
+			assert_equal "2", commits[0].token
+			assert_equal "Robin", commits[0].committer_name
+			assert_equal "robin@ohloh.net", commits[0].committer_email
 			assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
 			assert_equal 2, commits[0].diffs.size
 
-			assert_equal 'file1.txt', commits[0].diffs[0].path
-			assert_equal 'D', commits[0].diffs[0].action
-			assert_equal 'file2.txt', commits[0].diffs[1].path
-			assert_equal 'M', commits[0].diffs[1].action
+			assert_equal "file1.txt", commits[0].diffs[0].path
+			assert_equal "D", commits[0].diffs[0].action
+			assert_equal "file2.txt", commits[0].diffs[1].path
+			assert_equal "M", commits[0].diffs[1].action
 
-			assert_equal '1', commits[1].token
-			assert_equal 'Jason', commits[1].committer_name
-			assert_equal 'jason@ohloh.net', commits[1].committer_email
+			assert_equal "1", commits[1].token
+			assert_equal "Jason", commits[1].committer_name
+			assert_equal "jason@ohloh.net", commits[1].committer_email
 			assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
 			assert_equal 2, commits[1].diffs.size
 
-			assert_equal 'file1.txt', commits[1].diffs[0].path
-			assert_equal 'A', commits[1].diffs[0].action
-			assert_equal 'file2.txt', commits[1].diffs[1].path
-			assert_equal 'A', commits[1].diffs[1].action
+			assert_equal "file1.txt", commits[1].diffs[0].path
+			assert_equal "A", commits[1].diffs[0].action
+			assert_equal "file2.txt", commits[1].diffs[1].path
+			assert_equal "A", commits[1].diffs[1].action
 		end
 
 		def test_verbose_log_parser_with_show_id
@@ -134,29 +134,29 @@ SAMPLE
 			assert commits
 			assert_equal 2, commits.size
 
-			assert_equal 'info@ohloh.net-20090204004942-73rnw0izen42f154', commits[0].token
-			assert_equal 'Robin', commits[0].committer_name
-			assert_equal 'robin@ohloh.net', commits[0].committer_email
+			assert_equal "info@ohloh.net-20090204004942-73rnw0izen42f154", commits[0].token
+			assert_equal "Robin", commits[0].committer_name
+			assert_equal "robin@ohloh.net", commits[0].committer_email
 			assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
 			assert_equal 2, commits[0].diffs.size
 
-			assert_equal 'file1.txt', commits[0].diffs[0].path
-			assert_equal 'D', commits[0].diffs[0].action
-			assert_equal 'file2.txt', commits[0].diffs[1].path
-			assert_equal 'M', commits[0].diffs[1].action
+			assert_equal "file1.txt", commits[0].diffs[0].path
+			assert_equal "D", commits[0].diffs[0].action
+			assert_equal "file2.txt", commits[0].diffs[1].path
+			assert_equal "M", commits[0].diffs[1].action
 
-			assert_equal 'info@ohloh.net-20090204002540-gmana8tk5f9gboq9', commits[1].token
-			assert_equal 'Jason', commits[1].committer_name
-			assert_equal 'jason@ohloh.net', commits[1].committer_email
+			assert_equal "info@ohloh.net-20090204002540-gmana8tk5f9gboq9", commits[1].token
+			assert_equal "Jason", commits[1].committer_name
+			assert_equal "jason@ohloh.net", commits[1].committer_email
 			assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
 			assert_equal 2, commits[1].diffs.size
 
-			assert_equal 'file1.txt', commits[1].diffs[0].path
-			assert_equal 'A', commits[1].diffs[0].action
-			assert_equal 'file2.txt', commits[1].diffs[1].path
-			assert_equal 'A', commits[1].diffs[1].action
+			assert_equal "file1.txt", commits[1].diffs[0].path
+			assert_equal "A", commits[1].diffs[0].action
+			assert_equal "file2.txt", commits[1].diffs[1].path
+			assert_equal "A", commits[1].diffs[1].action
 		end
 
 		def test_verbose_log_parser_very_long_filename_with_show_id
@@ -179,15 +179,15 @@ SAMPLE
 			assert commits
 			assert_equal 1, commits.size
 
-			assert_equal 'info@ohloh.net-20090204002540-gmana8tk5f9gboq9', commits[0].token
-			assert_equal 'Jason', commits[0].committer_name
-			assert_equal 'jason@ohloh.net', commits[0].committer_email
+			assert_equal "info@ohloh.net-20090204002540-gmana8tk5f9gboq9", commits[0].token
+			assert_equal "Jason", commits[0].committer_name
+			assert_equal "jason@ohloh.net", commits[0].committer_email
 			assert_equal "Initial Revision\n", commits[0].message # Note \n at end of comment
 			assert_equal Time.utc(2009,2,4,0,25,40), commits[0].committer_date
 
 			assert_equal 1, commits[0].diffs.size
-			assert_equal 'a very long filename with space intended to cause log parsing problems', commits[0].diffs[0].path
-			assert_equal 'A', commits[0].diffs[0].action
+			assert_equal "a very long filename with space intended to cause log parsing problems", commits[0].diffs[0].path
+			assert_equal "A", commits[0].diffs[0].action
 		end
 
 		def test_verbose_log_with_nested_merge_commits
@@ -243,40 +243,40 @@ SAMPLE
 			assert commits
 			assert_equal 4, commits.size
 
-			assert_equal 'robin@ohloh.net-20080629125019-qxk9qma8esphwwus', commits[0].token
-			assert_equal 'robin@ohloh.net-20080629214643-5ru67mh04j09cmiz', commits[1].token
-			assert_equal 'robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm', commits[2].token
-			assert_equal 'robin@ohloh.net-20080629121849-2le5txjj7tkdq54f', commits[3].token
+			assert_equal "robin@ohloh.net-20080629125019-qxk9qma8esphwwus", commits[0].token
+			assert_equal "robin@ohloh.net-20080629214643-5ru67mh04j09cmiz", commits[1].token
+			assert_equal "robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm", commits[2].token
+			assert_equal "robin@ohloh.net-20080629121849-2le5txjj7tkdq54f", commits[3].token
 
 			assert_equal 1, commits[0].diffs.size
-			assert_equal 'goodbye_world.c', commits[0].diffs[0].path
-			assert_equal 'D', commits[0].diffs[0].action
+			assert_equal "goodbye_world.c", commits[0].diffs[0].path
+			assert_equal "D", commits[0].diffs[0].action
 
 			assert_equal 1, commits[1].diffs.size
-			assert_equal 'hello_world.c', commits[1].diffs[0].path
-			assert_equal 'M', commits[1].diffs[0].action
+			assert_equal "hello_world.c", commits[1].diffs[0].path
+			assert_equal "M", commits[1].diffs[0].action
 
 			assert_equal 1, commits[2].diffs.size
-			assert_equal 'goodbye_world.c', commits[2].diffs[0].path
-			assert_equal 'A', commits[2].diffs[0].action
+			assert_equal "goodbye_world.c", commits[2].diffs[0].path
+			assert_equal "A", commits[2].diffs[0].action
 
 			assert_equal 1, commits[3].diffs.size
-			assert_equal 'hello_world.c', commits[3].diffs[0].path
-			assert_equal 'M', commits[3].diffs[0].action
+			assert_equal "hello_world.c", commits[3].diffs[0].path
+			assert_equal "M", commits[3].diffs[0].action
 		end
 
 		def test_parse_diffs
-			assert_equal 'A', BzrParser.parse_diffs('A', "helloworld.c").first.action
-			assert_equal 'helloworld.c', BzrParser.parse_diffs('A', "helloworld.c").first.path
+			assert_equal "A", BzrParser.parse_diffs("A", "helloworld.c").first.action
+			assert_equal "helloworld.c", BzrParser.parse_diffs("A", "helloworld.c").first.path
 		end
 
 		def test_parse_diffs_rename
 			diffs = BzrParser.parse_diffs(:rename, "helloworld.c => goodbyeworld.c")
 			assert_equal 2, diffs.size
-			assert_equal 'D', diffs.first.action
-			assert_equal 'helloworld.c', diffs.first.path
-			assert_equal 'A', diffs.last.action
-			assert_equal 'goodbyeworld.c', diffs.last.path
+			assert_equal "D", diffs.first.action
+			assert_equal "helloworld.c", diffs.first.path
+			assert_equal "A", diffs.last.action
+			assert_equal "goodbyeworld.c", diffs.last.path
 		end
 
 		def test_rename
@@ -297,19 +297,19 @@ renamed:
 			assert_equal 1, commits.size
 			assert_equal 2, commits.first.diffs.size
 
-			assert_equal 'D', commits.first.diffs.first.action
-			assert_equal 'helloworld.c', commits.first.diffs.first.path
+			assert_equal "D", commits.first.diffs.first.action
+			assert_equal "helloworld.c", commits.first.diffs.first.path
 
-			assert_equal 'A', commits.first.diffs.last.action
-			assert_equal 'goodbyeworld.c', commits.first.diffs.last.path
+			assert_equal "A", commits.first.diffs.last.action
+			assert_equal "goodbyeworld.c", commits.first.diffs.last.path
 		end
 
 		def test_remove_dupes_add_remove
 			diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
 																				OhlohScm::Diff.new(:action => "D", :path => "foo") ])
 			assert_equal 1, diffs.size
-			assert_equal 'M', diffs.first.action
-			assert_equal 'foo', diffs.first.path
+			assert_equal "M", diffs.first.action
+			assert_equal "foo", diffs.first.path
 		end
 
 		# A somewhat tricky case. A file is deleted, and another
@@ -340,10 +340,10 @@ modified:
 			diffs.sort! { |a,b| a.path <=> b.path }
 
 			assert_equal 2, diffs.size
-			assert_equal 'D', diffs.first.action
-			assert_equal 'goodbyeworld.c', diffs.first.path
-			assert_equal 'M', diffs.last.action
-			assert_equal 'helloworld.c', diffs.last.path
+			assert_equal "D", diffs.first.action
+			assert_equal "goodbyeworld.c", diffs.first.path
+			assert_equal "M", diffs.last.action
+			assert_equal "helloworld.c", diffs.last.path
 		end
 
 		def test_strip_trailing_asterisk_from_executables
@@ -363,9 +363,9 @@ renamed:
 			diffs = BzrParser.parse(log).first.diffs
 			diffs.sort! { |a,b| a.path <=> b.path }
 
-			assert_equal 'goodbyeworld', diffs[0].path
-			assert_equal 'helloworld', diffs[1].path
-			assert_equal 'script', diffs[2].path
+			assert_equal "goodbyeworld", diffs[0].path
+			assert_equal "helloworld", diffs[1].path
+			assert_equal "script", diffs[2].path
 		end
 
 		def test_comment_that_contains_dashes
@@ -376,7 +376,7 @@ committer: info <info@ohloh.net>
 timestamp: Wed 2005-09-14 21:27:20 +1000
 message:
   This is a tricky commit message to confirm fix
-  to Ticket 5. We're including a line of dashes in
+  to Ticket 5. We"re including a line of dashes in
   the message that resembles a log delimiter.
 
   ------------------------------------------------------------
@@ -397,11 +397,11 @@ added:
 			commits = BzrParser.parse(log)
 
 			assert_equal 2, commits.size
-			assert_equal '2', commits.first.token
+			assert_equal "2", commits.first.token
 			assert_equal 1, commits.first.diffs.size
 			assert_equal "goodbyeworld.c", commits.first.diffs.first.path
 
-			assert_equal '1', commits.last.token
+			assert_equal "1", commits.last.token
 			assert_equal 1, commits.last.diffs.size
 			assert_equal "helloworld.c", commits.last.diffs.first.path
 		end
@@ -426,7 +426,7 @@ added:
 			commits = BzrParser.parse(log)
 
 			assert_equal 1, commits.size
-			assert_equal 'info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk', commits.first.token
+			assert_equal "info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk", commits.first.token
 			assert_equal 2, commits.first.diffs.size
 			assert_equal "D", commits.first.diffs.first.action
 			assert_equal "test", commits.first.diffs.first.path

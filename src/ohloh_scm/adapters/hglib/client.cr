@@ -1,10 +1,10 @@
-require 'rubygems'
-require 'posix/spawn'
+require "rubygems"
+require "posix/spawn"
 
 class HglibClient
   def initialize(repository_url)
     @repository_url = repository_url
-    @py_script = File.dirname(__FILE__) + '/server.py'
+    @py_script = File.dirname(__FILE__) + "/server.py"
   end
 
   def start
@@ -43,9 +43,9 @@ class HglibClient
     status = @stderr.read(10)
     flag = status[0,1]
     size = status[1,9].to_i
-    if flag == 'F'
+    if flag == "F"
       return nil
-    elsif flag == 'E'
+    elsif flag == "E"
       error = @stdout.read(size)
       raise RuntimeError.new("Exception in server process\n#{error}")
     end

@@ -3,17 +3,17 @@ module OhlohScm::Parsers
 	# This custom style provides additional information required by Ohloh.
 	class HgStyledParser < Parser
 		def self.scm
-			'hg'
+			"hg"
 		end
 
 		# Use when you want to include diffs
 		def self.verbose_style_path
-			File.expand_path(File.join(File.dirname(__FILE__), 'hg_verbose_style'))
+			File.expand_path(File.join(File.dirname(__FILE__), "hg_verbose_style"))
 		end
 
 		# Use when you do not want to include diffs
 		def self.style_path
-			File.expand_path(File.join(File.dirname(__FILE__), 'hg_style'))
+			File.expand_path(File.join(File.dirname(__FILE__), "hg_style"))
 		end
 
 		def self.internal_parse(buffer, opts)
@@ -53,7 +53,7 @@ module OhlohScm::Parsers
 					if l == "__END_COMMENT__\n"
 						next_state = :data
 					else
-						e.message ||= ''
+						e.message ||= ""
 						e.message << l
 					end
 				end

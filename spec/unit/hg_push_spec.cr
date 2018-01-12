@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class HgPushTest < OhlohScm::Test
@@ -7,7 +7,7 @@ module OhlohScm::Adapters
 			assert !HgAdapter.new.hostname
 			assert !HgAdapter.new(:url => "http://www.ohloh.net/test").hostname
 			assert !HgAdapter.new(:url => "/Users/robin/foo").hostname
-			assert_equal "foo", HgAdapter.new(:url => 'ssh://foo/bar').hostname
+			assert_equal "foo", HgAdapter.new(:url => "ssh://foo/bar").hostname
 		end
 
 		def test_local
@@ -35,7 +35,7 @@ module OhlohScm::Adapters
 		end
 
 		def test_push
-			with_hg_repository('hg') do |src|
+			with_hg_repository("hg") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 
 					dest = HgAdapter.new(:url => dest_dir).normalize

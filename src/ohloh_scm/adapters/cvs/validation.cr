@@ -27,10 +27,10 @@ module OhlohScm::Adapters
 			# Some CVS forges publish an URL which is actually a symlink, which causes CVSNT to crash.
 			# For some forges, we can work around this by using an alternate directory.
 			case guess_forge
-			when 'java.net', 'netbeans.org'
-				@url.gsub!(/:\/cvs\/?$/, ':/shared/data/ccvs/repository')
-			when 'gna.org'
-				@url.gsub!(/:\/cvs\b/, ':/var/cvs')
+			when "java.net", "netbeans.org"
+				@url.gsub!(/:\/cvs\/?$/, ":/shared/data/ccvs/repository")
+			when "gna.org"
+				@url.gsub!(/:\/cvs\b/, ":/var/cvs")
 			end
 
 			sync_pserver_username_password
@@ -56,8 +56,8 @@ module OhlohScm::Adapters
 			pserver_password = $3
 			pserver_remainder = $4
 
-			@username = pserver_username if @username.to_s == ''
-			@password = pserver_password if @password.to_s == ''
+			@username = pserver_username if @username.to_s == ""
+			@password = pserver_password if @password.to_s == ""
 
 			self.url = ":pserver:#{@username}:#{password}@#{pserver_remainder}"
 		end

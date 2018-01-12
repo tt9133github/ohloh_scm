@@ -43,7 +43,7 @@ module OhlohScm
 		attr_accessor :directories
 
 		def initialize(params={})
-			params.each { |k,v| send(k.to_s + '=', v) if respond_to?(k.to_s + '=') }
+			params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
 		end
 	end
 end

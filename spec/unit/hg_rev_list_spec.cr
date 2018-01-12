@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	# Repository hg_walk has the following structure:
@@ -10,7 +10,7 @@ module OhlohScm::Adapters
 	class HgRevListTest < OhlohScm::Test
 
 		def test_rev_list
-			with_hg_repository('hg_walk') do |hg|
+			with_hg_repository("hg_walk") do |hg|
 				# Full history to a commit
 				assert_equal [:A],                         rev_list_helper(hg, nil, :A)
 				assert_equal [:A, :B],                     rev_list_helper(hg, nil, :B)
@@ -37,13 +37,13 @@ module OhlohScm::Adapters
 		end
 
 		def commit_labels
-			{ '4bfbf836feeebb236492199fbb0d1474e26f69d9' => :A,
-				'23edb79d0d06c8c315d8b9e7456098823335377d' => :B,
-				'7e33b9fde56a6e3576753868d08fa143e4e8a9cf' => :C,
-				'8daa1aefa228d3ee5f9a0f685d696826e88266fb' => :D,
-				'e43cf1bb4b80d8ae70a695ec070ce017fdc529f3' => :G,
-				'dca215d8a3e4dd3e472379932f1dd9c909230331' => :H,
-				'3a1495175e40b1c983441d6a8e8e627d2bd672b6' => :I
+			{ "4bfbf836feeebb236492199fbb0d1474e26f69d9" => :A,
+				"23edb79d0d06c8c315d8b9e7456098823335377d" => :B,
+				"7e33b9fde56a6e3576753868d08fa143e4e8a9cf" => :C,
+				"8daa1aefa228d3ee5f9a0f685d696826e88266fb" => :D,
+				"e43cf1bb4b80d8ae70a695ec070ce017fdc529f3" => :G,
+				"dca215d8a3e4dd3e472379932f1dd9c909230331" => :H,
+				"3a1495175e40b1c983441d6a8e8e627d2bd672b6" => :I
 			}
 		end
 

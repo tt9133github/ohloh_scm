@@ -2,7 +2,7 @@ module OhlohScm::Parsers
 	class CvsParser < Parser
 
 		def self.scm
-			'cvs'
+			"cvs"
 		end
 
 		# Given an IO to a CVS rlog, returns a list of
@@ -12,7 +12,7 @@ module OhlohScm::Parsers
 		def self.internal_parse(io, opts)
 			commits = {}
 			branch_name = opts[:branch_name]
-			branch_name = nil if branch_name == 'HEAD' or branch_name == ''
+			branch_name = nil if branch_name == "HEAD" or branch_name == ""
 
 			read_files(io, branch_name) do |c|
 				# As commits are yielded by the parser, we sort them into bins.
@@ -136,12 +136,12 @@ module OhlohScm::Parsers
 					state = $3
 					# CVS creates a "phantom" dead file at 1.1 on the head if a file
 					#   is created on a branch. Ignore this file.
-					should_yield = false if commit_number == '1.1' and state == 'dead'
+					should_yield = false if commit_number == "1.1" and state == "dead"
 					message = read_message(io)
 					if should_yield
 						commit = OhlohScm::Commit.new
 						commit.token = committer_date[0..18]
-						commit.committer_date = Time.parse(committer_date[0..18] + ' +0000').utc
+						commit.committer_date = Time.parse(committer_date[0..18] + " +0000").utc
 						commit.committer_name = committer_name
 						commit.message = message
 						commit.directories = [File.dirname(filename).intern]
@@ -153,15 +153,15 @@ module OhlohScm::Parsers
 		end
 
 		def self.read_message(io)
-			message = ''
+			message = ""
 			first_line = true
 			io.each_line do |l|
 				if l =~ /^branches: / and first_line # the first line might be 'branches:', skip it.
 					# do nothing
 				else
 					l.chomp!
-					if l == '=============================================================================' or
-						l == '----------------------------'
+					if l == "=============================================================================" or
+						l == "----------------------------"
 						return message
 					end
 					message += "\n" if message.length != 0
@@ -174,7 +174,7 @@ module OhlohScm::Parsers
 	end
 
 	if $0 == __FILE__
-		require File.dirname(__FILE__) + '/../../config/environment'
+		require File.dirname(__FILE__) + "/../../config/environment"
 		LogParser.parse(STDIN).each do |r|
 			r.pretty_print(STDOUT)
 		end

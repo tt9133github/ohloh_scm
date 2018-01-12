@@ -31,7 +31,7 @@ module OhlohScm::Adapters
 		# If the URL is a simple directory path, make sure it is prefixed by file://
 		def path_to_file_url(path)
 			return nil if path.empty?
-			url =~ /:\/\// ? url : 'file://' + File.expand_path(path)
+			url =~ /:\/\// ? url : "file://" + File.expand_path(path)
 		end
 
 		def force_https_if_sourceforge(url)
@@ -61,7 +61,7 @@ module OhlohScm::Adapters
       begin
         @branch_name = @url ? @url[root.length..-1] : @branch_name
       rescue RuntimeError => exception
-        @branch_name = '' if exception.message =~ /(svn:*is not a working copy|Unable to open an ra_local session to URL)/ # we have a file system
+        @branch_name = "" if exception.message =~ /(svn:*is not a working copy|Unable to open an ra_local session to URL)/ # we have a file system
       end
       clean_branch_name
       @branch_name
@@ -81,7 +81,7 @@ module OhlohScm::Adapters
     private
     def clean_branch_name
       return unless @branch_name
-      @branch_name.chop! if @branch_name.end_with?('/')
+      @branch_name.chop! if @branch_name.end_with?("/")
     end
 	end
 end

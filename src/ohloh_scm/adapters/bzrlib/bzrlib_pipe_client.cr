@@ -1,10 +1,10 @@
-require 'rubygems'
-require 'posix/spawn'
+require "rubygems"
+require "posix/spawn"
 
 class BzrPipeClient
   def initialize(repository_url)
     @repository_url = repository_url
-    @py_script = File.dirname(__FILE__) + '/bzrlib_pipe_server.py'
+    @py_script = File.dirname(__FILE__) + "/bzrlib_pipe_server.py"
   end
 
   def start
@@ -20,7 +20,7 @@ class BzrPipeClient
   end
 
   def parent_tokens(revision)
-    send_command("PARENT_TOKENS|#{revision}").split('|')
+    send_command("PARENT_TOKENS|#{revision}").split("|")
   end
 
   def send_command(cmd)
@@ -34,9 +34,9 @@ class BzrPipeClient
     status = @stderr.read(10)
     flag = status[0,1]
     size = status[1,9].to_i
-    if flag == 'F'
+    if flag == "F"
       return nil
-    elsif flag == 'E'
+    elsif flag == "E"
       error = @stdout.read(size)
       raise RuntimeError.new("Exception in server process\n#{error}")
     end
@@ -56,7 +56,7 @@ def cat_all_files(client, datafile)
   count = 0
   bytes = 0
   File.open(datafile).each do |line|
-    parts = line.split('|')
+    parts = line.split("|")
     count = count + 1
     bytes = bytes + client.cat_file(parts[0], parts[1]).size
     puts "file=#{count}, bytes=#{bytes}"
@@ -65,7 +65,7 @@ end
 
 def all_parent_tokens(client, datafile)
   File.open(datafile).each do |line|
-    parts = line.split('|')
+    parts = line.split("|")
     puts client.parent_tokens(parts[0])
   end
 end

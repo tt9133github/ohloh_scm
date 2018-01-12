@@ -2,14 +2,14 @@ module OhlohScm::Parsers
 	# This parser can process the default bzr logs, with or without the --verbose flag.
 	class BzrParser < Parser
 		def self.scm
-			'bzr'
+			"bzr"
 		end
 
 		def self.internal_parse(buffer, opts)
 			e = nil
 			state = :data
-			action = ''
-			indent = '' # Track the level of indentation as we descend into branches
+			action = ""
+			indent = "" # Track the level of indentation as we descend into branches
 			show_id = false # true if this log includes revision and file ids
 
 			buffer.each_line do |l|
@@ -53,19 +53,19 @@ module OhlohScm::Parsers
 					next_state = :data
 				when /^#{indent}added:$/
 					next_state = :collect_files
-					action = 'A'
+					action = "A"
 				when /^#{indent}modified:$/
 					next_state = :collect_files
-					action = 'M'
+					action = "M"
 				when /^#{indent}removed:$/
 					next_state = :collect_files
-					action = 'D'
+					action = "D"
 				when /^#{indent}renamed:$/
 					next_state = :collect_files
 					action = :rename
 				when /^#{indent}message:$/
 					next_state = :collect_message
-					e.message ||= ''
+					e.message ||= ""
 				when /^#{indent}  (.*)$/
 					case state
 					when :collect_files
@@ -98,8 +98,8 @@ module OhlohScm::Parsers
 				# Note that is possible to be renamed to the empty string!
 				# This happens when a subdirectory is moved to become the root.
 				before, after = line.scan(/(.+) => ?(.*)/).first
-				[ OhlohScm::Diff.new(:action => 'D', :path => before),
-					OhlohScm::Diff.new(:action => 'A', :path => after || '' )]
+				[ OhlohScm::Diff.new(:action => "D", :path => before),
+					OhlohScm::Diff.new(:action => "A", :path => after || "" )]
 			else
 				[OhlohScm::Diff.new(:action => action, :path => line)]
 			end.each do |d|
@@ -108,20 +108,20 @@ module OhlohScm::Parsers
 		end
 
 		def self.strip_trailing_asterisk(path)
-			path[-1..-1] == '*' ? path[0..-2] : path
+			path[-1..-1] == "*" ? path[0..-2] : path
 		end
 
 		def self.remove_dupes(diffs)
 			# Bazaar may report that a file was added and modified in a single commit.
-			# Reduce these cases to a single 'A' action.
+			# Reduce these cases to a single "A" action.
 			diffs.delete_if do |d|
-				d.action == 'M' && diffs.select { |x| x.path == d.path && x.action == 'A' }.any?
+				d.action == "M" && diffs.select { |x| x.path == d.path && x.action == "A" }.any?
 			end
 
 			# Bazaar may report that a file was both deleted and added in a single commit.
-			# Reduce these cases to a single 'M' action.
+			# Reduce these cases to a single "M" action.
 			diffs.each do |d|
-				d.action = 'M' if diffs.select { |x| x.path == d.path }.size > 1
+				d.action = "M" if diffs.select { |x| x.path == d.path }.size > 1
 			end.uniq
 		end
 	end

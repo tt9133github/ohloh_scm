@@ -19,7 +19,7 @@ module OhlohScm::Adapters
 		# Bzr doesn't like it when the filename includes a colon
 		# Also, fix the case where the filename includes a single quote
 		def escape(path)
-			path.gsub(/[:]/) { |c| '\\' + c }.gsub("'", "''")
+			path.gsub(/[:]/) { |c| "\\" + c }.gsub("'", "''")
 		end
 	end
 end

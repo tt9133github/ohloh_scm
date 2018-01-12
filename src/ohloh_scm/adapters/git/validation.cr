@@ -11,7 +11,7 @@ module OhlohScm::Adapters
 		def normalize
 			super
       @url = normalize_url
-			@branch_name = 'master' if @branch_name.to_s == ''
+			@branch_name = "master" if @branch_name.to_s == ""
 			self
 		end
 

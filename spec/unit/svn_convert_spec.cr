@@ -1,9 +1,9 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class SvnConvertTest < OhlohScm::Test
 		def test_basic_convert
-			with_svn_repository('svn') do |src|
+			with_svn_repository("svn") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 					dest = GitAdapter.new(:url => dest_dir).normalize
 					assert !dest.exist?

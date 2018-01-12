@@ -1,14 +1,14 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class BzrXmlParserTest < OhlohScm::Test
 
 		def test_empty_array
-			assert_equal([], BzrXmlParser.parse(''))
+			assert_equal([], BzrXmlParser.parse(""))
 		end
 
 		def test_empty_xml
-			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n", BzrXmlParser.parse('', :writer => XmlWriter.new))
+			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n", BzrXmlParser.parse("", :writer => XmlWriter.new))
 		end
 
     def test_basic_xml
@@ -270,19 +270,19 @@ module OhlohScm::Parsers
       commits = BzrXmlParser.parse(xml)
       assert_equal 1, commits.size
       assert_equal 2, commits.first.diffs.size
-      assert_equal 'D', commits.first.diffs.first.action
-      assert_equal 'test1.txt', commits.first.diffs.first.path
+      assert_equal "D", commits.first.diffs.first.action
+      assert_equal "test1.txt", commits.first.diffs.first.path
 
-      assert_equal 'A', commits.first.diffs.last.action
-      assert_equal 'subdir/test_b.txt', commits.first.diffs.last.path
+      assert_equal "A", commits.first.diffs.last.action
+      assert_equal "subdir/test_b.txt", commits.first.diffs.last.path
     end
 
     def test_remove_dupes_add_remove
       diffs = BzrXmlParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
                                         OhlohScm::Diff.new(:action => "D", :path => "foo") ])
       assert_equal 1, diffs.size
-      assert_equal 'M', diffs.first.action
-      assert_equal 'foo', diffs.first.path
+      assert_equal "M", diffs.first.action
+      assert_equal "foo", diffs.first.path
     end
 
     # A complex delete/rename/modify test.
@@ -323,10 +323,10 @@ module OhlohScm::Parsers
       diffs = BzrXmlParser.parse(xml).first.diffs
       diffs.sort! { |a,b| a.action <=> b.action }
       assert_equal 2, diffs.size
-      assert_equal 'D', diffs.first.action
-      assert_equal 'test3.txt', diffs.first.path
-      assert_equal 'M', diffs.last.action
-      assert_equal 'test_a.txt', diffs.last.path
+      assert_equal "D", diffs.first.action
+      assert_equal "test3.txt", diffs.first.path
+      assert_equal "M", diffs.last.action
+      assert_equal "test_a.txt", diffs.last.path
     end
 
     # This test-case also tests rename and modify in the same commit.
@@ -357,23 +357,23 @@ module OhlohScm::Parsers
       XML
       diffs = BzrXmlParser.parse(xml).first.diffs
       diffs.sort! { |a,b| a.action <=> b.action }
-      assert_equal 'A', diffs[0].action
-      assert_equal 'renamed_arch', diffs[0].path
-      assert_equal 'D', diffs[1].action
-      assert_equal 'arch', diffs[1].path
+      assert_equal "A", diffs[0].action
+      assert_equal "renamed_arch", diffs[0].path
+      assert_equal "D", diffs[1].action
+      assert_equal "arch", diffs[1].path
     end
 
     def test_committer_name_capture
-      name, email = BzrXmlParser.capture_name('John')
-      assert_equal name, 'John'
+      name, email = BzrXmlParser.capture_name("John")
+      assert_equal name, "John"
       assert_equal email, nil
-      assert_equal ['John Doe', nil], BzrXmlParser.capture_name('John Doe')
-      assert_equal ['John Doe jdoe@example.com', nil], BzrXmlParser.capture_name('John Doe jdoe@example.com')
-      assert_equal ['John Doe <jdoe@example.com', nil], BzrXmlParser.capture_name('John Doe <jdoe@example.com')
-      assert_equal ['John Doe jdoe@example.com>', nil], BzrXmlParser.capture_name('John Doe jdoe@example.com>')
-      assert_equal ['John Doe', 'jdoe@example.com'], BzrXmlParser.capture_name('John Doe <jdoe@example.com>')
-      assert_equal ['John Doe', 'jdoe@example.com'], BzrXmlParser.capture_name('John Doe     <jdoe@example.com>   ')
-      assert_equal ['jdoe@example.com', nil], BzrXmlParser.capture_name('jdoe@example.com')
+      assert_equal ["John Doe", nil], BzrXmlParser.capture_name("John Doe")
+      assert_equal ["John Doe jdoe@example.com", nil], BzrXmlParser.capture_name("John Doe jdoe@example.com")
+      assert_equal ["John Doe <jdoe@example.com", nil], BzrXmlParser.capture_name("John Doe <jdoe@example.com")
+      assert_equal ["John Doe jdoe@example.com>", nil], BzrXmlParser.capture_name("John Doe jdoe@example.com>")
+      assert_equal ["John Doe", "jdoe@example.com"], BzrXmlParser.capture_name("John Doe <jdoe@example.com>")
+      assert_equal ["John Doe", "jdoe@example.com"], BzrXmlParser.capture_name("John Doe     <jdoe@example.com>   ")
+      assert_equal ["jdoe@example.com", nil], BzrXmlParser.capture_name("jdoe@example.com")
       xml = <<-XML
 <logs>
   <log>
@@ -398,11 +398,11 @@ module OhlohScm::Parsers
 </logs>
       XML
       c = BzrXmlParser.parse(xml).first
-      assert_equal 'M', c.diffs.first.action
-      assert_equal 'test_a.txt', c.diffs.first.path
-      assert_equal 'a@b.com', c.committer_name
+      assert_equal "M", c.diffs.first.action
+      assert_equal "test_a.txt", c.diffs.first.path
+      assert_equal "a@b.com", c.committer_name
       assert_equal nil, c.committer_email
-      assert_equal 'author@c.com', c.author_name
+      assert_equal "author@c.com", c.author_name
       assert_equal nil, c.author_email
     end
   end

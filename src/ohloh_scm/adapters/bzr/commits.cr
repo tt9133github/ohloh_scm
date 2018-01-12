@@ -54,7 +54,7 @@ module OhlohScm::Adapters
 		# Ohloh tracks only files, not directories. This function removes directories
 		# from the commit diffs.
 		def remove_directories(commit)
-			commit.diffs.delete_if { |d| d.path[-1..-1] == '/' }
+			commit.diffs.delete_if { |d| d.path[-1..-1] == "/" }
 			commit
 		end
 
@@ -75,26 +75,26 @@ module OhlohScm::Adapters
 				if after == head_token # There are no new commits
 					# As a time optimization, just create an empty
 					# file rather than fetch a log we know will be empty.
-          File.open(log_filename, 'w') { |f| f.puts '<?xml version="1.0"?>' }
+          File.open(log_filename, "w") { |f| f.puts %(<?xml version="1.0"?>) }
 				else
 					run "#{rev_list_command(opts)} -v > #{log_filename}"
 				end
-				File.open(log_filename, 'r') { |io| yield io }
+				File.open(log_filename, "r") { |io| yield io }
 			ensure
 				File.delete(log_filename) if FileTest.exist?(log_filename)
 			end
 		end
 
 		def log_filename
-		  File.join(temp_folder, (self.url).gsub(/\W/,'') + '.log')
+		  File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
 		end
 
     # Uses xmllog command for output to be used by BzrXmlParser.
 		def rev_list_command(opts={})
 			after = opts[:after]
-			trunk_only = opts[:trunk_only] ? '--levels=1' : '--include-merges'
+			trunk_only = opts[:trunk_only] ? "--levels=1" : "--include-merges"
 			"cd '#{self.url}' && bzr xmllog --show-id --forward #{trunk_only} -r #{to_rev_param(after)}.."
 		end
-	
+
   end
 end

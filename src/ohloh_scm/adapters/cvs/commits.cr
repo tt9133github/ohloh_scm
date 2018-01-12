@@ -12,7 +12,7 @@ module OhlohScm::Adapters
 			result.each { |c| c.scm = self }
 
 			return result if result.size == 0 # Nothing found; we're done here.
-			return result if after.to_s == '' # We requested everything, so just return everything.
+			return result if after.to_s == "" # We requested everything, so just return everything.
 
 			# We must now remove any duplicates caused by timestamp fudge factors,
 			# and only return commits with timestamp > after.
@@ -25,7 +25,7 @@ module OhlohScm::Adapters
 			# I want to string-compare timestamps without converting to dates objects (I think it's faster).
 			# Some CVS servers print dates as 2006/01/02 03:04:05, others as 2006-01-02 03:04:05.
 			# To work around this, we'll build a regex that matches either date format.
-			re = Regexp.new(after.gsub(/[\/-]/, '.'))
+			re = Regexp.new(after.gsub(/[\/-]/, "."))
 
 			result.each_index do |i|
 				if result[i].token =~ re # We found the match for after
@@ -64,7 +64,7 @@ module OhlohScm::Adapters
 			begin
         ensure_host_key
 				run "cvsnt -d #{self.url} rlog #{opt_branch} #{opt_time(after)} '#{self.module_name}' | #{ string_encoder } > #{rlog_filename}"
-				File.open(rlog_filename, 'r') do |file|
+				File.open(rlog_filename, "r") do |file|
 					yield file
 				end
 			ensure
@@ -75,14 +75,14 @@ module OhlohScm::Adapters
 		def opt_time(after=nil)
 			if after
 				most_recent_time = parse_time(after) - 10
-				" -d '#{most_recent_time.strftime('%Y-%m-%d %H:%M:%S')}Z<#{Time.now.utc.strftime('%Y-%m-%d %H:%M:%S')}Z' "
+				%( -d '#{most_recent_time.strftime("%Y-%m-%d %H:%M:%S")}Z<#{Time.now.utc.strftime("%Y-%m-%d %H:%M:%S")}Z' )
 			else
 				""
 			end
 		end
 
 		def rlog_filename
-		  File.join(temp_folder, (self.url + self.module_name.to_s + self.branch_name.to_s).gsub(/\W/,'') + '.rlog')
+		  File.join(temp_folder, (self.url + self.module_name.to_s + self.branch_name.to_s).gsub(/\W/,"") + ".rlog")
 		end
 
 		# Converts a CVS time string to a Ruby Time object

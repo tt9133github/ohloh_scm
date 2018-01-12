@@ -45,7 +45,7 @@ module OhlohScm::Adapters
 		end
 
 		def hg_path
-			path && File.join(path, '.hg')
+			path && File.join(path, ".hg")
 		end
 	end
 end

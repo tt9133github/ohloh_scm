@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/../lib/ohloh_scm'
+require File.dirname(__FILE__) + "/../lib/ohloh_scm"
 
 # This is a simple command line tool which parses CVS and Subversion logs.
 # It is not used by the main Ohloh system.
@@ -89,7 +89,7 @@ HELP
 
 			if self.paths.any?
 				self.paths.each do |path|
-					parser.parse File.new(path,'r'), :writer => self.writer
+					parser.parse File.new(path,"r"), :writer => self.writer
 				end
 			else
 				parser.parse STDIN, :writer => self.writer
@@ -111,25 +111,25 @@ HELP
 
 		def set_option(option)
 			case option
-			when '--cvs'
+			when "--cvs"
 				self.subcommand = :cvs
-			when '--git'
+			when "--git"
 				self.subcommand = :git
-			when '--svn'
+			when "--svn"
 				self.subcommand = :svn
-			when '--svn-xml'
+			when "--svn-xml"
 				self.subcommand = :svn_xml
-			when '--hg'
+			when "--hg"
 				self.subcommand = :hg
-			when '--bzr'
+			when "--bzr"
 				self.subcommand = :bzr
-			when '--bzr-xml'
+			when "--bzr-xml"
 				self.subcommand = :bzr_xml
-			when '-h', '--human'
+			when "-h", "--human"
 				self.writer = HumanWriter.new(STDOUT)
-			when '-x', '--xml'
+			when "-x", "--xml"
 				self.writer = XmlWriter.new(STDOUT)
-			when '-?', '--help'
+			when "-?", "--help"
 				self.subcommand = :help
 			else
 				STDERR.puts "Type 'ohlog -?' for usage."

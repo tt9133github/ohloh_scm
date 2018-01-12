@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class HgValidationTest < OhlohScm::Test
@@ -47,14 +47,14 @@ module OhlohScm::Adapters
 			hg = HgAdapter.new(:url => "/home/robin/hg")
 			assert_equal nil, hg.guess_forge
 
-			hg = HgAdapter.new( :url => 'http://www.selenic.com/repo/hello')
-			assert_equal 'www.selenic.com', hg.guess_forge
+			hg = HgAdapter.new( :url => "http://www.selenic.com/repo/hello")
+			assert_equal "www.selenic.com", hg.guess_forge
 
-			hg = HgAdapter.new( :url => 'http://algoc.hg.sourceforge.net:8000/hgroot/algoc')
-			assert_equal 'sourceforge.net', hg.guess_forge
+			hg = HgAdapter.new( :url => "http://algoc.hg.sourceforge.net:8000/hgroot/algoc")
+			assert_equal "sourceforge.net", hg.guess_forge
 
-			hg = HgAdapter.new( :url => 'http://poliqarp.sourceforge.net/hg/poliqarp/')
-			assert_equal 'sourceforge.net', hg.guess_forge
+			hg = HgAdapter.new( :url => "http://poliqarp.sourceforge.net/hg/poliqarp/")
+			assert_equal "sourceforge.net", hg.guess_forge
 		end
 	end
 end

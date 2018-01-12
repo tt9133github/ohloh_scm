@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class SvnChainCatFileTest < OhlohScm::Test
@@ -11,7 +11,7 @@ main()
 	printf("Goodbye, world!\\n");
 }
 EXPECTED
-			with_svn_chain_repository('svn_with_branching', '/trunk') do |svn|
+			with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
 				# The first case asks for the file on the HEAD, so it should easily be found
 				assert_equal goodbye, svn.cat_file(OhlohScm::Commit.new(:token => 8), OhlohScm::Diff.new(:path => "goodbyeworld.c"))
 

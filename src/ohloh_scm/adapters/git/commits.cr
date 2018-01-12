@@ -78,38 +78,38 @@ module OhlohScm::Adapters
 		def log(opts={})
 			if has_branch?
 				if opts[:after] && opts[:after]==self.head_token
-					'' # Nothing new.
+					"" # Nothing new.
 				else
 					run "#{rev_list_command(opts)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder }"
 				end
 			else
-				''
+				""
 			end
 		end
 
 
-		# Same as log() method above, except that it writes the log to 
+		# Same as log() method above, except that it writes the log to
     # a file.
 		def open_log_file(opts={})
 			if has_branch?
 				if opts[:after] && opts[:after]==self.head_token
-					'' # Nothing new.
+					"" # Nothing new.
 				else
           begin
 					  run "#{rev_list_command(opts)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder } > #{log_filename}"
-            File.open(log_filename, 'r') { |io| yield io } 
+            File.open(log_filename, "r") { |io| yield io }
           ensure
             File.delete(log_filename) if FileTest.exist?(log_filename)
           end
 				end
 			else
-				''
+				""
 			end
 		end
 
     def log_filename
-      File.join(temp_folder, (self.url).gsub(/\W/,'') + '.log')
-    end 
+      File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
+    end
 
 		def rev_list_command(opts={})
       up_to = opts[:up_to] || branch_name

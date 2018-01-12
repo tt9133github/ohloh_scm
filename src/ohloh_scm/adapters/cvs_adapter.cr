@@ -3,7 +3,7 @@ module OhlohScm::Adapters
 		attr_accessor :module_name
 
 		def english_name
-			'CVS'
+			"CVS"
 		end
 
 		def initialize(params={})
@@ -13,6 +13,6 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative 'cvs/validation'
-require_relative 'cvs/commits'
-require_relative 'cvs/misc'
+require_relative "cvs/validation"
+require_relative "cvs/commits"
+require_relative "cvs/misc"

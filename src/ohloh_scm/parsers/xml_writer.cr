@@ -4,7 +4,7 @@ module OhlohScm::Parsers
 		# the << operator works on both File and String objects.
 
 		attr_accessor :buffer
-		def initialize(buffer='')
+		def initialize(buffer="")
 			@buffer = buffer
 		end
 
@@ -12,7 +12,7 @@ module OhlohScm::Parsers
 			@buffer << "<?xml version=\"1.0\"?>\n"
 			@buffer << "<ohloh_log"
 			opts.each_key do |key|
-				next if key.to_s == 'writer'
+				next if key.to_s == "writer"
 				@buffer << " #{key}=\"#{opts[key]}\""
 			end
 			@buffer << ">\n"

@@ -1,7 +1,7 @@
 module OhlohScm::Parsers
 	class GitParser < Parser
 		def self.scm
-			'git'
+			"git"
 		end
 
 		ANONYMOUS = "(no author)" unless defined?(ANONYMOUS)

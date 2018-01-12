@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class GitTokenTest < OhlohScm::Test
@@ -35,7 +35,7 @@ module OhlohScm::Adapters
 		end
 
     def test_read_token_encoding
-      with_git_repository('git_with_invalid_encoding') do |git|
+      with_git_repository("git_with_invalid_encoding") do |git|
         assert_nothing_raised do
           git.read_token
         end

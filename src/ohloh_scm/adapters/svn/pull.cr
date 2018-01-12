@@ -29,12 +29,12 @@ module OhlohScm::Adapters
 
 		# The local template for the Subversion hook
 		def pre_revprop_change_template
-			File.join(File.dirname(__FILE__), 'pre-revprop-change')
+			File.join(File.dirname(__FILE__), "pre-revprop-change")
 		end
 
 		# The destination location for the Subversion hook
 		def pre_revprop_change_path
-			File.join(path, 'hooks', 'pre-revprop-change')
+			File.join(path, "hooks", "pre-revprop-change")
 		end
 
 		def svnadmin_create_local
@@ -59,8 +59,8 @@ module OhlohScm::Adapters
 			# We use svnsync to manage multiple backups on our server cluster, as well as to
 			# pull from the well-known public repository.
 			# Therefore we have to set the root and UUID of the svnsync every time.
-			dest.propset('sync-from-url', src.root)
-			dest.propset('sync-from-uuid', src.uuid)
+			dest.propset("sync-from-url", src.root)
+			dest.propset("sync-from-uuid", src.uuid)
 
 			run "svnsync sync #{src.opt_auth} --trust-server-cert --non-interactive '#{SvnAdapter.uri_encode(dest.root)}'"
 		end

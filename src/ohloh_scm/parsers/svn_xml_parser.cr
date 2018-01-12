@@ -1,5 +1,5 @@
-require 'rexml/document'
-require 'rexml/streamlistener'
+require "rexml/document"
+require "rexml/streamlistener"
 
 module OhlohScm::Parsers
 	class SubversionListener
@@ -14,29 +14,29 @@ module OhlohScm::Parsers
 
 		def tag_start(name, attrs)
 			case name
-			when 'logentry'
+			when "logentry"
 				@commit = OhlohScm::Commit.new
 				@commit.diffs = []
-				@commit.token = attrs['revision'].to_i
-			when 'path'
-				@diff = OhlohScm::Diff.new(:action => attrs['action'],
-															:from_path => attrs['copyfrom-path'],
-															:from_revision => attrs['copyfrom-rev'].to_i)
+				@commit.token = attrs["revision"].to_i
+			when "path"
+				@diff = OhlohScm::Diff.new(:action => attrs["action"],
+															:from_path => attrs["copyfrom-path"],
+															:from_revision => attrs["copyfrom-rev"].to_i)
 			end
 		end
 
 		def tag_end(name)
 			case name
-			when 'logentry'
+			when "logentry"
 				@callback.call(@commit)
-			when 'author'
+			when "author"
 				@commit.committer_name = @text
-			when 'date'
+			when "date"
 				@commit.committer_date = Time.parse(@text).round.utc
-			when 'path'
+			when "path"
 				@diff.path = @text
 				@commit.diffs << @diff
-			when 'msg'
+			when "msg"
 				@commit.message = @text
 			end
 		end
@@ -48,7 +48,7 @@ module OhlohScm::Parsers
 
 	class SvnXmlParser < Parser
 		def self.internal_parse(buffer, opts)
-			buffer = '<?xml?>' if buffer.is_a?(StringIO) and buffer.length < 2
+			buffer = "<?xml?>" if buffer.is_a?(StringIO) and buffer.length < 2
 			begin
 				REXML::Document.parse_stream(buffer, SubversionListener.new(Proc.new { |c| yield c if block_given? }))
 			rescue EOFError
@@ -56,7 +56,7 @@ module OhlohScm::Parsers
 		end
 
 		def self.scm
-			'svn'
+			"svn"
 		end
 	end
 end

@@ -1,11 +1,11 @@
 # encoding: utf-8
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class BzrCatFileTest < OhlohScm::Test
 
 		def test_cat_file
-			with_bzr_repository('bzr') do |bzr|
+			with_bzr_repository("bzr") do |bzr|
 				expected = <<-EXPECTED
 first file
 second line
@@ -21,7 +21,7 @@ EXPECTED
 		end
 
     def test_cat_file_non_ascii_name
-      with_bzr_repository('bzr') do |bzr|
+      with_bzr_repository("bzr") do |bzr|
         expected = <<-EXPECTED
 first file
 second line
@@ -33,7 +33,7 @@ EXPECTED
     end
 
 		def test_cat_file_parent
-			with_bzr_repository('bzr') do |bzr|
+			with_bzr_repository("bzr") do |bzr|
 				expected = <<-EXPECTED
 first file
 second line

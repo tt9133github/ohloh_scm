@@ -1,23 +1,23 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class SvnParserTest < OhlohScm::Test
 
 		def test_basic
-			assert_convert(SvnParser, DATA_DIR + '/simple.svn_log', DATA_DIR + '/simple.ohlog')
+			assert_convert(SvnParser, DATA_DIR + "/simple.svn_log", DATA_DIR + "/simple.ohlog")
 		end
 
 		def test_empty_array
-			assert_equal([], SvnParser.parse(''))
+			assert_equal([], SvnParser.parse(""))
 		end
 
 		def test_empty_xml
-			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnParser.parse('', :writer => XmlWriter.new))
+			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnParser.parse("", :writer => XmlWriter.new))
 		end
 
 		def test_yield_instead_of_writer
 			commits = []
-			result = SvnParser.parse(File.read(DATA_DIR + '/simple.svn_log')) do |commit|
+			result = SvnParser.parse(File.read(DATA_DIR + "/simple.svn_log")) do |commit|
 				commits << commit.token
 			end
 			assert_nil result
@@ -48,23 +48,23 @@ SAMPLE
 			assert_equal 3, revs.size
 
 			assert_equal 1, revs[0].token
-			assert_equal 'robin', revs[0].committer_name
+			assert_equal "robin", revs[0].committer_name
 			assert_equal "Initial Checkin\n", revs[0].message # Note \n at end of comment
 			assert_equal Time.utc(2006,6,11,18,28,00), revs[0].committer_date
 
 			assert_equal 2, revs[1].token
-			assert_equal 'jason', revs[1].committer_name
+			assert_equal "jason", revs[1].committer_name
 			assert_equal "added makefile", revs[1].message # Note no \n at end of comment
 			assert_equal Time.utc(2006,6,11,18,32,13), revs[1].committer_date
 
 			assert_equal 3, revs[2].token
-			assert_equal 'robin', revs[2].committer_name
+			assert_equal "robin", revs[2].committer_name
 			assert_equal "added some documentation and licensing info", revs[2].message
 			assert_equal Time.utc(2006,6,11,18,34,17), revs[2].committer_date
 		end
 
 		# This is an excerpt from the log for Wireshark. It includes Subversion log excerpts in
-		# its comments, which really screwed us up. This test confirms that I've fixed the
+		# its comments, which really screwed us up. This test confirms that I"ve fixed the
 		# parser to ignore log excerpts in the comments.
 		def test_log_embedded_in_comments
 			log = <<LOG
@@ -78,7 +78,7 @@ r23069 | metze | 2007-05-22 13:23:36 +0200 (Tue, 22 May 2007) | 3 lines
 Changed paths:
    M /branches/SAMBA_4_0/source/pidl/tests/Util.pm
 
-print out the command, to find out the problem on host 'tridge'
+print out the command, to find out the problem on host "tridge"
 
 metze
 ------------------------------------------------------------------------
@@ -116,7 +116,7 @@ r23069 | metze | 2007-05-22 13:23:36 +0200 (Tue, 22 May 2007) | 3 lines
 Changed paths:
    M /branches/SAMBA_4_0/source/pidl/tests/Util.pm
 
-print out the command, to find out the problem on host 'tridge'
+print out the command, to find out the problem on host "tridge"
 
 metze
 ------------------------------------------------------------------------

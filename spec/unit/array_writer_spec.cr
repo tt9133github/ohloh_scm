@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class ArrayWriterTest < OhlohScm::Test
@@ -18,16 +18,16 @@ added some documentation and licensing info
 
 			# By default, the ArrayWriter is used, and an empty string is parsed
 			assert_equal [], SvnParser.parse
-			assert_equal [], SvnParser.parse('')
-			assert_equal [], SvnParser.parse('', :writer => ArrayWriter.new)
+			assert_equal [], SvnParser.parse("")
+			assert_equal [], SvnParser.parse("", :writer => ArrayWriter.new)
 
 			result = SvnParser.parse(log, :writer => ArrayWriter.new)
 			assert_equal 1, result.size
-			assert_equal 'robin', result.first.committer_name
+			assert_equal "robin", result.first.committer_name
 			assert_equal 3, result.first.token
 			assert_equal 2, result.first.diffs.size
-			assert_equal '/trunk/README', result.first.diffs.first.path
-			assert_equal 'A', result.first.diffs.first.action
+			assert_equal "/trunk/README", result.first.diffs.first.path
+			assert_equal "A", result.first.diffs.first.action
 		end
 	end
 end

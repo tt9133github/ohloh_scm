@@ -1,4 +1,4 @@
-require 'rexml/document'
+require "rexml/document"
 
 module OhlohScm::Adapters
 	class SvnAdapter < AbstractAdapter
@@ -23,14 +23,14 @@ module OhlohScm::Adapters
 		def commit_count(opts={})
 			after = (opts[:after] || 0).to_i
 			return 0 if final_token && after >= final_token
-			run("svn log --trust-server-cert --non-interactive -q -r #{after.to_i + 1}:#{final_token || 'HEAD'} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || 'HEAD'}' | grep -E -e '^r[0-9]+ ' | wc -l").strip.to_i
+			run(%(svn log --trust-server-cert --non-interactive -q -r #{after.to_i + 1}:#{final_token || "HEAD"} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || "HEAD"}' | grep -E -e '^r[0-9]+ ' | wc -l)).strip.to_i
 		end
 
 		# Returns an array of revision numbers for all commits following revision number 'after'.
 		def commit_tokens(opts={})
 			after = (opts[:after] || 0).to_i
 			return [] if final_token && after >= final_token
-			cmd = "svn log --trust-server-cert --non-interactive -q -r #{after + 1}:#{final_token || 'HEAD'} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || 'HEAD'}' | grep -E -e '^r[0-9]+ ' | cut -f 1 -d '|' | cut -c 2-"
+			cmd = %(svn log --trust-server-cert --non-interactive -q -r #{after + 1}:#{final_token || "HEAD"} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || "HEAD"}' | grep -E -e '^r[0-9]+ ' | cut -f 1 -d '|' | cut -c 2-)
 			run(cmd).split.collect { |r| r.to_i }
 		end
 
@@ -81,7 +81,7 @@ module OhlohScm::Adapters
 			# So look for diffs of the form ["M", "path"] which are matched by ["A", "path"], and keep only the "A" diff.
 			if commit.diffs
 				commit.diffs.delete_if do |d|
-					d && d.action =~ /[MR]/ && commit.diffs.select { |x| x.action == 'A' and x.path == d.path }.any?
+					d && d.action =~ /[MR]/ && commit.diffs.select { |x| x.action == "A" and x.path == d.path }.any?
 				end
 			end
 			commit
@@ -91,9 +91,9 @@ module OhlohScm::Adapters
 		# If the diff points to a directory, returns an array of diffs for every file in the directory.
 		def deepen_diff(diff, rev)
 			# Note that if the directory was deleted, we have to look at the previous revision to see what it held.
-			recurse_rev = (diff.action == 'D') ? rev-1 : rev
+			recurse_rev = (diff.action == "D") ? rev-1 : rev
 
-			if (diff.action == 'D' or diff.action == 'A') && is_directory?(diff.path, recurse_rev)
+			if (diff.action == "D" or diff.action == "A") && is_directory?(diff.path, recurse_rev)
 				# Deleting or adding a directory. Expand it out to show every file.
 				recurse_files(diff.path, recurse_rev).collect do |f|
 					OhlohScm::Diff.new(:action => diff.action, :path => File.join(diff.path, f))
@@ -126,7 +126,7 @@ module OhlohScm::Adapters
 		# Returns nil if the path is not within the branch.
 		def strip_path_branch(path)
 			if path == self.branch_name.to_s
-				''
+				""
 			else
 				$1 if path =~ /^#{Regexp.escape(self.branch_name.to_s)}(\/.*)$/
 			end
@@ -144,7 +144,7 @@ module OhlohScm::Adapters
 
 		def log(opts={})
 			after = (opts[:after] || 0).to_i
-			run "svn log --trust-server-cert --non-interactive --xml --stop-on-copy -r #{after.to_i + 1}:#{final_token || 'HEAD'} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name.to_s))}@#{final_token || 'HEAD'}' #{opt_auth} | #{ string_encoder }"
+			run %(svn log --trust-server-cert --non-interactive --xml --stop-on-copy -r #{after.to_i + 1}:#{final_token || "HEAD"} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name.to_s))}@#{final_token || "HEAD"}' #{opt_auth} | #{ string_encoder })
 		end
 
 		def open_log_file(opts={})
@@ -152,18 +152,18 @@ module OhlohScm::Adapters
 			begin
 				if (final_token && after >= final_token) || after >= head_token
 					# As a time optimization, just create an empty file rather than fetch a log we know will be empty.
-					File.open(log_filename, 'w') { |f| f.puts '<?xml version="1.0"?>' }
+					File.open(log_filename, "w") { |f| f.puts %(<?xml version="1.0"?>) }
 				else
-					run "svn log --trust-server-cert --non-interactive --xml --stop-on-copy -r #{after + 1}:#{final_token || 'HEAD'} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name))}@#{final_token || 'HEAD'}' #{opt_auth} | #{ string_encoder } > #{log_filename}"
+					run %(svn log --trust-server-cert --non-interactive --xml --stop-on-copy -r #{after + 1}:#{final_token || "HEAD"} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name))}@#{final_token || "HEAD"}' #{opt_auth} | #{ string_encoder } > #{log_filename})
 				end
-				File.open(log_filename, 'r') { |io| yield io }
+				File.open(log_filename, "r") { |io| yield io }
 			ensure
 				File.delete(log_filename) if FileTest.exist?(log_filename)
 			end
 		end
 
 		def log_filename
-		  File.join(temp_folder, (self.url).gsub(/\W/,'') + '.log')
+		  File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
 		end
 
 		# Returns one commit with the exact revision number provided
@@ -176,7 +176,7 @@ module OhlohScm::Adapters
 		# Directories named 'CVSROOT' are always ignored and the files they contain are never returned.
 		# An empty array means that the call succeeded, but the remote directory is empty.
 		# A nil result means that the call failed and the remote server could not be queried.
-		def recurse_files(path=nil, revision=final_token || 'HEAD')
+		def recurse_files(path=nil, revision=final_token || "HEAD")
 			begin
 				stdout = run "svn ls --trust-server-cert --non-interactive -r #{revision} --recursive #{opt_auth} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s, path.to_s))}@#{revision}'"
 			rescue
@@ -186,8 +186,8 @@ module OhlohScm::Adapters
 
 			files = []
 			stdout.each_line do |s|
-				s.chomp!.force_encoding('UTF-8')
-				files << s if s.length > 0 and s !~ /CVSROOT\// and s[-1..-1] != '/'
+				s.chomp!.force_encoding("UTF-8")
+				files << s if s.length > 0 and s !~ /CVSROOT\// and s[-1..-1] != "/"
 			end
 			files.sort
 		end

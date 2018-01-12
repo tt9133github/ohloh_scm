@@ -1,5 +1,5 @@
-require 'open-uri'
-require 'nokogiri'
+require "open-uri"
+require "nokogiri"
 
 module OhlohScm::Adapters
 	class SvnAdapter < AbstractAdapter
@@ -34,10 +34,10 @@ module OhlohScm::Adapters
 			list = ls
 			return self.url unless list
 
-			if list.include? 'trunk/'
-				self.url = File.join(self.url, 'trunk')
-				self.branch_name = File.join(self.branch_name, 'trunk')
-			elsif list.size == 1 and list.first[-1..-1] == '/'
+			if list.include? "trunk/"
+				self.url = File.join(self.url, "trunk")
+				self.branch_name = File.join(self.branch_name, "trunk")
+			elsif list.size == 1 and list.first[-1..-1] == "/"
 				self.url = File.join(self.url, list.first[0..-2])
 				self.branch_name = File.join(self.branch_name, list.first[0..-2])
 				return restrict_url_to_trunk
@@ -60,7 +60,7 @@ module OhlohScm::Adapters
 			end
 		end
 
-		def info(path=nil, revision=final_token || 'HEAD')
+		def info(path=nil, revision=final_token || "HEAD")
 			@info ||= {}
 			uri = if path
 							File.join(root, branch_name.to_s, path)
@@ -83,7 +83,7 @@ module OhlohScm::Adapters
 		# Directories named 'CVSROOT' are always ignored and never returned.
 		# An empty array means that the call succeeded, but the remote directory is empty.
 		# A nil result means that the call failed and the remote server could not be queried.
-		def ls(path=nil, revision=final_token || 'HEAD')
+		def ls(path=nil, revision=final_token || "HEAD")
 			begin
 				stdout = run "svn ls --trust-server-cert --non-interactive -r #{revision} #{opt_auth} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s, path.to_s))}@#{revision}'"
 			rescue
@@ -93,18 +93,18 @@ module OhlohScm::Adapters
 			files = []
 			stdout.each_line do |s|
 				s.chomp!
-				files << s if s.length > 0 and s != 'CVSROOT/'
+				files << s if s.length > 0 and s != "CVSROOT/"
 			end
 			files.sort
 		end
 
-		def node_kind(path=nil, revision=final_token || 'HEAD')
+		def node_kind(path=nil, revision=final_token || "HEAD")
 			$1 if self.info(path, revision) =~ /Node Kind: (\w+)\W/
 		end
 
-		def is_directory?(path=nil, revision=final_token || 'HEAD')
+		def is_directory?(path=nil, revision=final_token || "HEAD")
 			begin
-				return node_kind(path, revision) == 'directory'
+				return node_kind(path, revision) == "directory"
 			rescue Exception
 				if $!.message =~ /svn: E200009: Could not display info for all targets because some targets don't exist/
 					return false
@@ -119,7 +119,7 @@ module OhlohScm::Adapters
 			run "svn checkout --trust-server-cert --non-interactive -r #{rev.token} '#{SvnAdapter.uri_encode(self.url)}@#{rev.token}' '#{dest_dir}' --ignore-externals #{opt_auth}"
 		end
 
-		def export(dest_dir, commit_id = final_token || 'HEAD')
+		def export(dest_dir, commit_id = final_token || "HEAD")
 			FileUtils.mkdir_p(File.dirname(dest_dir)) unless FileTest.exist?(File.dirname(dest_dir))
 			run "svn export --trust-server-cert --non-interactive --ignore-externals --force -r #{commit_id} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}' '#{dest_dir}'"
 		end
@@ -135,20 +135,20 @@ module OhlohScm::Adapters
 
 		def opt_auth
 			opt_password = ""
-			opt_password = "--username='#{self.username}' --password='#{self.password}'" if self.username && self.username != ''
+			opt_password = "--username='#{self.username}' --password='#{self.password}'" if self.username && self.username != ""
 			" #{opt_password} --no-auth-cache "
 		end
 
     # Svn root is not usable here since several projects are nested in subfolders.
-    # e.g. https://svn.apache.org/repos/asf/openoffice/ooo-site/trunk/ 
+    # e.g. https://svn.apache.org/repos/asf/openoffice/ooo-site/trunk/
     #      http://svn.apache.org/repos/asf/httpd/httpd/trunk
     #      http://svn.apache.org/repos/asf/maven/plugin-testing/trunk
     #      all have the same root value(https://svn.apache.org/repos/asf)
     def tags
       doc = Nokogiri::XML(`svn ls --xml #{ base_path}/tags`)
-      doc.xpath('//lists/list/entry').map do |entry|
-        tag_name = entry.xpath('name').text
-        revision = entry.xpath('commit').attr('revision').text
+      doc.xpath("//lists/list/entry").map do |entry|
+        tag_name = entry.xpath("name").text
+        revision = entry.xpath("commit").attr("revision").text
         date_string = Time.parse(entry.xpath("commit/date").text)
         [tag_name, revision, date_string]
       end
@@ -163,7 +163,7 @@ module OhlohScm::Adapters
     private
 
     def base_path
-      url.sub(/(.*)(branches|trunk|tags)(.*)/, '\1').chomp('/')
+      url.sub(/(.*)(branches|trunk|tags)(.*)/, "\\1").chomp("/")
     end
 
 	end

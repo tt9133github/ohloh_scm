@@ -1,5 +1,5 @@
-require_relative '../test_helper'
-require 'socket'
+require_relative "../test_helper"
+require "socket"
 
 module OhlohScm::Adapters
 	class SvnPullTest < OhlohScm::Test
@@ -15,13 +15,13 @@ module OhlohScm::Adapters
 
 				# Ensure that revision properties are settable
         # Note that only valid properties can be set
-				svn.propset('log','bar')
-				assert_equal 'bar', svn.propget('log')
+				svn.propset("log","bar")
+				assert_equal "bar", svn.propget("log")
 			end
 		end
 
 		def test_basic_pull_using_svnsync
-			with_svn_repository('svn') do |src|
+			with_svn_repository("svn") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 
 					dest = SvnAdapter.new(:url => dest_dir).normalize
@@ -40,9 +40,9 @@ module OhlohScm::Adapters
 				svn = SvnAdapter.new(:url => "file://#{dir}")
 				svn.svnadmin_create_local
 				assert svn.exist?
-				assert FileTest.exist?(File.join(dir, 'hooks', 'pre-revprop-change'))
-				assert FileTest.executable?(File.join(dir, 'hooks', 'pre-revprop-change'))
-				svn.run File.join(dir, 'hooks', 'pre-revprop-change')
+				assert FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change"))
+				assert FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change"))
+				svn.run File.join(dir, "hooks", "pre-revprop-change")
 			end
 		end
 
@@ -51,9 +51,9 @@ module OhlohScm::Adapters
 				svn = SvnAdapter.new(:url => "svn+ssh://#{Socket.gethostname}#{dir}")
 				svn.svnadmin_create_remote
 				assert svn.exist?
-				assert FileTest.exist?(File.join(dir, 'hooks', 'pre-revprop-change'))
-				assert FileTest.executable?(File.join(dir, 'hooks', 'pre-revprop-change'))
-				svn.run File.join(dir, 'hooks', 'pre-revprop-change')
+				assert FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change"))
+				assert FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change"))
+				svn.run File.join(dir, "hooks", "pre-revprop-change")
 			end
 		end
 	end

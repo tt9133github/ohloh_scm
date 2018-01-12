@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Adapters
 	class BzrPushTest < OhlohScm::Test
@@ -7,7 +7,7 @@ module OhlohScm::Adapters
 			assert !BzrAdapter.new.hostname
 			assert !BzrAdapter.new(:url => "http://www.ohloh.net/test").hostname
 			assert !BzrAdapter.new(:url => "/Users/test/foo").hostname
-			assert_equal "foo", BzrAdapter.new(:url => 'bzr+ssh://foo/bar').hostname
+			assert_equal "foo", BzrAdapter.new(:url => "bzr+ssh://foo/bar").hostname
 		end
 
 		def test_local
@@ -35,7 +35,7 @@ module OhlohScm::Adapters
 		end
 
 		def test_push
-			with_bzr_repository('bzr') do |src|
+			with_bzr_repository("bzr") do |src|
 				OhlohScm::ScratchDir.new do |dest_dir|
 
 					dest = BzrAdapter.new(:url => dest_dir).normalize

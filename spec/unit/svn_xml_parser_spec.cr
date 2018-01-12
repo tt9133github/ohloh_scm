@@ -1,18 +1,18 @@
-require_relative '../test_helper'
+require_relative "../test_helper"
 
 module OhlohScm::Parsers
 	class SvnXmlParserTest < OhlohScm::Test
 
 		def test_basic
-			assert_convert(SvnXmlParser, DATA_DIR + '/simple.svn_xml_log', DATA_DIR + '/simple.ohlog')
+			assert_convert(SvnXmlParser, DATA_DIR + "/simple.svn_xml_log", DATA_DIR + "/simple.ohlog")
 		end
 
 		def test_empty_array
-			assert_equal([], SvnXmlParser.parse(''))
+			assert_equal([], SvnXmlParser.parse(""))
 		end
 
 		def test_empty_xml
-			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnXmlParser.parse('', :writer => XmlWriter.new))
+			assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnXmlParser.parse("", :writer => XmlWriter.new))
 		end
 
 		def test_copy_from

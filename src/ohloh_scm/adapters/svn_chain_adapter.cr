@@ -39,6 +39,6 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative 'svn_chain/chain'
-require_relative 'svn_chain/commits'
-require_relative 'svn_chain/cat_file'
+require_relative "svn_chain/chain"
+require_relative "svn_chain/commits"
+require_relative "svn_chain/cat_file"

@@ -1,5 +1,5 @@
 module OhlohScm::Adapters
-	require 'logger'
+	require "logger"
 	class AbstractAdapter
 		def self.logger
 			@@logger ||= Logger.new(STDERR)

@@ -29,28 +29,28 @@ module OhlohScm::Adapters
 		# Author info is optional, and defaults to committer info.
 		def set_commit_metadata(commit)
 
-			ENV['GIT_COMMITTER_NAME'] = commit.committer_name || '[anonymous]'
-			ENV['GIT_AUTHOR_NAME'] = commit.author_name || ENV['GIT_COMMITTER_NAME']
+			ENV["GIT_COMMITTER_NAME"] = commit.committer_name || "[anonymous]"
+			ENV["GIT_AUTHOR_NAME"] = commit.author_name || ENV["GIT_COMMITTER_NAME"]
 
-			ENV['GIT_COMMITTER_EMAIL'] = commit.committer_email || ENV['GIT_COMMITTER_NAME']
-			ENV['GIT_AUTHOR_EMAIL'] = commit.author_email || ENV['GIT_AUTHOR_NAME']
+			ENV["GIT_COMMITTER_EMAIL"] = commit.committer_email || ENV["GIT_COMMITTER_NAME"]
+			ENV["GIT_AUTHOR_EMAIL"] = commit.author_email || ENV["GIT_AUTHOR_NAME"]
 
-			ENV['GIT_COMMITTER_DATE'] = commit.committer_date.to_s
-			ENV['GIT_AUTHOR_DATE'] = (commit.author_date || commit.committer_date).to_s
+			ENV["GIT_COMMITTER_DATE"] = commit.committer_date.to_s
+			ENV["GIT_AUTHOR_DATE"] = (commit.author_date || commit.committer_date).to_s
 
 			# This is a one-off fix for DrJava, which includes some escape characters
 			# in one of its Subversion messages. This might lead to a more generalized
 			# cleanup of message text, but for now...
-			commit.message.gsub!(/\\027/,'') if commit.message
+			commit.message.gsub!(/\\027/,"") if commit.message
 
 			# Git requires a non-empty message
 			if commit.message.nil? || commit.message =~ /\A\s*\z/
-				commit.message = '[no message]'
+				commit.message = "[no message]"
 			end
 
 			# We need to store the message in a file in case it contains crazy characters
 			#    that would corrupt a bash command line.
-			File.open(message_filename, 'w') do |f|
+			File.open(message_filename, "w") do |f|
 				f.write commit.message
 			end
 			message_filename
@@ -59,7 +59,7 @@ module OhlohScm::Adapters
 		# By hiding the message file inside the .git directory, we
 		#    avoid it being found by the commit-all.
 		def message_filename
-			File.expand_path(File.join(git_path, 'ohloh_message'))
+			File.expand_path(File.join(git_path, "ohloh_message"))
 		end
 
 		# True if there are pending changes to commit.
@@ -120,7 +120,7 @@ module OhlohScm::Adapters
 		# to the end of .gitignore.
 		def ensure_gitignore
 			IGNORE.each do |ignore|
-				gitignore_filename = File.join(self.url, '.gitignore')
+				gitignore_filename = File.join(self.url, ".gitignore")
 				found = false
 				File.open(gitignore_filename, File::CREAT | File::RDONLY) do |io|
 					io.readlines.each do |l|
