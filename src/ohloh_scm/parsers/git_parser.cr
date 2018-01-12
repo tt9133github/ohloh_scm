@@ -18,7 +18,7 @@ module OhlohScm::Parsers
 				# so we may need to make an unexpected state change.
 				if line =~ /^commit ([a-z0-9]{40,40})$/
 					state = :key_values
-				elsif state == :message and line =~ /^[ADM]\s+(.+)$/
+				elsif state == :message && line =~ /^[ADM]\s+(.+)$/
 					state = :diffs
 				end
 

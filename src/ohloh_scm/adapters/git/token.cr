@@ -43,7 +43,7 @@ module OhlohScm::Adapters
 		# Saves the new token in a well-known file.
 		# If the passed token is empty, this method silently does nothing.
 		def write_token(token)
-			if token and token.to_s.length > 0
+			if token && token.to_s.length > 0
 				File.open(token_path, "w") do |f|
 					f.write token.to_s
 				end

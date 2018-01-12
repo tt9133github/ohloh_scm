@@ -5,12 +5,12 @@ module OhlohScm::Parsers
 	class SubversionListener
 		include REXML::StreamListener
 
-		attr_accessor :callback
+		property :callback
 		def initialize(callback)
 			@callback = callback
 		end
 
-		attr_accessor :text, :commit, :diff
+		property :text, :commit, :diff
 
 		def tag_start(name, attrs)
 			case name
@@ -48,9 +48,9 @@ module OhlohScm::Parsers
 
 	class SvnXmlParser < Parser
 		def self.internal_parse(buffer, opts)
-			buffer = "<?xml?>" if buffer.is_a?(StringIO) and buffer.length < 2
+			buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
 			begin
-				REXML::Document.parse_stream(buffer, SubversionListener.new(Proc.new { |c| yield c if block_given? }))
+				REXML::Document.parse_stream(buffer, SubversionListener.new(-> { |c| yield c if block_given? }))
 			rescue EOFError
 			end
 		end

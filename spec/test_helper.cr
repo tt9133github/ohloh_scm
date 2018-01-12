@@ -5,7 +5,7 @@ require "find"
 unless defined?(TEST_DIR)
 	TEST_DIR = File.dirname(__FILE__)
 end
-require_relative "../lib/ohloh_scm"
+require "../lib/ohloh_scm"
 
 OhlohScm::Adapters::AbstractAdapter.logger = Logger.new(File.open("log/test.log","a"))
 

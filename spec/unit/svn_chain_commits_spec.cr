@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Parsers
 	class SvnChainTest < OhlohScm::Test
@@ -37,17 +37,17 @@ module OhlohScm::Parsers
 
 		def test_chained_commits
 			with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
-				assert_equal [1,2,4,5,8,9,11], svn.commits.collect { |c| c.token }
-				assert_equal [2,4,5,8,9,11], svn.commits(:after => 1).collect { |c| c.token }
-				assert_equal [4,5,8,9,11], svn.commits(:after => 2).collect { |c| c.token }
-				assert_equal [4,5,8,9,11], svn.commits(:after => 3).collect { |c| c.token }
-				assert_equal [5,8,9,11], svn.commits(:after => 4).collect { |c| c.token }
-				assert_equal [8,9,11], svn.commits(:after => 5).collect { |c| c.token }
-				assert_equal [8,9,11], svn.commits(:after => 6).collect { |c| c.token }
-				assert_equal [8,9,11], svn.commits(:after => 7).collect { |c| c.token }
-				assert_equal [9,11], svn.commits(:after => 8).collect { |c| c.token }
-				assert_equal [11], svn.commits(:after => 9).collect { |c| c.token }
-				assert_equal [], svn.commits(:after => 11).collect { |c| c.token }
+				assert_equal [1,2,4,5,8,9,11], svn.commits.map { |c| c.token }
+				assert_equal [2,4,5,8,9,11], svn.commits(:after => 1).map { |c| c.token }
+				assert_equal [4,5,8,9,11], svn.commits(:after => 2).map { |c| c.token }
+				assert_equal [4,5,8,9,11], svn.commits(:after => 3).map { |c| c.token }
+				assert_equal [5,8,9,11], svn.commits(:after => 4).map { |c| c.token }
+				assert_equal [8,9,11], svn.commits(:after => 5).map { |c| c.token }
+				assert_equal [8,9,11], svn.commits(:after => 6).map { |c| c.token }
+				assert_equal [8,9,11], svn.commits(:after => 7).map { |c| c.token }
+				assert_equal [9,11], svn.commits(:after => 8).map { |c| c.token }
+				assert_equal [11], svn.commits(:after => 9).map { |c| c.token }
+				assert_equal [], svn.commits(:after => 11).map { |c| c.token }
 			end
 		end
 
@@ -66,7 +66,7 @@ module OhlohScm::Parsers
 				end
 			end
 
-			assert_equal [1,2,4,5,8,9,11], commits.collect { |c| c.token }
+			assert_equal [1,2,4,5,8,9,11], commits.map { |c| c.token }
 
 			# This repository spends a lot of energy moving directories around.
 			# File edits actually occur in just 3 commits.
@@ -143,7 +143,7 @@ module OhlohScm::Parsers
 
 				c = svn.verbose_commit(9)
 				assert_equal "modified helloworld.c", c.message
-				assert_equal ["/helloworld.c"], c.diffs.collect { |d| d.path }
+				assert_equal ["/helloworld.c"], c.diffs.map { |d| d.path }
 				assert_equal "/trunk", c.scm.branch_name
 
 				c = svn.verbose_commit(8)
@@ -153,7 +153,7 @@ module OhlohScm::Parsers
 				# Reaching these commits requires chaining
 				c = svn.verbose_commit(5)
 				assert_equal "add a new branch, with goodbyeworld.c", c.message
-				assert_equal ["/goodbyeworld.c"], c.diffs.collect { |d| d.path }
+				assert_equal ["/goodbyeworld.c"], c.diffs.map { |d| d.path }
 				assert_equal "/branches/development", c.scm.branch_name
 
 				# Reaching these commits requires chaining twice
@@ -164,7 +164,7 @@ module OhlohScm::Parsers
 				# And now a fourth chain (to skip over /trunk deletion in rev 3)
 				c = svn.verbose_commit(2)
 				assert_equal "Added helloworld.c to trunk", c.message
-				assert_equal ["/helloworld.c"], c.diffs.collect { |d| d.path }
+				assert_equal ["/helloworld.c"], c.diffs.map { |d| d.path }
 				assert_equal "/trunk", c.scm.branch_name
 
 				c = svn.verbose_commit(1)

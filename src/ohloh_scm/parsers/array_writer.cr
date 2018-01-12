@@ -1,7 +1,7 @@
 module OhlohScm::Parsers
 	class ArrayWriter
 
-		attr_accessor :buffer
+		property :buffer
 		def initialize(buffer=[])
 			@buffer = buffer
 		end

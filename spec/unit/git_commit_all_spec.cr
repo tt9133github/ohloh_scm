@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class GitCommitAllTest < OhlohScm::Test
@@ -26,7 +26,7 @@ module OhlohScm::Adapters
 				# We don"t really care, so just compare the stripped versions.
 				assert_equal c.message.strip, git.commits.first.message.strip
 
-				assert_equal [".gitignore", "README"], git.commits.first.diffs.collect { |d| d.path }.sort
+				assert_equal [".gitignore", "README"], git.commits.first.diffs.map { |d| d.path }.sort
 			end
 		end
 

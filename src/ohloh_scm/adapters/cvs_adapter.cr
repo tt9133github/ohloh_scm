@@ -1,6 +1,6 @@
 module OhlohScm::Adapters
 	class CvsAdapter < AbstractAdapter
-		attr_accessor :module_name
+		property :module_name
 
 		def english_name
 			"CVS"
@@ -13,6 +13,6 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative "cvs/validation"
-require_relative "cvs/commits"
-require_relative "cvs/misc"
+require "./cvs/validation"
+require "./cvs/commits"
+require "./cvs/misc"

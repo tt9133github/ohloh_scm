@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class BzrCommitsTest < OhlohScm::Test
@@ -182,9 +182,9 @@ module OhlohScm::Adapters
 
 		def test_commits
 			with_bzr_repository("bzr") do |bzr|
-				assert_equal revision_ids, bzr.commits.collect { |c| c.token }
-				assert_equal revision_ids[6..6], bzr.commits(:after => revision_ids[5]).collect { |c| c.token }
-				assert_equal [], bzr.commits(:after => revision_ids.last).collect { |c| c.token }
+				assert_equal revision_ids, bzr.commits.map { |c| c.token }
+				assert_equal revision_ids[6..6], bzr.commits(:after => revision_ids[5]).map { |c| c.token }
+				assert_equal [], bzr.commits(:after => revision_ids.last).map { |c| c.token }
 
 				# Check that the diffs are not populated
 				assert_equal [], bzr.commits.first.diffs
@@ -211,7 +211,7 @@ module OhlohScm::Adapters
 				assert !FileTest.exist?(bzr.log_filename)
 
 				# Verify that we got the commits in forward chronological order
-				assert_equal revision_ids, commits.collect{ |c| c.token }
+				assert_equal revision_ids, commits.map{ |c| c.token }
 			end
 		end
 

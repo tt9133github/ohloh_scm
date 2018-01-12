@@ -37,7 +37,7 @@ module OhlohScm::Adapters
 			if list.include? "trunk/"
 				self.url = File.join(self.url, "trunk")
 				self.branch_name = File.join(self.branch_name, "trunk")
-			elsif list.size == 1 and list.first[-1..-1] == "/"
+			elsif list.size == 1 && list.first[-1..-1] == "/"
 				self.url = File.join(self.url, list.first[0..-2])
 				self.branch_name = File.join(self.branch_name, list.first[0..-2])
 				return restrict_url_to_trunk
@@ -93,7 +93,7 @@ module OhlohScm::Adapters
 			files = []
 			stdout.each_line do |s|
 				s.chomp!
-				files << s if s.length > 0 and s != "CVSROOT/"
+				files << s if s.length > 0 && s != "CVSROOT/"
 			end
 			files.sort
 		end
@@ -160,9 +160,7 @@ module OhlohScm::Adapters
       end
     end
 
-    private
-
-    def base_path
+    private def base_path
       url.sub(/(.*)(branches|trunk|tags)(.*)/, "\\1").chomp("/")
     end
 

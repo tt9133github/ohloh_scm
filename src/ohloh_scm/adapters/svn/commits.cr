@@ -17,7 +17,7 @@ module OhlohScm::Adapters
 		# The last revision to be analyzed in this repository. Everything after this revision is ignored.
 		# The repository is considered to be retired after this point, and under no circumstances should
 		# this adapter ever return information regarding commits after this point.
-		attr_accessor :final_token
+		property :final_token
 
 		# Returns the count of commits following revision number 'after'.
 		def commit_count(opts={})
@@ -31,7 +31,7 @@ module OhlohScm::Adapters
 			after = (opts[:after] || 0).to_i
 			return [] if final_token && after >= final_token
 			cmd = %(svn log --trust-server-cert --non-interactive -q -r #{after + 1}:#{final_token || "HEAD"} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || "HEAD"}' | grep -E -e '^r[0-9]+ ' | cut -f 1 -d '|' | cut -c 2-)
-			run(cmd).split.collect { |r| r.to_i }
+			run(cmd).split.map { |r| r.to_i }
 		end
 
 		# Returns an array of commits following revision number 'after'.
@@ -63,7 +63,7 @@ module OhlohScm::Adapters
 		def deepen_commit(commit)
 			deep_commit = commit.clone
 			if commit.diffs
-				deep_commit.diffs = commit.diffs.collect do |diff|
+				deep_commit.diffs = commit.diffs.map do |diff|
 					deepen_diff(diff, commit.token)
 				end.compact.flatten.uniq.sort { |a,b| a.action <=> b.action }.sort { |a,b| a.path <=> b.path }
 			end
@@ -81,7 +81,7 @@ module OhlohScm::Adapters
 			# So look for diffs of the form ["M", "path"] which are matched by ["A", "path"], and keep only the "A" diff.
 			if commit.diffs
 				commit.diffs.delete_if do |d|
-					d && d.action =~ /[MR]/ && commit.diffs.select { |x| x.action == "A" and x.path == d.path }.any?
+					d && d.action =~ /[MR]/ && commit.diffs.select { |x| x.action == "A" && x.path == d.path }.any?
 				end
 			end
 			commit
@@ -93,9 +93,9 @@ module OhlohScm::Adapters
 			# Note that if the directory was deleted, we have to look at the previous revision to see what it held.
 			recurse_rev = (diff.action == "D") ? rev-1 : rev
 
-			if (diff.action == "D" or diff.action == "A") && is_directory?(diff.path, recurse_rev)
+			if (diff.action == "D" || diff.action == "A") && is_directory?(diff.path, recurse_rev)
 				# Deleting or adding a directory. Expand it out to show every file.
-				recurse_files(diff.path, recurse_rev).collect do |f|
+				recurse_files(diff.path, recurse_rev).map do |f|
 					OhlohScm::Diff.new(:action => diff.action, :path => File.join(diff.path, f))
 				end
 			else
@@ -109,7 +109,7 @@ module OhlohScm::Adapters
 		def strip_commit_branch(commit)
 			stripped_commit = commit.clone
 			if commit.diffs
-				stripped_commit.diffs = commit.diffs.collect { |d| strip_diff_branch(d) }.compact
+				stripped_commit.diffs = commit.diffs.map { |d| strip_diff_branch(d) }.compact
 			end
 			stripped_commit
 		end
@@ -187,7 +187,7 @@ module OhlohScm::Adapters
 			files = []
 			stdout.each_line do |s|
 				s.chomp!.force_encoding("UTF-8")
-				files << s if s.length > 0 and s !~ /CVSROOT\// and s[-1..-1] != "/"
+				files << s if s.length > 0 && s !~ /CVSROOT\// && s[-1..-1] != "/"
 			end
 			files.sort
 		end

@@ -48,7 +48,7 @@ module OhlohScm::Adapters
 
 		# Returns an array of all branch names
 		def branches
-			run("cd '#{self.url}' && git branch | #{ string_encoder }" ).split.collect { |b| b =~ /\b(.+)$/ ; $1 }.compact
+			run("cd '#{self.url}' && git branch | #{ string_encoder }" ).split.map { |b| b =~ /\b(.+)$/ ; $1 }.compact
 		end
 
 		def has_branch?(name=self.branch_name)
@@ -83,23 +83,21 @@ module OhlohScm::Adapters
       end
     end
 
-    private
-
-    def dereferenced_sha(tag_name)
+    private def dereferenced_sha(tag_name)
       dtag_sha_and_name = dtag_sha_and_names.find { |sha_and_name| sha_and_name.last == tag_name }
       dtag_sha_and_name.first if dtag_sha_and_name
     end
 
-    def dtag_sha_and_names
+    private def dtag_sha_and_names
       @dtag_sha_and_names ||= dereferenced_tag_strings.map(&:split)
     end
 
-    def dereferenced_tag_strings
+    private def dereferenced_tag_strings
       # Pattern: b6e9220c3cabe53a4ed7f32952aeaeb8a822603d refs/tags/v1.0.0^{}
       run("cd #{url} && git show-ref --tags -d | grep '\\^{}' | sed 's/\\^{}//' | sed 's/refs\\/tags\\///'").split(/\n/)
     end
 
-    def time_object(timestamp_string)
+    private def time_object(timestamp_string)
       timestamp_string = "1970-01-01" if timestamp_string.strip.empty?
       timestamp = Time.parse(timestamp_string)
     end

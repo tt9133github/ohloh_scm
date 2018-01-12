@@ -21,7 +21,7 @@ module OhlohScm::Adapters
 		end
 
 		def validate_url
-			return [:url, "The URL can't be blank."] unless @url and @url.length > 0
+			return [:url, "The URL can't be blank."] unless @url && @url.length > 0
 			return [:url, "The URL must not be longer than 120 characters."] unless @url.length <= 120
 
 			regex = @public_urls_only ? self.class.public_url_regex : self.class.url_regex

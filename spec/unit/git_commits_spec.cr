@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class GitCommitsTest < OhlohScm::Test
@@ -30,10 +30,10 @@ module OhlohScm::Adapters
 				assert_equal ["089c527c61235bd0793c49109b5bd34d439848c6",
 											"b6e9220c3cabe53a4ed7f32952aeaeb8a822603d",
 											"2e9366dd7a786fdb35f211fff1c8ea05c51968b1",
-											"1df547800dcd168e589bb9b26b4039bff3a7f7e4"], git.commits.collect { |c| c.token }
+											"1df547800dcd168e589bb9b26b4039bff3a7f7e4"], git.commits.map { |c| c.token }
 
 				assert_equal ["1df547800dcd168e589bb9b26b4039bff3a7f7e4"],
-					git.commits(:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1").collect { |c| c.token }
+					git.commits(:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1").map { |c| c.token }
 
 				assert_equal [], git.commits(:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4")
 			end
@@ -98,7 +98,7 @@ module OhlohScm::Adapters
                       # The following commit is on a branch and should be excluded
                       # "6126337d2497806528fd8657181d5d4afadd72a4",
                       "41c4b1044ebffc968d363e5f5e883134e624f846"],
-          git.commits(:trunk_only => true).collect { |c| c.token }
+          git.commits(:trunk_only => true).map { |c| c.token }
 			end
 		end
 
@@ -107,7 +107,7 @@ module OhlohScm::Adapters
 				assert_equal ["ad6bb43112706c462e53a9a8a8cd3b05f8e9260f",
                       "41c4b1044ebffc968d363e5f5e883134e624f846"],
 					git.commits(:after => "a0a2b8623941562031a7d7f95d984feb4a2d719c",
-                      :trunk_only => true).collect { |c| c.token }
+                      :trunk_only => true).map { |c| c.token }
 
 				assert_equal [], git.commit_tokens(
           :after => "41c4b1044ebffc968d363e5f5e883134e624f846",

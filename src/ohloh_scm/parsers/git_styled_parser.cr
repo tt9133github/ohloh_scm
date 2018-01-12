@@ -27,7 +27,7 @@ module OhlohScm::Parsers
 				# If we are expecting a line of diffs, but instead find a line
 				# starting with "Commit: ", that means the diffs section
 				# is missing for this commit,  and we need to fix up our state.
-				if state == :diffs and line =~ /^Commit: ([a-z0-9]+)$/
+				if state == :diffs && line =~ /^Commit: ([a-z0-9]+)$/
 					state = :key_values
 				end
 

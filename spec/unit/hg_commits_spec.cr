@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class HgCommitsTest < OhlohScm::Test
@@ -42,10 +42,10 @@ module OhlohScm::Adapters
 											"b14fa4692f949940bd1e28da6fb4617de2615484",
 											"468336c6671cbc58237a259d1b7326866afc2817",
                       "75532c1e1f1de55c2271f6fd29d98efbe35397c4",
-											"655f04cf6ad708ab58c7b941672dce09dd369a18"], hg.commits.collect { |c| c.token }
+											"655f04cf6ad708ab58c7b941672dce09dd369a18"], hg.commits.map { |c| c.token }
 
 				assert_equal ["655f04cf6ad708ab58c7b941672dce09dd369a18"],
-					hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").collect { |c| c.token }
+					hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").map { |c| c.token }
 
 				# Check that the diffs are not populated
 				assert_equal [], hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").first.diffs
@@ -60,10 +60,10 @@ module OhlohScm::Adapters
 											"b14fa4692f949940bd1e28da6fb4617de2615484",
 											"468336c6671cbc58237a259d1b7326866afc2817",
                       "75532c1e1f1de55c2271f6fd29d98efbe35397c4",
-											"4d54c3f0526a1ec89214a70615a6b1c6129c665c"], hg.commits.collect { |c| c.token }
+											"4d54c3f0526a1ec89214a70615a6b1c6129c665c"], hg.commits.map { |c| c.token }
 
 				assert_equal ["4d54c3f0526a1ec89214a70615a6b1c6129c665c"],
-					hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").collect { |c| c.token }
+					hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").map { |c| c.token }
 
 				# Check that the diffs are not populated
 				assert_equal [], hg.commits(:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4").first.diffs
@@ -123,7 +123,7 @@ module OhlohScm::Adapters
 											"732345b1d5f4076498132fd4b965b1fec0108a50",
 											# "525de321d8085bc1d4a3c7608fda6b4020027985", # On branch
 											"72fe74d643bdcb30b00da3b58796c50f221017d0"],
-					hg.commits(:trunk_only => true).collect { |c| c.token }
+					hg.commits(:trunk_only => true).map { |c| c.token }
 			end
 		end
 
@@ -150,7 +150,7 @@ module OhlohScm::Adapters
 											"b14fa4692f949940bd1e28da6fb4617de2615484",
 											"468336c6671cbc58237a259d1b7326866afc2817",
 											"75532c1e1f1de55c2271f6fd29d98efbe35397c4",
-                      "655f04cf6ad708ab58c7b941672dce09dd369a18"], commits.collect { |c| c.token }
+                      "655f04cf6ad708ab58c7b941672dce09dd369a18"], commits.map { |c| c.token }
 			end
 		end
 
@@ -165,7 +165,7 @@ module OhlohScm::Adapters
                     "b14fa4692f949940bd1e28da6fb4617de2615484",
                     "468336c6671cbc58237a259d1b7326866afc2817",
                     "75532c1e1f1de55c2271f6fd29d98efbe35397c4",
-                    "4d54c3f0526a1ec89214a70615a6b1c6129c665c"], commits.collect { |c| c.token }
+                    "4d54c3f0526a1ec89214a70615a6b1c6129c665c"], commits.map { |c| c.token }
     end
 
 
@@ -176,7 +176,7 @@ module OhlohScm::Adapters
 					commits << c
 				end
 				assert_equal ["75532c1e1f1de55c2271f6fd29d98efbe35397c4",
-											"655f04cf6ad708ab58c7b941672dce09dd369a18"], commits.collect { |c| c.token }
+											"655f04cf6ad708ab58c7b941672dce09dd369a18"], commits.map { |c| c.token }
 			end
 		end
 

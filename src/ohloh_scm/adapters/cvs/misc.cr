@@ -22,7 +22,7 @@ module OhlohScm::Adapters
 				s = $1 + "/" if s =~ /^D\/(.*)\/\/\/\/$/
 				s = $1 if s =~ /^\/(.*)\/.*\/.*\/.*\/$/
 				next if s == "CVSROOT/"
-				files << s if s and s.length > 0
+				files << s if s && s.length > 0
 			end
 
 			# Some of the cvs 'errors' are just harmless problems with some directories.
@@ -113,19 +113,19 @@ module OhlohScm::Adapters
 			return [""] if self.url =~ /^\//
 
 				list = []
-			directories.collect{ |a| trim_directory(a.to_s).to_s }.each do |d|
+			directories.map{ |a| trim_directory(a.to_s).to_s }.each do |d|
 				# We always ignore Attic directories, which just contain deleted files
 				# Update the parent directory of the Attic instead.
 				if d =~ /^(.*)Attic$/
 					d = $1
-					d = d[0..-2] if d.length > 0 and d[-1,1]=="/"
+					d = d[0..-2] if d.length > 0 && d[-1,1]=="/"
 				end
 
 				unless list.include? d
 					list << d
 					# We also need to include every parent directory of the directory
 					# we are interested in, all the way up to the root.
-					while d.rindex("/") and d.rindex("/") > 0 do
+					while d.rindex("/") && d.rindex("/") > 0 do
 						d = d[0..(d.rindex("/")-1)]
 						if list.include? d
 							break
@@ -158,7 +158,7 @@ module OhlohScm::Adapters
 		end
 
 		def opt_branch
-			if branch_name != nil and branch_name.length > 0 and branch_name != "HEAD"
+			if branch_name != nil && branch_name.length > 0 && branch_name != "HEAD"
 		"-r'#{branch_name}'"
 			else
 		"-b -r1:"

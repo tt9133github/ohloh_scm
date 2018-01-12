@@ -3,7 +3,7 @@ require "fileutils"
 # A utility class to manage the creation and automatic cleanup of temporary directories.
 module OhlohScm
   class ScratchDir
-    attr_reader :path
+    getter :path
 
     # Creates a uniquely named directory in the system tmp directory.
     #

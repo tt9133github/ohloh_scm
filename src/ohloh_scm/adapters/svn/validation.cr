@@ -78,8 +78,7 @@ module OhlohScm::Adapters
 			end
 		end
 
-    private
-    def clean_branch_name
+    private def clean_branch_name
       return unless @branch_name
       @branch_name.chop! if @branch_name.end_with?("/")
     end

@@ -74,7 +74,7 @@ module OhlohScm::Adapters
 
 			# Any new work to be done since the last time we were here?
 			commits = source_scm.commits(:after => read_token)
-			if commits and commits.size > 0
+			if commits && commits.size > 0
 				# Start by making sure we are in a known good state. Set up our working directory.
 				clean_up_disk
 				checkout

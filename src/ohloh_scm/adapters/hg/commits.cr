@@ -89,9 +89,7 @@ module OhlohScm::Adapters
 		  File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
 		end
 
-    private
-
-    def hg_command_builder(opts)
+    private def hg_command_builder(opts)
       after = opts[:after] || 0
       up_to = opts[:up_to] || :tip
 

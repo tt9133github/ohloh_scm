@@ -1,10 +1,10 @@
 module OhlohScm::Parsers
 	class BranchNumber
 		def initialize(s)
-			@a = s.split(".").collect { |i| i.to_i }
+			@a = s.split(".").map { |i| i.to_i }
 			# Accomodate CVS magic branch numbers by swapping the magic zero
 			# That is, 1.1.0.2 => 1.1.2.0
-			if @a.size > 2 and @a[-2]==0
+			if @a.size > 2 && @a[-2]==0
 				@a[-1],@a[-2] = @a[-2],@a[-1]
 			end
 		end
@@ -26,7 +26,7 @@ module OhlohScm::Parsers
 
 			if b.size == 2
 				return false if b[0] > @a[0]
-				return false if b[0] == @a[0] and b[1] > @a[1]
+				return false if b[0] == @a[0] && b[1] > @a[1]
 			else
 				0.upto(b.size-2) do |i|
 					return false if b[i] != @a[i]
@@ -49,7 +49,7 @@ module OhlohScm::Parsers
 				# b and a have the same number of branch events.
 				# If either one inherits from the other then they
 				# are on the same line.
-				return (inherits_from?(branch_number) or branch_number.inherits_from?(self))
+				return (inherits_from?(branch_number) || branch_number.inherits_from?(self))
 			elsif b.size < @a.size
 				# b has not been branched as often as this object.
 				# That's OK if b is an ancestor of this object.

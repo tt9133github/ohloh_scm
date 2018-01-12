@@ -12,7 +12,7 @@ module OhlohScm::Parsers
 		def self.internal_parse(io, opts)
 			commits = {}
 			branch_name = opts[:branch_name]
-			branch_name = nil if branch_name == "HEAD" or branch_name == ""
+			branch_name = nil if branch_name == "HEAD" || branch_name == ""
 
 			read_files(io, branch_name) do |c|
 				# As commits are yielded by the parser, we sort them into bins.
@@ -136,7 +136,7 @@ module OhlohScm::Parsers
 					state = $3
 					# CVS creates a "phantom" dead file at 1.1 on the head if a file
 					#   is created on a branch. Ignore this file.
-					should_yield = false if commit_number == "1.1" and state == "dead"
+					should_yield = false if commit_number == "1.1" && state == "dead"
 					message = read_message(io)
 					if should_yield
 						commit = OhlohScm::Commit.new
@@ -156,7 +156,7 @@ module OhlohScm::Parsers
 			message = ""
 			first_line = true
 			io.each_line do |l|
-				if l =~ /^branches: / and first_line # the first line might be 'branches:', skip it.
+				if l =~ /^branches: / && first_line # the first line might be 'branches:', skip it.
 					# do nothing
 				else
 					l.chomp!

@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	# Repository hg_walk has the following structure:
@@ -52,7 +52,7 @@ module OhlohScm::Adapters
 		end
 
 		def to_labels(sha1s)
-			sha1s.collect { |sha1| to_label(sha1) }
+			sha1s.map { |sha1| to_label(sha1) }
 		end
 
 		def from_label(l)

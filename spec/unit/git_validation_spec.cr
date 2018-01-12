@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class GitValidationTest < OhlohScm::Test
@@ -83,8 +83,7 @@ module OhlohScm::Adapters
       normalize_url_test("http://github.com/Person/something", "git://github.com/Person/something")
     end
 
-  private
-    def normalize_url_test(url, result_url)
+    private def normalize_url_test(url, result_url)
       git = GitAdapter.new(:url => url)
       git.normalize
       assert_equal result_url, git.url

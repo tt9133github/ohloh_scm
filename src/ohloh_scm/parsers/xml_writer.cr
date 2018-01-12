@@ -3,7 +3,7 @@ module OhlohScm::Parsers
 		# Note that we use << instead of write() or puts() in this writer because
 		# the << operator works on both File and String objects.
 
-		attr_accessor :buffer
+		property :buffer
 		def initialize(buffer="")
 			@buffer = buffer
 		end

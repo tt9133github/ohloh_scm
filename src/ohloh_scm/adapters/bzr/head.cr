@@ -13,7 +13,7 @@ module OhlohScm::Adapters
 		end
 
 		def parents(commit)
-			parent_tokens(commit).collect { |token| verbose_commit(token) }
+			parent_tokens(commit).map { |token| verbose_commit(token) }
 		end
 	end
 end

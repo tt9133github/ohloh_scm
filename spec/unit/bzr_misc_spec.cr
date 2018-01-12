@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class BzrMiscTest < OhlohScm::Test
@@ -43,9 +43,7 @@ module OhlohScm::Adapters
       end
     end
 
-    private
-
-    def monkey_patch_run_method_to_match_tag_patterns
+    private def monkey_patch_run_method_to_match_tag_patterns
       original_method = AbstractAdapter.method(:run)
       AbstractAdapter.send :define_method, :run do |command|
         if command =~ /bzr tags/

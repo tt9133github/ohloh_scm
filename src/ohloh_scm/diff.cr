@@ -13,7 +13,7 @@ module OhlohScm
 	# item from a source control log.
 	class Diff
 		# The filename of the changed file, relative to the root of the repository.
-		attr_accessor :path
+		property :path
 
 		# An action code describing the type of change made to the file.
 		# Action codes are copied directly from the Git standard.
@@ -21,15 +21,15 @@ module OhlohScm
 		#   "A" added
 		#   "M" modified
 		#   "D" deleted
-		attr_accessor :action
+		property :action
 
 		# The SHA1 hash of the file contents both before and after the change.
 		# These must be computed using the same method as Git.
-		attr_accessor :parent_sha1, :sha1
+		property :parent_sha1, :sha1
 
 		# For Subversion only, a path may be reported as copied from another location.
 		# These attributes store the path and revision number of the source of the copy.
-		attr_accessor :from_path, :from_revision
+		property :from_path, :from_revision
 
 		def initialize(params={})
 			params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }

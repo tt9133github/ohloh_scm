@@ -1,6 +1,6 @@
 require "rubygems"
 
-require_relative "bzrlib/bzrlib_pipe_client"
+require "./bzrlib/bzrlib_pipe_client"
 module OhlohScm::Adapters
 	class BzrlibAdapter < BzrAdapter
 
@@ -21,5 +21,5 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative "bzrlib/head"
-require_relative "bzrlib/cat_file"
+require "./bzrlib/head"
+require "./bzrlib/cat_file"

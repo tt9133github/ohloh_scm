@@ -4,7 +4,7 @@ require "rexml/streamlistener"
 module OhlohScm::Parsers
 	class BazaarListener
 		include REXML::StreamListener
-		attr_accessor :callback
+		property :callback
 
 		def initialize(callback)
 			@callback = callback
@@ -13,7 +13,7 @@ module OhlohScm::Parsers
       @authors = []
 		end
 
-		attr_accessor :text, :commit, :diff
+		property :text, :commit, :diff
 
 		def tag_start(name, attrs)
       case name
@@ -80,9 +80,8 @@ module OhlohScm::Parsers
 			@text = text
 		end
 
-    private
     # Parse one single diff
-    def parse_diff(action, path, before_path)
+    private def parse_diff(action, path, before_path)
       diffs = []
       case action
         # A rename action requires two diffs: one to remove the old filename,
@@ -106,11 +105,11 @@ module OhlohScm::Parsers
       diffs
     end
 
-    def strip_trailing_asterisk(path)
+    private def strip_trailing_asterisk(path)
       path[-1..-1] == "*" ? path[0..-2] : path
     end
 
-    def remove_dupes(diffs)
+    private def remove_dupes(diffs)
       BzrXmlParser.remove_dupes(diffs)
     end
 
@@ -119,9 +118,9 @@ module OhlohScm::Parsers
 	class BzrXmlParser < Parser
     NAME_REGEX = /^(.+?)(\s+<(.+)>\s*)?$/
 		def self.internal_parse(buffer, opts)
-			buffer = "<?xml?>" if buffer.is_a?(StringIO) and buffer.length < 2
+			buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
 			begin
-				REXML::Document.parse_stream(buffer, BazaarListener.new(Proc.new { |c| yield c if block_given? }))
+				REXML::Document.parse_stream(buffer, BazaarListener.new(-> { |c| yield c if block_given? }))
 			rescue EOFError
 			end
 		end

@@ -1,4 +1,4 @@
-require_relative "../test_helper"
+require "../test_helper"
 
 module OhlohScm::Adapters
 	class SvnCommitsTest < OhlohScm::Test
@@ -13,8 +13,8 @@ module OhlohScm::Adapters
 				assert_equal [3,4,5], svn.commit_tokens(:after => 2)
 				assert_equal [], svn.commit_tokens(:after => 1000)
 
-				assert_equal [1,2,3,4,5], svn.commits.collect { |c| c.token }
-				assert_equal [3,4,5], svn.commits(:after => 2).collect { |c| c.token }
+				assert_equal [1,2,3,4,5], svn.commits.map { |c| c.token }
+				assert_equal [3,4,5], svn.commits(:after => 2).map { |c| c.token }
 				assert_equal [], svn.commits(:after => 1000)
 				assert !FileTest.exist?(svn.log_filename)
 			end
@@ -56,7 +56,7 @@ module OhlohScm::Adapters
 				OhlohScm::Diff.new(:path => "/trunk/helloworld.c"),
 				OhlohScm::Diff.new(:path => "/branches/a")
 			]
-			assert_equal ["", "/helloworld.c"], svn.strip_commit_branch(commit).diffs.collect { |d| d.path }.sort
+			assert_equal ["", "/helloworld.c"], svn.strip_commit_branch(commit).diffs.map { |d| d.path }.sort
 		end
 
 		def test_strip_diff_branch
@@ -204,8 +204,8 @@ module OhlohScm::Adapters
 				assert !FileTest.exist?(svn.log_filename) # Make sure we cleaned up after ourselves
 			end
 
-			assert_equal [1, 2, 3, 4, 5], commits.collect { |c| c.token }
-			assert_equal ["robin","robin","robin","jason","jason"], commits.collect { |c| c.committer_name }
+			assert_equal [1, 2, 3, 4, 5], commits.map { |c| c.token }
+			assert_equal ["robin","robin","robin","jason","jason"], commits.map { |c| c.committer_name }
 
 			assert_equal Time.utc(2006,6,11,18,28, 0), commits[0].committer_date
 			assert_equal Time.utc(2006,6,11,18,32,14), commits[1].committer_date

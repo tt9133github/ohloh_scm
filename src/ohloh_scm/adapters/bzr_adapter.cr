@@ -6,10 +6,10 @@ module OhlohScm::Adapters
 	end
 end
 
-require_relative "bzr/validation"
-require_relative "bzr/commits"
-require_relative "bzr/head"
-require_relative "bzr/cat_file"
-require_relative "bzr/misc"
-require_relative "bzr/pull"
-require_relative "bzr/push"
+require "./bzr/validation"
+require "./bzr/commits"
+require "./bzr/head"
+require "./bzr/cat_file"
+require "./bzr/misc"
+require "./bzr/pull"
+require "./bzr/push"
