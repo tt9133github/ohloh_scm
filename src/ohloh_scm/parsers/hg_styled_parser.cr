@@ -46,7 +46,7 @@ module OhlohScm::Parsers
 					if l == "__END_FILES__\n"
 						next_state = :data
 					elsif l =~ /^([MAD]) (.+)$/
-						e.diffs << OhlohScm::Diff.new(:action => $1, :path => $2)
+						e.diffs << OhlohScm::Diff.new({:action => $1, :path => $2})
 					end
 
 				elsif state == :long_comment

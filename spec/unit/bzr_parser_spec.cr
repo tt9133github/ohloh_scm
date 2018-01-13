@@ -270,7 +270,7 @@ SAMPLE
   end
 
   it "parse_diffs_rename" do
-    diffs = BzrParser.parse_diffs(:rename, "helloworld.c => goodbyeworld.c")
+    diffs = BzrParser.parse_diffs(:rename, { "helloworld.c => goodbyeworld.c" })
     diffs.size.should eq(2)
     diffs.first.action.should eq("D")
     diffs.first.path.should eq("helloworld.c")
@@ -304,8 +304,8 @@ helloworld.c => goodbyeworld.c
   end
 
   it "remove_dupes_add_remove" do
-    diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
-                                      OhlohScm::Diff.new(:action => "D", :path => "foo") ])
+    diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new({:action => "A", :path => "foo"}),
+                                      OhlohScm::Diff.new({:action => "D", :path => "foo"}) ])
     diffs.size.should eq(1)
     diffs.first.action.should eq("M")
     diffs.first.path.should eq("foo")

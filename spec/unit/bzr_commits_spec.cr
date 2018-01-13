@@ -5,9 +5,9 @@ describe "BzrCommits" do
   it "commit_count" do
     with_bzr_repository("bzr") do |bzr|
       bzr.commit_count.should eq(7)
-      bzr.commit_count(:after => revision_ids.first).should eq(6)
-      bzr.commit_count(:after => revision_ids[5]).should eq(1)
-      bzr.commit_count(:after => revision_ids.last).should eq(0)
+      bzr.commit_count({:after => revision_ids.first}).should eq(6)
+      bzr.commit_count({:after => revision_ids[5]}).should eq(1)
+      bzr.commit_count({:after => revision_ids.last}).should eq(0)
     end
   end
 
@@ -21,37 +21,37 @@ describe "BzrCommits" do
   it "commit_count_after_merge" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commit_count(:trunk_only => false, :after => last_commit.token).should eq(0)
+      bzr.commit_count({:trunk_only => false, :after => last_commit.token}).should eq(0)
     end
   end
 
   it "commit_count_trunk_only" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       # Only 3 commits are on main line
-      bzr.commit_count(:trunk_only => true).should eq(3)
+      bzr.commit_count({:trunk_only => true}).should eq(3)
     end
   end
 
   it "commit_tokens_after" do
     with_bzr_repository("bzr") do |bzr|
       bzr.commit_tokens.should eq(revision_ids)
-      bzr.commit_tokens(:after => revision_ids.first).should eq(revision_ids[1..6])
-      bzr.commit_tokens(:after => revision_ids[5]).should eq(revision_ids[6..6])
-      bzr.commit_tokens(:after => revision_ids.last).should eq([])
+      bzr.commit_tokens({:after => revision_ids.first}).should eq(revision_ids[1..6])
+      bzr.commit_tokens({:after => revision_ids[5]}).should eq(revision_ids[6..6])
+      bzr.commit_tokens({:after => revision_ids.last}).should eq([])
     end
   end
 
   it "commit_tokens_after_merge" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commit_tokens(:trunk_only => false, :after => last_commit.token).should eq([])
+      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq([])
     end
   end
 
   it "commit_tokens_after_nested_merge" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commit_tokens(:trunk_only => false, :after => last_commit.token).should eq([])
+      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq([])
     end
   end
 
@@ -59,7 +59,7 @@ describe "BzrCommits" do
     # Funny business with commit ordering has been fixed by BzrXmlParser.
     # Now we always see branch commits before merge commit.
     with_bzr_repository("bzr_with_branch") do |bzr|
-      bzr.commit_tokens(:trunk_only => false).should eq([
+      bzr.commit_tokens({:trunk_only => false}).should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
         "test@example.com-20090206214350-rqhdpz92l11eoq2t", # branch commit
@@ -70,7 +70,7 @@ describe "BzrCommits" do
 
   it "commit_tokens_trunk_only_true" do
     with_bzr_repository("bzr_with_branch") do |bzr|
-      bzr.commit_tokens(:trunk_only => true).should eq([
+      bzr.commit_tokens({:trunk_only => true}).should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
         "test@example.com-20090206214515-21lkfj3dbocao5pr"  # merge commit
@@ -80,7 +80,7 @@ describe "BzrCommits" do
 
   it "nested_branches_commit_tokens_trunk_only_false" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      bzr.commit_tokens(:trunk_only => false).should eq([
+      bzr.commit_tokens({:trunk_only => false}).should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",
         "obnox@samba.org-20090204002453-u70a3ehf3ae9kay1",
@@ -99,7 +99,7 @@ describe "BzrCommits" do
 
   it "nested_branches_commit_tokens_trunk_only_true" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      bzr.commit_tokens(:trunk_only => true).should eq([
+      bzr.commit_tokens({:trunk_only => true}).should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",
         "obnox@samba.org-20090204002453-u70a3ehf3ae9kay1",
@@ -113,7 +113,7 @@ describe "BzrCommits" do
 
   it "commits_trunk_only_false" do
     with_bzr_repository("bzr_with_branch") do |bzr|
-      bzr.commits(:trunk_only => false).map { |c| c.token }.should eq([
+      bzr.commits({:trunk_only => false}).map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
         "test@example.com-20090206214350-rqhdpz92l11eoq2t", # branch commit
@@ -124,7 +124,7 @@ describe "BzrCommits" do
 
   it "commits_trunk_only_true" do
     with_bzr_repository("bzr_with_branch") do |bzr|
-      bzr.commits(:trunk_only => true).map { |c| c.token }.should eq([
+      bzr.commits({:trunk_only => true}).map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
         "test@example.com-20090206214515-21lkfj3dbocao5pr"  # merge commit
@@ -135,20 +135,20 @@ describe "BzrCommits" do
   it "commits_after_merge" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commits(:trunk_only => false, :after => last_commit.token).should eq([])
+      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq([])
     end
   end
 
   it "commits_after_nested_merge" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commits(:trunk_only => false, :after => last_commit.token).should eq([])
+      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq([])
     end
   end
 
   it "nested_branches_commits_trunk_only_false" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      bzr.commits(:trunk_only => false).map { |c| c.token }.should eq([
+      bzr.commits({:trunk_only => false}).map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",
         "obnox@samba.org-20090204002453-u70a3ehf3ae9kay1",
@@ -167,7 +167,7 @@ describe "BzrCommits" do
 
   it "nested_branches_commits_trunk_only_true" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      bzr.commits(:trunk_only => true).map { |c| c.token }.should eq([
+      bzr.commits({:trunk_only => true}).map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",
         "obnox@samba.org-20090204002453-u70a3ehf3ae9kay1",
@@ -182,8 +182,8 @@ describe "BzrCommits" do
   it "commits" do
     with_bzr_repository("bzr") do |bzr|
       bzr.commits.map { |c| c.token }.should eq(revision_ids)
-      bzr.commits(:after => revision_ids[5]).map { |c| c.token }.should eq(revision_ids[6..6])
-      bzr.commits(:after => revision_ids.last).map { |c| c.token }.should eq([])
+      bzr.commits({:after => revision_ids[5]}).map { |c| c.token }.should eq(revision_ids[6..6])
+      bzr.commits({:after => revision_ids.last}).map { |c| c.token }.should eq([])
 
       # Check that the diffs are not populated
       bzr.commits.first.diffs.should eq([])
@@ -217,7 +217,7 @@ describe "BzrCommits" do
   it "each_commit_trunk_only_false" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       commits = []
-      bzr.each_commit(:trunk_only => false) { |c| commits << c }
+      bzr.each_commit({:trunk_only => false}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
@@ -230,7 +230,7 @@ describe "BzrCommits" do
   it "each_commit_trunk_only_true" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       commits = []
-      bzr.each_commit(:trunk_only => true) { |c| commits << c }
+      bzr.each_commit({:trunk_only => true}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
         "test@example.com-20090206214451-lzjngefdyw3vmgms",
@@ -245,7 +245,7 @@ describe "BzrCommits" do
       last_commit = bzr.commits.last
 
       commits = []
-      bzr.each_commit(:trunk_only => false, :after => last_commit.token) { |c| commits << c }
+      bzr.each_commit({:trunk_only => false, :after => last_commit.token}) { |c| commits << c }
       commits.should eq([])
     end
   end
@@ -255,7 +255,7 @@ describe "BzrCommits" do
       last_commit = bzr.commits.last
 
       commits = []
-      bzr.each_commit(:trunk_only => false, :after => last_commit.token) { |c| commits << c }
+      bzr.each_commit({:trunk_only => false, :after => last_commit.token}) { |c| commits << c }
       commits.should eq([])
     end
   end
@@ -266,7 +266,7 @@ describe "BzrCommits" do
       next_to_last_commit = bzr.commits[-2]
 
       yielded_commits = []
-      bzr.each_commit(:trunk_only => false, :after => next_to_last_commit.token) { |c| yielded_commits << c }
+      bzr.each_commit({:trunk_only => false, :after => next_to_last_commit.token}) { |c| yielded_commits << c }
       yielded_commits.map(&:token).should eq([last_commit.token])
     end
   end
@@ -274,7 +274,7 @@ describe "BzrCommits" do
   it "nested_branches_each_commit_trunk_only_false" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       commits = []
-      bzr.each_commit(:trunk_only => false) { |c| commits << c}
+      bzr.each_commit({:trunk_only => false}) { |c| commits << c}
       commits.map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",
@@ -295,7 +295,7 @@ describe "BzrCommits" do
   it "nested_branches_each_commit_trunk_only_true" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       commits = []
-      bzr.each_commit(:trunk_only => true) { |c| commits << c }
+      bzr.each_commit({:trunk_only => true}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
         "obnox@samba.org-20090204002422-5ylnq8l4713eqfy0",

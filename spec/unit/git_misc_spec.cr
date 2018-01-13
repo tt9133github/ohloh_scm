@@ -26,8 +26,8 @@ describe "GitMisc" do
 
   it "is_merge_commit" do
     with_git_repository("git_walk") do |git|
-      git.is_merge_commit?(OhlohScm::Commit.new(:token => "f264fb40c340a415b305ac1f0b8f12502aa2788f")).should be_truthy
-      git.is_merge_commit?(OhlohScm::Commit.new(:token => "d067161caae2eeedbd74976aeff5c4d8f1ccc946")).should be_falsey
+      git.is_merge_commit?(OhlohScm::Commit.new({:token => "f264fb40c340a415b305ac1f0b8f12502aa2788f"})).should be_truthy
+      git.is_merge_commit?(OhlohScm::Commit.new({:token => "d067161caae2eeedbd74976aeff5c4d8f1ccc946"})).should be_falsey
     end
   end
 

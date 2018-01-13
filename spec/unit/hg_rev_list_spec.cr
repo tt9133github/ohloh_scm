@@ -32,7 +32,7 @@ describe "HgRevList" do
   protected
 
   def rev_list_helper(hg, from, to)
-    to_labels(hg.commit_tokens(:after => from_label(from), :up_to => from_label(to)))
+    to_labels(hg.commit_tokens({:after => from_label(from), :up_to => from_label(to)}))
   end
 
   def commit_labels

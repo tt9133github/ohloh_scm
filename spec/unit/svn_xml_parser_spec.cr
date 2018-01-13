@@ -11,7 +11,7 @@ describe "SvnXmlParser" do
   end
 
   it "empty_xml" do
-    SvnXmlParser.parse("", :writer => XmlWriter.new).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n")
+    SvnXmlParser.parse("", { :writer => XmlWriter.new }).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n")
   end
 
   it "copy_from" do

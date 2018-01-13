@@ -6,7 +6,7 @@ describe "HgPull" do
     with_hg_repository("hg") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
 
-        dest = HgAdapter.new(:url => dest_dir).normalize
+        dest = HgAdapter.new({:url => dest_dir}).normalize
         dest.exist?.should be_falsey
 
         dest.pull(src)

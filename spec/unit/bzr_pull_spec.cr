@@ -6,7 +6,7 @@ describe "BzrPull" do
     with_bzr_repository("bzr") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
 
-        dest = BzrAdapter.new(:url => dest_dir).normalize
+        dest = BzrAdapter.new({:url => dest_dir}).normalize
         dest.exist?.should be_falsey
 
         dest.pull(src)

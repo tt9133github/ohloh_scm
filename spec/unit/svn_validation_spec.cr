@@ -3,7 +3,7 @@ require "../test_helper"
 describe "SvnValidation" do
   it "valid_usernames" do
     [nil,"","joe_36","a"*32,"robin@ohloh.net"].each do |username|
-      SvnAdapter.new(:username => username).validate_username.should be_falsey
+      SvnAdapter.new({:username => username}).validate_username.should be_falsey
     end
   end
 
@@ -30,7 +30,7 @@ describe "SvnValidation" do
     ].each do |url|
       # Rejected for both internal and public use
       [true, false].each do |p|
-        svn = SvnAdapter.new(:url => url, :public_urls_only => p)
+        svn = SvnAdapter.new({:url => url, :public_urls_only => p})
         svn.validate_url.should be_truthy
       end
     end
@@ -51,7 +51,7 @@ describe "SvnValidation" do
     ].each do |url|
       # Accepted for both internal and public use
       [true, false].each do |p|
-        svn = SvnAdapter.new(:url => url, :public_urls_only => p)
+        svn = SvnAdapter.new({:url => url, :public_urls_only => p})
         svn.validate_url.should be_falsey
       end
     end
@@ -61,60 +61,60 @@ describe "SvnValidation" do
   it "rejected_public_urls" do
     [ "file:///home/robin/svn"
     ].each do |url|
-      svn = SvnAdapter.new(:url => url, :public_urls_only => true)
+      svn = SvnAdapter.new({:url => url, :public_urls_only => true})
       svn.validate_url.should be_truthy
 
-      svn = SvnAdapter.new(:url => url)
+      svn = SvnAdapter.new({:url => url})
       svn.validate_url.should be_falsey
     end
   end
 
   it "guess_forge" do
-    svn = SvnAdapter.new(:url => nil)
+    svn = SvnAdapter.new({:url => nil})
     svn.guess_forge.should eq(nil)
 
-    svn = SvnAdapter.new(:url => "garbage_in_garbage_out")
+    svn = SvnAdapter.new({:url => "garbage_in_garbage_out"})
     svn.guess_forge.should eq(nil)
 
-    svn = SvnAdapter.new(:url => "svn://rubyforge.org//var/svn/rubyomf2097")
+    svn = SvnAdapter.new({:url => "svn://rubyforge.org//var/svn/rubyomf2097"})
     svn.guess_forge.should eq("rubyforge.org")
 
-    svn = SvnAdapter.new(:url => "svn://rubyforge.org:3960//var/svn/rubyomf2097")
+    svn = SvnAdapter.new({:url => "svn://rubyforge.org:3960//var/svn/rubyomf2097"})
     svn.guess_forge.should eq("rubyforge.org")
 
-    svn = SvnAdapter.new(:url => "http://bivouac.rubyforge.org/svn/trunk")
+    svn = SvnAdapter.new({:url => "http://bivouac.rubyforge.org/svn/trunk"})
     svn.guess_forge.should eq("rubyforge.org")
 
-    svn = SvnAdapter.new(:url => "https://svn.sourceforge.net/svnroot/typo3/CoreDocs/trunk")
+    svn = SvnAdapter.new({:url => "https://svn.sourceforge.net/svnroot/typo3/CoreDocs/trunk"})
     svn.guess_forge.should eq("sourceforge.net")
 
-    svn = SvnAdapter.new(:url => "https://svn.sourceforge.net:80/svnroot/typo3/CoreDocs/trunk")
+    svn = SvnAdapter.new({:url => "https://svn.sourceforge.net:80/svnroot/typo3/CoreDocs/trunk"})
     svn.guess_forge.should eq("sourceforge.net")
 
-    svn = SvnAdapter.new(:url => "https://vegastrike.svn.sourceforge.net/svnroot/vegastrike/trunk")
+    svn = SvnAdapter.new({:url => "https://vegastrike.svn.sourceforge.net/svnroot/vegastrike/trunk"})
     svn.guess_forge.should eq("sourceforge.net")
 
-    svn = SvnAdapter.new(:url => "https://svn.code.sf.net/p/gallery/code/trunk/gallery2")
+    svn = SvnAdapter.new({:url => "https://svn.code.sf.net/p/gallery/code/trunk/gallery2"})
     svn.guess_forge.should eq("code.sf.net")
 
-    svn = SvnAdapter.new(:url => "https://appfuse.dev.java.net/svn/appfuse/trunk")
+    svn = SvnAdapter.new({:url => "https://appfuse.dev.java.net/svn/appfuse/trunk"})
     svn.guess_forge.should eq("java.net")
 
-    svn = SvnAdapter.new(:url => "http://moulinette.googlecode.com/svn/trunk")
+    svn = SvnAdapter.new({:url => "http://moulinette.googlecode.com/svn/trunk"})
     svn.guess_forge.should eq("googlecode.com")
 
-    svn = SvnAdapter.new(:url => "http://moulinette.googlecode.com")
+    svn = SvnAdapter.new({:url => "http://moulinette.googlecode.com"})
     svn.guess_forge.should eq("googlecode.com")
   end
 
   it "sourceforge_requires_https" do
     url = "://svn.code.sf.net/p/gallery/code/trunk/gallery2"
-    SvnAdapter.new(:url => "http#{url}").normalize.url.should eq("https#{url}")
+    SvnAdapter.new({:url => "http#{url}"}).normalize.url.should eq("https#{url}")
 
-    SvnAdapter.new(:url => "https#{url}").normalize.url.should eq("https#{url}")
+    SvnAdapter.new({:url => "https#{url}"}).normalize.url.should eq("https#{url}")
 
     url = "https://github.com/blackducksw/ohloh_scm/trunk"
-     SvnAdapter.new(:url => url).normalize.url.should eq(url)
+     SvnAdapter.new({:url => url}).normalize.url.should eq(url)
   end
 
   it "validate_server_connection" do
@@ -128,31 +128,31 @@ describe "SvnValidation" do
 
   it "recalc_branch_name" do
     with_svn_repository("svn") do |svn|
-      svn_based_at_root = SvnAdapter.new(:url => svn.root)
+      svn_based_at_root = SvnAdapter.new({:url => svn.root})
       svn_based_at_root.branch_name.should be_falsey
       svn_based_at_root.recalc_branch_name.should eq("")
       svn_based_at_root.branch_name.should eq("")
 
-      svn_based_at_root_with_whack = SvnAdapter.new(:url => svn.root, :branch_name => "/")
+      svn_based_at_root_with_whack = SvnAdapter.new({:url => svn.root, :branch_name => "/"})
       svn_based_at_root.recalc_branch_name.should eq("")
       svn_based_at_root.branch_name.should eq("")
 
-      svn_trunk = SvnAdapter.new(:url => svn.root + "/trunk")
+      svn_trunk = SvnAdapter.new({:url => svn.root + "/trunk"})
       svn_trunk.branch_name.should be_falsey
       svn_trunk.recalc_branch_name.should eq("/trunk")
       svn_trunk.branch_name.should eq("/trunk")
 
-      svn_trunk_with_whack = SvnAdapter.new(:url => svn.root + "/trunk/")
+      svn_trunk_with_whack = SvnAdapter.new({:url => svn.root + "/trunk/"})
       svn_trunk_with_whack.branch_name.should be_falsey
       svn_trunk_with_whack.recalc_branch_name.should eq("/trunk")
       svn_trunk_with_whack.branch_name.should eq("/trunk")
 
-      svn_trunk = SvnAdapter.new(:url => svn.root + "/trunk")
+      svn_trunk = SvnAdapter.new({:url => svn.root + "/trunk"})
       svn_trunk.branch_name.should be_falsey
       svn_trunk.normalize # only normalize to ensure branch_name is populated correctly
       svn_trunk.branch_name.should eq("/trunk")
 
-      svn_trunk = SvnAdapter.new(:url => svn.root)
+      svn_trunk = SvnAdapter.new({:url => svn.root})
       svn_trunk.branch_name.should be_falsey
       svn_trunk.normalize
       svn_trunk.branch_name.should eq("")
@@ -161,13 +161,13 @@ describe "SvnValidation" do
 
   it "strip_trailing_whack_from_branch_name" do
     with_svn_repository("svn") do |svn|
-      SvnAdapter.new(:url => svn.root, :branch_name => "/trunk/").normalize.branch_name.should eq("/trunk")
+      SvnAdapter.new({:url => svn.root, :branch_name => "/trunk/"}).normalize.branch_name.should eq("/trunk")
     end
   end
 
   it "empty_branch_name_with_file_system" do
     OhlohScm::ScratchDir.new do |dir|
-      svn = SvnAdapter.new(:url => dir).normalize
+      svn = SvnAdapter.new({:url => dir}).normalize
       svn.branch_name.should eq("")
     end
   end

@@ -4,7 +4,7 @@ describe "GitToken" do
 
   it "no_token_returns_nil" do
     OhlohScm::ScratchDir.new do |dir|
-      git = GitAdapter.new(:url => dir).normalize
+      git = GitAdapter.new({:url => dir}).normalize
       git.read_token.should be_falsey
       git.init_db
       git.read_token.should be_falsey
@@ -13,7 +13,7 @@ describe "GitToken" do
 
   it "write_and_read_token" do
     OhlohScm::ScratchDir.new do |dir|
-      git = GitAdapter.new(:url => dir).normalize
+      git = GitAdapter.new({:url => dir}).normalize
       git.init_db
       git.write_token("FOO")
       git.read_token.should be_falsey # Token not valid until committed
@@ -24,7 +24,7 @@ describe "GitToken" do
 
   it "commit_all_includes_write_token" do
     OhlohScm::ScratchDir.new do |dir|
-      git = GitAdapter.new(:url => dir).normalize
+      git = GitAdapter.new({:url => dir}).normalize
       git.init_db
       c = OhlohScm::Commit.new
       c.token = "BAR"

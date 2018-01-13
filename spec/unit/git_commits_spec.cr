@@ -5,8 +5,8 @@ describe "GitCommits" do
   it "commit_count" do
     with_git_repository("git") do |git|
       git.commit_count.should eq(4)
-      git.commit_count(:after => "b6e9220c3cabe53a4ed7f32952aeaeb8a822603d").should eq(2)
-      git.commit_count(:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4").should eq(0)
+      git.commit_count({:after => "b6e9220c3cabe53a4ed7f32952aeaeb8a822603d"}).should eq(2)
+      git.commit_count({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq(0)
     end
   end
 
@@ -17,10 +17,10 @@ describe "GitCommits" do
                                   "2e9366dd7a786fdb35f211fff1c8ea05c51968b1",
                                   "1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commit_tokens(:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1").should eq(
+      git.commit_tokens({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).should eq(
         ["1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commit_tokens(:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4").should eq([])
+      git.commit_tokens({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq([])
     end
   end
 
@@ -31,10 +31,10 @@ describe "GitCommits" do
                                                  "2e9366dd7a786fdb35f211fff1c8ea05c51968b1",
                                                  "1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commits(:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1").map { |c| c.token }.should eq(
+      git.commits({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).map { |c| c.token }.should eq(
         ["1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commits(:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4").should eq([])
+      git.commits({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq([])
     end
   end
 
@@ -45,28 +45,28 @@ describe "GitCommits" do
                                           "2e9366dd7a786fdb35f211fff1c8ea05c51968b1",
                                           "b4046b9a80fead62fa949232f2b87b0cb78fffcc"])
 
-      git.commits(:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1").map(&:token).should eq(
+      git.commits({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).map(&:token).should eq(
         ["b4046b9a80fead62fa949232f2b87b0cb78fffcc"])
 
-      git.commits(:after => "b4046b9a80fead62fa949232f2b87b0cb78fffcc").should eq([])
+      git.commits({:after => "b4046b9a80fead62fa949232f2b87b0cb78fffcc"}).should eq([])
     end
   end
 
   it "trunk_only_commit_count" do
     with_git_repository("git_dupe_delete") do |git|
-      git.commit_count(:trunk_only => false).should eq(4)
-      git.commit_count(:trunk_only => true).should eq(3)
+      git.commit_count({:trunk_only => false}).should eq(4)
+      git.commit_count({:trunk_only => true}).should eq(3)
     end
   end
 
   it "trunk_only_commit_tokens" do
     with_git_repository("git_dupe_delete") do |git|
-      git.commit_tokens(:trunk_only => false).should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
+      git.commit_tokens({:trunk_only => false}).should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
                                                          "ad6bb43112706c462e53a9a8a8cd3b05f8e9260f",
                                                          "6126337d2497806528fd8657181d5d4afadd72a4", # On branch
                                                          "41c4b1044ebffc968d363e5f5e883134e624f846"])
 
-      git.commit_tokens(:trunk_only => true).should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
+      git.commit_tokens({:trunk_only => true}).should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
                                                         "ad6bb43112706c462e53a9a8a8cd3b05f8e9260f",
                                                         # "6126337d2497806528fd8657181d5d4afadd72a4", # On branch
                                                         "41c4b1044ebffc968d363e5f5e883134e624f846"])
@@ -76,17 +76,17 @@ describe "GitCommits" do
 
   it "trunk_only_commit_tokens_using_after" do
     with_git_repository("git_dupe_delete") do |git|
-      git.commit_tokens(:after => "a0a2b8623941562031a7d7f95d984feb4a2d719c", :trunk_only => true).should eq(
+      git.commit_tokens({:after => "a0a2b8623941562031a7d7f95d984feb4a2d719c", :trunk_only => true}).should eq(
         ["ad6bb43112706c462e53a9a8a8cd3b05f8e9260f", "41c4b1044ebffc968d363e5f5e883134e624f846"])
 
       # All trunk commit_tokens, with :after == HEAD
-      git.commit_tokens(:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true).should eq([])
+      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq([])
     end
   end
 
   it "trunk_only_commits" do
     with_git_repository("git_dupe_delete") do |git|
-      git.commits(:trunk_only => true).map { |c| c.token }.should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
+      git.commits({:trunk_only => true}).map { |c| c.token }.should eq(["a0a2b8623941562031a7d7f95d984feb4a2d719c",
                                                                      "ad6bb43112706c462e53a9a8a8cd3b05f8e9260f",
                                                                      # The following commit is on a branch and should be excluded
                                                                      # "6126337d2497806528fd8657181d5d4afadd72a4",
@@ -99,7 +99,7 @@ describe "GitCommits" do
       git.commits({after: "a0a2b8623941562031a7d7f95d984feb4a2d719c", trunk_only: true}).map { |c| c.token }.should eq(
         ["ad6bb43112706c462e53a9a8a8cd3b05f8e9260f", "41c4b1044ebffc968d363e5f5e883134e624f846"])
 
-      git.commit_tokens(:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true).should eq([])
+      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq([])
     end
   end
 

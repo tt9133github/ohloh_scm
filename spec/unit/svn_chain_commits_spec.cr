@@ -5,48 +5,48 @@ describe "SvnChain" do
   it "chained_commit_tokens" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.commit_tokens.should eq([1,2,4,5,8,9,11])
-      svn.commit_tokens(:after => 1).should eq([2,4,5,8,9,11])
-      svn.commit_tokens(:after => 2).should eq([4,5,8,9,11])
-      svn.commit_tokens(:after => 3).should eq([4,5,8,9,11])
-      svn.commit_tokens(:after => 4).should eq([5,8,9,11])
-      svn.commit_tokens(:after => 5).should eq([8,9,11])
-      svn.commit_tokens(:after => 6).should eq([8,9,11])
-      svn.commit_tokens(:after => 7).should eq([8,9,11])
-      svn.commit_tokens(:after => 8).should eq([9,11])
-      svn.commit_tokens(:after => 9).should eq([11])
-      svn.commit_tokens(:after => 11).should eq([])
+      svn.commit_tokens({:after => 1}).should eq([2,4,5,8,9,11])
+      svn.commit_tokens({:after => 2}).should eq([4,5,8,9,11])
+      svn.commit_tokens({:after => 3}).should eq([4,5,8,9,11])
+      svn.commit_tokens({:after => 4}).should eq([5,8,9,11])
+      svn.commit_tokens({:after => 5}).should eq([8,9,11])
+      svn.commit_tokens({:after => 6}).should eq([8,9,11])
+      svn.commit_tokens({:after => 7}).should eq([8,9,11])
+      svn.commit_tokens({:after => 8}).should eq([9,11])
+      svn.commit_tokens({:after => 9}).should eq([11])
+      svn.commit_tokens({:after => 11}).should eq([])
     end
   end
 
   it "chained_commit_count" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.commit_count.should eq(7)
-      svn.commit_count(:after => 1).should eq(6)
-      svn.commit_count(:after => 2).should eq(5)
-      svn.commit_count(:after => 3).should eq(5)
-      svn.commit_count(:after => 4).should eq(4)
-      svn.commit_count(:after => 5).should eq(3)
-      svn.commit_count(:after => 6).should eq(3)
-      svn.commit_count(:after => 7).should eq(3)
-      svn.commit_count(:after => 8).should eq(2)
-      svn.commit_count(:after => 9).should eq(1)
-      svn.commit_count(:after => 11).should eq(0)
+      svn.commit_count({:after => 1}).should eq(6)
+      svn.commit_count({:after => 2}).should eq(5)
+      svn.commit_count({:after => 3}).should eq(5)
+      svn.commit_count({:after => 4}).should eq(4)
+      svn.commit_count({:after => 5}).should eq(3)
+      svn.commit_count({:after => 6}).should eq(3)
+      svn.commit_count({:after => 7}).should eq(3)
+      svn.commit_count({:after => 8}).should eq(2)
+      svn.commit_count({:after => 9}).should eq(1)
+      svn.commit_count({:after => 11}).should eq(0)
     end
   end
 
   it "chained_commits" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.commits.map { |c| c.token }.should eq([1,2,4,5,8,9,11])
-      svn.commits(:after => 1).map { |c| c.token }.should eq([2,4,5,8,9,11])
-      svn.commits(:after => 2).map { |c| c.token }.should eq([4,5,8,9,11])
-      svn.commits(:after => 3).map { |c| c.token }.should eq([4,5,8,9,11])
-      svn.commits(:after => 4).map { |c| c.token }.should eq([5,8,9,11])
-      svn.commits(:after => 5).map { |c| c.token }.should eq([8,9,11])
-      svn.commits(:after => 6).map { |c| c.token }.should eq([8,9,11])
-      svn.commits(:after => 7).map { |c| c.token }.should eq([8,9,11])
-      svn.commits(:after => 8).map { |c| c.token }.should eq([9,11])
-      svn.commits(:after => 9).map { |c| c.token }.should eq([11])
-      svn.commits(:after => 11).map { |c| c.token }.should eq([])
+      svn.commits({:after => 1}).map { |c| c.token }.should eq([2,4,5,8,9,11])
+      svn.commits({:after => 2}).map { |c| c.token }.should eq([4,5,8,9,11])
+      svn.commits({:after => 3}).map { |c| c.token }.should eq([4,5,8,9,11])
+      svn.commits({:after => 4}).map { |c| c.token }.should eq([5,8,9,11])
+      svn.commits({:after => 5}).map { |c| c.token }.should eq([8,9,11])
+      svn.commits({:after => 6}).map { |c| c.token }.should eq([8,9,11])
+      svn.commits({:after => 7}).map { |c| c.token }.should eq([8,9,11])
+      svn.commits({:after => 8}).map { |c| c.token }.should eq([9,11])
+      svn.commits({:after => 9}).map { |c| c.token }.should eq([11])
+      svn.commits({:after => 11}).map { |c| c.token }.should eq([])
     end
   end
 

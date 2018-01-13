@@ -11,7 +11,7 @@ describe "GitValidation" do
     "file:///home/robin/cvs", # file protocol is not allowed
     ":pserver:anonymous:@juicereceiver.cvs.sourceforge.net:/cvsroot/juicereceiver" # pserver is just wrong
     ].each do |url|
-      git = GitAdapter.new(:url => url)
+      git = GitAdapter.new({:url => url})
       git.validate_url.any?.should be_truthy
     end
   end
@@ -28,40 +28,40 @@ describe "GitValidation" do
     "https://github.com/Person/some_repo",
     "http://github.com/Person/some_repo"
     ].each do |url|
-      git = GitAdapter.new(:url => url)
+      git = GitAdapter.new({:url => url})
       git.validate_url.should be_falsey
     end
   end
 
   it "guess_forge" do
-    git = GitAdapter.new(:url => nil)
+    git = GitAdapter.new({:url => nil})
     git.guess_forge.should eq(nil)
 
-    git = GitAdapter.new(:url => "git://methabot.git.sourceforge.net/gitroot/methabot")
+    git = GitAdapter.new({:url => "git://methabot.git.sourceforge.net/gitroot/methabot"})
     git.guess_forge.should eq("sourceforge.net")
 
-    git = GitAdapter.new( :url => "http://kernel.org/pub/scm/linux/kernel/git/stable/linux-2.6.17.y.git")
+    git = GitAdapter.new({ :url => "http://kernel.org/pub/scm/linux/kernel/git/stable/linux-2.6.17.y.git"})
     git.guess_forge.should eq("kernel.org")
   end
 
   it "normalize_url" do
-    GitAdapter.new(:url => nil).normalize_url.should eq(nil)
-    GitAdapter.new(:url => "").normalize_url.should eq("")
-    GitAdapter.new(:url => "foo").normalize_url.should eq("foo")
+    GitAdapter.new({:url => nil}).normalize_url.should eq(nil)
+    GitAdapter.new({:url => ""}).normalize_url.should eq("")
+    GitAdapter.new({:url => "foo"}).normalize_url.should eq("foo")
 
     # A non-Github URL: no change
-    GitAdapter.new(:url => "git://kernel.org/pub/scm/git/git.git").normalize_url.should eq("git://kernel.org/pub/scm/git/git.git")
+    GitAdapter.new({:url => "git://kernel.org/pub/scm/git/git.git"}).normalize_url.should eq("git://kernel.org/pub/scm/git/git.git")
 
     # A Github read-write URL: converted to read-only
-    GitAdapter.new(:url => "https://robinluckey@github.com/robinluckey/ohcount.git").normalize_url.should eq(
+    GitAdapter.new({:url => "https://robinluckey@github.com/robinluckey/ohcount.git"}).normalize_url.should eq(
       "git://github.com/robinluckey/ohcount.git")
 
     # A Github read-write URL: converted to read-only
-    GitAdapter.new(:url => "git@github.com:robinluckey/ohcount.git").normalize_url.should eq(
+    GitAdapter.new({:url => "git@github.com:robinluckey/ohcount.git"}).normalize_url.should eq(
       "git://github.com/robinluckey/ohcount.git")
 
     # A Github read-only URL: no change
-    GitAdapter.new(:url => "git@github.com:robinluckey/ohcount.git").normalize_url.should eq(
+    GitAdapter.new({:url => "git@github.com:robinluckey/ohcount.git"}).normalize_url.should eq(
       "git://github.com/robinluckey/ohcount.git")
   end
 
@@ -82,7 +82,7 @@ describe "GitValidation" do
   end
 
   private def normalize_url_test(url, result_url)
-    git = GitAdapter.new(:url => url)
+    git = GitAdapter.new({:url => url})
     git.normalize
     git.url.should eq(result_url)
    end

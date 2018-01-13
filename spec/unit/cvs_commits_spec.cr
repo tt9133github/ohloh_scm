@@ -12,13 +12,13 @@ describe "CvsCommits" do
                                                  "2006-06-29 18:52:23"])
 
       # Make sure we are date format agnostic (2008/01/01 is the same as 2008-01-01)
-      cvs.commits(:after => "2006/06/29 18:45:29").map { |c| c.token }.should eq(
+      cvs.commits({:after => "2006/06/29 18:45:29"}).map { |c| c.token }.should eq(
         ["2006-06-29 18:48:54", "2006-06-29 18:52:23"])
 
-      cvs.commits(:after => "2006-06-29 18:45:29").map { |c| c.token }.should eq(
+      cvs.commits({:after => "2006-06-29 18:45:29"}).map { |c| c.token }.should eq(
         ["2006-06-29 18:48:54", "2006-06-29 18:52:23"])
 
-      cvs.commits(:after => "2006/06/29 18:52:23").map { |c| c.token }.should eq([])
+      cvs.commits({:after => "2006/06/29 18:52:23"}).map { |c| c.token }.should eq([])
     end
   end
 

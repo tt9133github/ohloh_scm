@@ -4,7 +4,7 @@ describe "GitCommitAll" do
 
   it "commit_all" do
     OhlohScm::ScratchDir.new do |dir|
-      git = GitAdapter.new(:url => dir).normalize
+      git = GitAdapter.new({:url => dir}).normalize
 
       git.init_db
       git.anything_to_commit?.should be_falsey

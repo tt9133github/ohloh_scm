@@ -96,7 +96,7 @@ module OhlohScm::Adapters
 			if (diff.action == "D" || diff.action == "A") && is_directory?(diff.path, recurse_rev)
 				# Deleting or adding a directory. Expand it out to show every file.
 				recurse_files(diff.path, recurse_rev).map do |f|
-					OhlohScm::Diff.new(:action => diff.action, :path => File.join(diff.path, f))
+					OhlohScm::Diff.new({:action => diff.action, :path => File.join(diff.path, f)})
 				end
 			else
 				# An ordinary file action. Just return the diff.

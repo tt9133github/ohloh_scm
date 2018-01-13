@@ -27,7 +27,7 @@ module OhlohScm::Parsers
 						e.committer_date = Time.parse($1).utc
 					when /^files:\s+(.+)/
 						($1 || "").split(" ").each do |file|
-							e.diffs << OhlohScm::Diff.new(:action => "?", :path => file)
+							e.diffs << OhlohScm::Diff.new({:action => "?", :path => file})
 						end
 					when /^summary:\s+(.+)/
 						e.message = $1

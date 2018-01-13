@@ -90,14 +90,14 @@ module OhlohScm::Parsers
         # Note that is possible to be renamed to the empty string!
         # This happens when a subdirectory is moved to become the root.
       when "renamed"
-        diffs = [ OhlohScm::Diff.new(:action => "D", :path => before_path),
-                  OhlohScm::Diff.new(:action => "A", :path => path || "")]
+        diffs = [ OhlohScm::Diff.new({:action => "D", :path => before_path}),
+                  OhlohScm::Diff.new({:action => "A", :path => path || ""})]
       when "added"
-        diffs = [OhlohScm::Diff.new(:action => "A", :path => path)]
+        diffs = [OhlohScm::Diff.new({:action => "A", :path => path})]
       when "modified"
-        diffs = [OhlohScm::Diff.new(:action => "M", :path => path)]
+        diffs = [OhlohScm::Diff.new({:action => "M", :path => path})]
       when "removed"
-        diffs = [OhlohScm::Diff.new(:action => "D", :path => path)]
+        diffs = [OhlohScm::Diff.new({:action => "D", :path => path})]
       end
       diffs.each do |d|
         d.path = strip_trailing_asterisk(d.path)

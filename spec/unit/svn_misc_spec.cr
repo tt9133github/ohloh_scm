@@ -35,18 +35,18 @@ describe "SvnMisc" do
   end
 
   it "path" do
-    SvnAdapter.new(:url => "http://svn.collab.net/repos/svn/trunk").path.should be_falsey
-    SvnAdapter.new(:url => "svn://svn.collab.net/repos/svn/trunk").path.should be_falsey
-    SvnAdapter.new(:url => "file:///foo/bar").path.should eq("/foo/bar")
-    SvnAdapter.new(:url => "file://foo/bar").path.should eq("foo/bar")
-    SvnAdapter.new(:url => "svn+ssh://server/foo/bar").path.should eq("/foo/bar")
+    SvnAdapter.new({:url => "http://svn.collab.net/repos/svn/trunk"}).path.should be_falsey
+    SvnAdapter.new({:url => "svn://svn.collab.net/repos/svn/trunk"}).path.should be_falsey
+    SvnAdapter.new({:url => "file:///foo/bar"}).path.should eq("/foo/bar")
+    SvnAdapter.new({:url => "file://foo/bar"}).path.should eq("foo/bar")
+    SvnAdapter.new({:url => "svn+ssh://server/foo/bar"}).path.should eq("/foo/bar")
   end
 
   it "hostname" do
-    SvnAdapter.new(:url => "http://svn.collab.net/repos/svn/trunk").hostname.should be_falsey
-    SvnAdapter.new(:url => "svn://svn.collab.net/repos/svn/trunk").hostname.should be_falsey
-    SvnAdapter.new(:url => "file:///foo/bar").hostname.should be_falsey
-    SvnAdapter.new(:url => "svn+ssh://server/foo/bar").hostname.should eq("server")
+    SvnAdapter.new({:url => "http://svn.collab.net/repos/svn/trunk"}).hostname.should be_falsey
+    SvnAdapter.new({:url => "svn://svn.collab.net/repos/svn/trunk"}).hostname.should be_falsey
+    SvnAdapter.new({:url => "file:///foo/bar"}).hostname.should be_falsey
+    SvnAdapter.new({:url => "svn+ssh://server/foo/bar"}).hostname.should eq("server")
   end
 
   it "info" do
@@ -108,7 +108,7 @@ describe "SvnMisc" do
         folder_name = source_scm.root.slice(/[^\/]+\/?\Z/)
         system "cd #{ svn_working_folder } && svn co #{ source_scm.root } && cd #{ folder_name } &&
                 mkdir -p #{ source_scm.root.gsub(/^file:../, "") }/db/transactions
-                svn copy trunk tags/2.0 && svn commit -m "v2.0" && svn update"
+                svn copy trunk tags/2.0 && svn commit -m \"v2.0\" && svn update"
 
         source_scm.tags.first[0..1].should eq(["2.0", "6"])
         # Avoid millisecond comparision.
@@ -121,9 +121,9 @@ describe "SvnMisc" do
     with_svn_repository("svn", "trunk") do |source_scm|
       OhlohScm::ScratchDir.new do |svn_working_folder|
         folder_name = source_scm.root.slice(/[^\/]+\/?\Z/)
-        system "cd #{ svn_working_folder } && svn co #{ source_scm.root } && cd #{ folder_name } &&
+        system %(cd #{ svn_working_folder } && svn co #{ source_scm.root } && cd #{ folder_name } &&
                 mkdir -p #{ source_scm.root.gsub(/^file:../, "") }/db/transactions
-                svn copy trunk tags/"HL7 engine" && svn commit -m "v2.0" && svn update && svn propset svn:date --revprop -r "HEAD" 2016-02-12T00:44:04.921324Z"
+                svn copy trunk tags/"HL7 engine" && svn commit -m "v2.0" && svn update && svn propset svn:date --revprop -r "HEAD" 2016-02-12T00:44:04.921324Z)
 
         source_scm.tags.first[0..1].should eq(["HL7 engine", "6"])
         # Avoid millisecond comparision.

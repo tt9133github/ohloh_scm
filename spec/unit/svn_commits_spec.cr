@@ -5,16 +5,16 @@ describe "SvnCommits" do
   it "commits" do
     with_svn_repository("svn") do |svn|
       svn.commit_count.should eq(5)
-      svn.commit_count(:after => 2).should eq(3)
-      svn.commit_count(:after => 1000).should eq(0)
+      svn.commit_count({:after => 2}).should eq(3)
+      svn.commit_count({:after => 1000}).should eq(0)
 
       svn.commit_tokens.should eq([1,2,3,4,5])
-      svn.commit_tokens(:after => 2).should eq([3,4,5])
-      svn.commit_tokens(:after => 1000).should eq([])
+      svn.commit_tokens({:after => 2}).should eq([3,4,5])
+      svn.commit_tokens({:after => 1000}).should eq([])
 
       svn.commits.map { |c| c.token }.should eq([1,2,3,4,5])
-      svn.commits(:after => 2).map { |c| c.token }.should eq([3,4,5])
-      svn.commits(:after => 1000).should eq([])
+      svn.commits({:after => 2}).map { |c| c.token }.should eq([3,4,5])
+      svn.commits({:after => 1000}).should eq([])
       FileTest.exist?(svn.log_filename).should be_falsey
     end
   end
@@ -31,8 +31,8 @@ describe "SvnCommits" do
   # Given a commit with diffs, fill in all of the SHA1 values.
   it "populate_sha1" do
     with_svn_repository("svn") do |svn|
-      c = OhlohScm::Commit.new(:token => 3)
-      c.diffs = [OhlohScm::Diff.new(:path => "/trunk/helloworld.c", :action => "M")]
+      c = OhlohScm::Commit.new({:token => 3})
+      c.diffs = [OhlohScm::Diff.new({:path => "/trunk/helloworld.c", :action => "M"})]
       svn.populate_commit_sha1s!(c)
       c.diffs.first.sha1.should eq("f6adcae4447809b651c787c078d255b2b4e963c5")
       c.diffs.first.parent_sha1.should eq("4c734ad53b272c9b3d719f214372ac497ff6c068")
@@ -40,7 +40,7 @@ describe "SvnCommits" do
   end
 
   it "strip_commit_branch" do
-    svn = SvnAdapter.new(:branch_name => "/trunk")
+    svn = SvnAdapter.new({:branch_name => "/trunk"})
     commit = OhlohScm::Commit.new
 
     # nil diffs before => nil diffs after
@@ -51,44 +51,44 @@ describe "SvnCommits" do
     svn.strip_commit_branch(commit).diffs.should eq([])
 
     commit.diffs = [
-      OhlohScm::Diff.new(:path => "/trunk"),
-      OhlohScm::Diff.new(:path => "/trunk/helloworld.c"),
-      OhlohScm::Diff.new(:path => "/branches/a")
+      OhlohScm::Diff.new({:path => "/trunk"}),
+      OhlohScm::Diff.new({:path => "/trunk/helloworld.c"}),
+      OhlohScm::Diff.new({:path => "/branches/a"})
     ]
     svn.strip_commit_branch(commit).diffs.map { |d| d.path }.sort.should eq(["", "/helloworld.c"])
   end
 
   it "strip_diff_branch" do
-    svn = SvnAdapter.new(:branch_name => "/trunk")
+    svn = SvnAdapter.new({:branch_name => "/trunk"})
     svn.strip_diff_branch(OhlohScm::Diff.new).should be_falsey
-    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/branches/b")).should be_falsey
-    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk")).path.should eq("")
-    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk/helloworld.c")).path.should eq("/helloworld.c")
+    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/branches/b"})).should be_falsey
+    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/trunk"})).path.should eq("")
+    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/trunk/helloworld.c"})).path.should eq("/helloworld.c")
   end
 
   it "strip_path_branch" do
     # Returns nil for any path outside of SvnAdapter::branch_name
     SvnAdapter.new.strip_path_branch(nil).should be_falsey
-    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/branches/foo").should be_falsey
-    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/t").should be_falsey
+    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/branches/foo").should be_falsey
+    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/t").should be_falsey
 
     # If branch_name is empty or root, returns path unchanged
     SvnAdapter.new.strip_path_branch("").should eq("")
     SvnAdapter.new.strip_path_branch("/trunk").should eq("/trunk")
 
     # If path is equal to or is a subdirectory of branch_name, returns subdirectory portion only.
-    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk").should eq("")
-    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk/foo").should eq("/foo")
+    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/trunk").should eq("")
+    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/trunk/foo").should eq("/foo")
   end
 
   it "strip_path_branch_with_special_chars" do
-    SvnAdapter.new(:branch_name => "/trunk/hamcrest-c++").strip_path_branch("/trunk/hamcrest-c++/foo").should eq("/foo")
+    SvnAdapter.new({:branch_name => "/trunk/hamcrest-c++"}).strip_path_branch("/trunk/hamcrest-c++/foo").should eq("/foo")
   end
 
   it "remove_dupes_add_modify" do
     svn = SvnAdapter.new
-    c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "A", :path => "foo"),
-                                    OhlohScm::Diff.new(:action => "M", :path => "foo") ])
+    c = OhlohScm::Commit.new({:diffs => [OhlohScm::Diff.new({:action => "A", :path => "foo"}),
+                                         OhlohScm::Diff.new({:action => "M", :path => "foo"})]})
 
     svn.remove_dupes(c)
     c.diffs.size.should eq(1)
@@ -97,8 +97,8 @@ describe "SvnCommits" do
 
   it "remove_dupes_add_replace" do
     svn = SvnAdapter.new
-    c = OhlohScm::Commit.new(:diffs => [ OhlohScm::Diff.new(:action => "R", :path => "foo"),
-                                    OhlohScm::Diff.new(:action => "A", :path => "foo") ])
+    c = OhlohScm::Commit.new({:diffs => [OhlohScm::Diff.new({:action => "R", :path => "foo"}),
+                                         OhlohScm::Diff.new({:action => "A", :path => "foo"})]})
 
     svn.remove_dupes(c)
     c.diffs.size.should eq(1)
@@ -126,7 +126,7 @@ describe "SvnCommits" do
       # Even though there was a different trunk directory present in
       # revisions 1 and 2, it is not visible to Ohloh.
 
-      trunk = SvnAdapter.new(:url => File.join(svn.url,"trunk"), :branch_name => "/trunk").normalize
+      trunk = SvnAdapter.new({:url => File.join(svn.url,"trunk"), :branch_name => "/trunk"}).normalize
       trunk.commit_count.should eq(2)
       trunk.commit_tokens.should eq([3,4])
 

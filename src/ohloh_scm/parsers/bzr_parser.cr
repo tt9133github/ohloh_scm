@@ -98,10 +98,10 @@ module OhlohScm::Parsers
 				# Note that is possible to be renamed to the empty string!
 				# This happens when a subdirectory is moved to become the root.
 				before, after = line.scan(/(.+) => ?(.*)/).first
-				[ OhlohScm::Diff.new(:action => "D", :path => before),
-					OhlohScm::Diff.new(:action => "A", :path => after || "" )]
+				[ OhlohScm::Diff.new({:action => "D", :path => before}),
+					OhlohScm::Diff.new({:action => "A", :path => after || "" })]
 			else
-				[OhlohScm::Diff.new(:action => action, :path => line)]
+				[OhlohScm::Diff.new({:action => action, :path => line})]
 			end.each do |d|
 				d.path = strip_trailing_asterisk(d.path)
 			end

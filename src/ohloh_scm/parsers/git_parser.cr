@@ -53,7 +53,7 @@ module OhlohScm::Parsers
 
 				elsif state == :diffs
 					if line =~ /^([ADM])\t(.+)$/
-						e.diffs << OhlohScm::Diff.new( :action => $1, :path => $2)
+						e.diffs << OhlohScm::Diff.new({ :action => $1, :path => $2})
 					end
 
 				else

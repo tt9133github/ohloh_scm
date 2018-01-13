@@ -7,7 +7,7 @@ describe "BzrXmlParser" do
   end
 
   it "empty_xml" do
-    BzrXmlParser.parse("", :writer => XmlWriter.new).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n")
+    BzrXmlParser.parse("", { :writer => XmlWriter.new }).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n")
   end
 
   it "basic_xml" do
@@ -277,8 +277,8 @@ describe "BzrXmlParser" do
   end
 
   it "remove_dupes_add_remove" do
-    diffs = BzrXmlParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
-                                      OhlohScm::Diff.new(:action => "D", :path => "foo") ])
+    diffs = BzrXmlParser.remove_dupes([ OhlohScm::Diff.new({:action => "A", :path => "foo"}),
+                                      OhlohScm::Diff.new({:action => "D", :path => "foo"}) ])
     diffs.size.should eq(1)
     diffs.first.action.should eq("M")
     diffs.first.path.should eq("foo")

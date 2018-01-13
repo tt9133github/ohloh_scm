@@ -20,9 +20,9 @@ printf("Hello, World!\\n");
 EXPECTED
 
       # The file was deleted in revision 468336c6671c. Check that it does not exist now, but existed in parent.
-      hg.cat_file(OhlohScm::Commit.new(:token => "75532c1e1f1d"), OhlohScm::Diff.new(:path => "helloworld.c")).should eq(nil)
-      hg.cat_file_parent(OhlohScm::Commit.new(:token => "75532c1e1f1d"), OhlohScm::Diff.new(:path => "helloworld.c")).should eq(expected)
-      hg.cat_file(OhlohScm::Commit.new(:token => "468336c6671c"), OhlohScm::Diff.new(:path => "helloworld.c")).should eq(expected)
+      hg.cat_file(OhlohScm::Commit.new({:token => "75532c1e1f1d"}), OhlohScm::Diff.new({:path => "helloworld.c"})).should eq(nil)
+      hg.cat_file_parent(OhlohScm::Commit.new({:token => "75532c1e1f1d"}), OhlohScm::Diff.new({:path => "helloworld.c"})).should eq(expected)
+      hg.cat_file(OhlohScm::Commit.new({:token => "468336c6671c"}), OhlohScm::Diff.new({:path => "helloworld.c"})).should eq(expected)
     end
   end
 
@@ -37,8 +37,8 @@ EXPECTED
       `cd #{dir} && hg init && hg add * && hg commit -u tester -m test`
 
       # Confirm that we can read the file back
-      hg = HgAdapter.new(:url => dir).normalize
-      hg.cat_file(hg.head, OhlohScm::Diff.new(:path => funny_name)).should eq("contents")
+      hg = HgAdapter.new({:url => dir}).normalize
+      hg.cat_file(hg.head, OhlohScm::Diff.new({:path => funny_name})).should eq("contents")
     end
   end
 

@@ -5,7 +5,7 @@ describe "CvsConvert" do
   it "basic_convert" do
     with_cvs_repository("cvs", "simple") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
-        dest = GitAdapter.new(:url => dest_dir).normalize
+        dest = GitAdapter.new({:url => dest_dir}).normalize
         dest.exist?.should be_falsey
 
         dest.pull(src)

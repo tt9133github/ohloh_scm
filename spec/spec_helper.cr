@@ -3,7 +3,7 @@ require "../src/ohloh_scm"
 
 def assert_convert(parser, log, expected)
   result = ""
-  parser.parse File.new(log), :writer => OhlohScm::Parsers::XmlWriter.new(result)
+  parser.parse File.new(log), {:writer => OhlohScm::Parsers::XmlWriter.new(result)}
   assert_buffers_equal File.read(expected), result
 end
 
@@ -34,7 +34,7 @@ def with_repository(type, name, branch_name = nil)
     else
       raise RuntimeError.new("Repository archive #{File.join(REPO_DIR, name)} not found.")
     end
-    yield type.new(:url => File.join(dir, name), branch_name: branch_name).normalize
+    yield type.new({:url => File.join(dir, name), branch_name: branch_name}).normalize
   end
 end
 

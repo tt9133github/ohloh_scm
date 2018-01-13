@@ -4,7 +4,7 @@ describe "SvnConvert" do
   it "basic_convert" do
     with_svn_repository("svn") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
-        dest = GitAdapter.new(:url => dest_dir).normalize
+        dest = GitAdapter.new({:url => dest_dir}).normalize
         dest.exist?.should be_falsey
 
         dest.pull(src)

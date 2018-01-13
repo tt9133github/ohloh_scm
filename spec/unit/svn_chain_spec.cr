@@ -61,9 +61,9 @@ describe "SvnChain" do
   end
 
   it "parent_branch_name" do
-    svn = OhlohScm::Adapters::SvnChainAdapter.new(:branch_name => "/trunk")
+    svn = OhlohScm::Adapters::SvnChainAdapter.new({:branch_name => "/trunk"})
 
-    svn.parent_branch_name(OhlohScm::Diff.new(:action => "A", :path => "/trunk", :from_revision => 1, :from_path => "/branches/b")).should eq("/branches/b")
+    svn.parent_branch_name(OhlohScm::Diff.new({:action => "A", :path => "/trunk", :from_revision => 1, :from_path => "/branches/b"})).should eq("/branches/b")
   end
 
   it "next_revision_xml_valid_encoding" do
