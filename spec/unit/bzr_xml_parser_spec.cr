@@ -3,11 +3,11 @@ require "../test_helper"
 describe "BzrXmlParser" do
 
   it "empty_array" do
-    assert_equal([], BzrXmlParser.parse(""))
+    BzrXmlParser.parse("").should eq([])
   end
 
   it "empty_xml" do
-    assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n", BzrXmlParser.parse("", :writer => XmlWriter.new))
+    BzrXmlParser.parse("", :writer => XmlWriter.new).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"bzr\">\n</ohloh_log>\n")
   end
 
   it "basic_xml" do
@@ -28,11 +28,11 @@ describe "BzrXmlParser" do
 </logs>
     XML
     commits = BzrXmlParser.parse(xml)
-    assert_equal 1, commits.size
+    commits.size.should eq(1)
     c = commits.first
-    assert_equal 0, c.diffs.size
-    assert_equal "Renamed test1.txt to subdir/test_b.txt, removed test2.txt and added test_a.txt.", c.message
-    assert_equal "test@example.com-20110725174345-brbpkwumeh07aoh8", c.token
+    c.diffs.size.should eq(0)
+    c.message.should eq("Renamed test1.txt to subdir/test_b.txt, removed test2.txt and added test_a.txt.")
+    c.token.should eq("test@example.com-20110725174345-brbpkwumeh07aoh8")
   end
 
   it "verbose_xml" do
@@ -64,21 +64,21 @@ describe "BzrXmlParser" do
 </logs>
     XML
     commits = BzrXmlParser.parse(xml)
-    assert_equal 1, commits.size
+    commits.size.should eq(1)
     c = commits.first
-    assert_equal 4, c.diffs.size # Rename is a D followed by A
+    c.diffs.size.should eq(4) # Rename is a D followed by A
 
-    assert_equal "test2.txt", c.diffs[0].path
-    assert_equal "D", c.diffs[0].action
+    c.diffs[0].path.should eq("test2.txt")
+    c.diffs[0].action.should eq("D")
 
-    assert_equal "test_a.txt", c.diffs[1].path
-    assert_equal "A", c.diffs[1].action
+    c.diffs[1].path.should eq("test_a.txt")
+    c.diffs[1].action.should eq("A")
 
-    assert_equal "test1.txt", c.diffs[2].path
-    assert_equal "D", c.diffs[2].action
+    c.diffs[2].path.should eq("test1.txt")
+    c.diffs[2].action.should eq("D")
 
-    assert_equal "subdir/test_b.txt", c.diffs[3].path
-    assert_equal "A", c.diffs[3].action
+    c.diffs[3].path.should eq("subdir/test_b.txt")
+    c.diffs[3].action.should eq("A")
   end
 
   # When an directory is deleted, bzr outputs one delete entry
@@ -112,11 +112,11 @@ describe "BzrXmlParser" do
 </logs>
   XML
     commits = BzrXmlParser.parse(xml)
-    assert_equal 1, commits.size
+    commits.size.should eq(1)
 
     c = commits.first
-    assert_equal 1, c.diffs.size
-    assert_equal "uspace/lib/net/include/nil_interface.h", c.diffs.first.path
+    c.diffs.size.should eq(1)
+    c.diffs.first.path.should eq("uspace/lib/net/include/nil_interface.h")
   end
 
   # bzr also outputs a kind_changed entry when file kind changes, for example
@@ -156,16 +156,16 @@ describe "BzrXmlParser" do
 </logs>
     XML
     commits = BzrXmlParser.parse(xml)
-    assert_equal 1, commits.size
+    commits.size.should eq(1)
 
     c = commits.first
-    assert_equal 3, c.diffs.size
-    assert_equal "D", c.diffs[0].action
-    assert_equal "uspace/lib/net/include/nil_interface.h", c.diffs[0].path
-    assert_equal "A", c.diffs[1].action
-    assert_equal "uspace/app/tester/mm/mapping1.c", c.diffs[1].path
-    assert_equal "M", c.diffs[2].action
-    assert_equal ".bzrignore", c.diffs[2].path
+    c.diffs.size.should eq(3)
+    c.diffs[0].action.should eq("D")
+    c.diffs[0].path.should eq("uspace/lib/net/include/nil_interface.h")
+    c.diffs[1].action.should eq("A")
+    c.diffs[1].path.should eq("uspace/app/tester/mm/mapping1.c")
+    c.diffs[2].action.should eq("M")
+    c.diffs[2].path.should eq(".bzrignore")
   end
 
   it "different_author_and_committer" do
@@ -223,26 +223,26 @@ describe "BzrXmlParser" do
     XML
     commits = BzrXmlParser.parse(xml)
     c = commits[0]
-    assert_equal "Abhay Mujumdar", c.committer_name
-    assert_equal "amujumdar@blackducksoftware.com", c.committer_email
+    c.committer_name.should eq("Abhay Mujumdar")
+    c.committer_email.should eq("amujumdar@blackducksoftware.com")
 
     c = commits[1]
-    assert_equal "Abhay Mujumdar", c.committer_name
-    assert_equal "amujumdar@blackducksoftware.com", c.committer_email
-    assert_equal "John Doe", c.author_name
-    assert_equal "johndoe@example.com", c.author_email
+    c.committer_name.should eq("Abhay Mujumdar")
+    c.committer_email.should eq("amujumdar@blackducksoftware.com")
+    c.author_name.should eq("John Doe")
+    c.author_email.should eq("johndoe@example.com")
 
     c = commits[2]
-    assert_equal "test", c.committer_name
-    assert_equal "test@example.com", c.committer_email
-    assert_equal "Jim Beam", c.author_name
-    assert_equal "jimbeam@example.com", c.author_email
+    c.committer_name.should eq("test")
+    c.committer_email.should eq("test@example.com")
+    c.author_name.should eq("Jim Beam")
+    c.author_email.should eq("jimbeam@example.com")
 
     c = commits[3]
-    assert_equal "test", c.committer_name
-    assert_equal "test@example.com", c.committer_email
-    assert_equal nil, c.author_name
-    assert_equal nil, c.author_email
+    c.committer_name.should eq("test")
+    c.committer_email.should eq("test@example.com")
+    c.author_name.should eq(nil)
+    c.author_email.should eq(nil)
   end
 
   it "rename" do
@@ -267,21 +267,21 @@ describe "BzrXmlParser" do
 </logs>
     XML
     commits = BzrXmlParser.parse(xml)
-    assert_equal 1, commits.size
-    assert_equal 2, commits.first.diffs.size
-    assert_equal "D", commits.first.diffs.first.action
-    assert_equal "test1.txt", commits.first.diffs.first.path
+    commits.size.should eq(1)
+    commits.first.diffs.size.should eq(2)
+    commits.first.diffs.first.action.should eq("D")
+    commits.first.diffs.first.path.should eq("test1.txt")
 
-    assert_equal "A", commits.first.diffs.last.action
-    assert_equal "subdir/test_b.txt", commits.first.diffs.last.path
+    commits.first.diffs.last.action.should eq("A")
+    commits.first.diffs.last.path.should eq("subdir/test_b.txt")
   end
 
   it "remove_dupes_add_remove" do
     diffs = BzrXmlParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
                                       OhlohScm::Diff.new(:action => "D", :path => "foo") ])
-    assert_equal 1, diffs.size
-    assert_equal "M", diffs.first.action
-    assert_equal "foo", diffs.first.path
+    diffs.size.should eq(1)
+    diffs.first.action.should eq("M")
+    diffs.first.path.should eq("foo")
   end
 
   # A complex delete/rename/modify test.
@@ -321,11 +321,11 @@ describe "BzrXmlParser" do
     XML
     diffs = BzrXmlParser.parse(xml).first.diffs
     diffs.sort! { |a,b| a.action <=> b.action }
-    assert_equal 2, diffs.size
-    assert_equal "D", diffs.first.action
-    assert_equal "test3.txt", diffs.first.path
-    assert_equal "M", diffs.last.action
-    assert_equal "test_a.txt", diffs.last.path
+    diffs.size.should eq(2)
+    diffs.first.action.should eq("D")
+    diffs.first.path.should eq("test3.txt")
+    diffs.last.action.should eq("M")
+    diffs.last.path.should eq("test_a.txt")
   end
 
   # This test-case also tests rename and modify in the same commit.
@@ -356,23 +356,23 @@ describe "BzrXmlParser" do
     XML
     diffs = BzrXmlParser.parse(xml).first.diffs
     diffs.sort! { |a,b| a.action <=> b.action }
-    assert_equal "A", diffs[0].action
-    assert_equal "renamed_arch", diffs[0].path
-    assert_equal "D", diffs[1].action
-    assert_equal "arch", diffs[1].path
+    diffs[0].action.should eq("A")
+    diffs[0].path.should eq("renamed_arch")
+    diffs[1].action.should eq("D")
+    diffs[1].path.should eq("arch")
   end
 
   it "committer_name_capture" do
     name, email = BzrXmlParser.capture_name("John")
-    assert_equal name, "John"
-    assert_equal email, nil
-    assert_equal ["John Doe", nil], BzrXmlParser.capture_name("John Doe")
-    assert_equal ["John Doe jdoe@example.com", nil], BzrXmlParser.capture_name("John Doe jdoe@example.com")
-    assert_equal ["John Doe <jdoe@example.com", nil], BzrXmlParser.capture_name("John Doe <jdoe@example.com")
-    assert_equal ["John Doe jdoe@example.com>", nil], BzrXmlParser.capture_name("John Doe jdoe@example.com>")
-    assert_equal ["John Doe", "jdoe@example.com"], BzrXmlParser.capture_name("John Doe <jdoe@example.com>")
-    assert_equal ["John Doe", "jdoe@example.com"], BzrXmlParser.capture_name("John Doe     <jdoe@example.com>   ")
-    assert_equal ["jdoe@example.com", nil], BzrXmlParser.capture_name("jdoe@example.com")
+    "John".should eq(name)
+    nil.should eq(email)
+    BzrXmlParser.capture_name("John Doe").should eq(["John Doe", nil])
+    BzrXmlParser.capture_name("John Doe jdoe@example.com").should eq(["John Doe jdoe@example.com", nil])
+    BzrXmlParser.capture_name("John Doe <jdoe@example.com").should eq(["John Doe <jdoe@example.com", nil])
+    BzrXmlParser.capture_name("John Doe jdoe@example.com>").should eq(["John Doe jdoe@example.com>", nil])
+    BzrXmlParser.capture_name("John Doe <jdoe@example.com>").should eq(["John Doe", "jdoe@example.com"])
+    BzrXmlParser.capture_name("John Doe     <jdoe@example.com>   ").should eq(["John Doe", "jdoe@example.com"])
+    BzrXmlParser.capture_name("jdoe@example.com").should eq(["jdoe@example.com", nil])
     xml = <<-XML
 <logs>
 <log>
@@ -397,11 +397,11 @@ describe "BzrXmlParser" do
 </logs>
     XML
     c = BzrXmlParser.parse(xml).first
-    assert_equal "M", c.diffs.first.action
-    assert_equal "test_a.txt", c.diffs.first.path
-    assert_equal "a@b.com", c.committer_name
-    assert_equal nil, c.committer_email
-    assert_equal "author@c.com", c.author_name
-    assert_equal nil, c.author_email
+    c.diffs.first.action.should eq("M")
+    c.diffs.first.path.should eq("test_a.txt")
+    c.committer_name.should eq("a@b.com")
+    c.committer_email.should eq(nil)
+    c.author_name.should eq("author@c.com")
+    c.author_email.should eq(nil)
   end
 end

@@ -4,49 +4,49 @@ describe "SvnChain" do
 
   it "chained_commit_tokens" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
-      assert_equal [1,2,4,5,8,9,11], svn.commit_tokens
-      assert_equal [2,4,5,8,9,11], svn.commit_tokens(:after => 1)
-      assert_equal [4,5,8,9,11], svn.commit_tokens(:after => 2)
-      assert_equal [4,5,8,9,11], svn.commit_tokens(:after => 3)
-      assert_equal [5,8,9,11], svn.commit_tokens(:after => 4)
-      assert_equal [8,9,11], svn.commit_tokens(:after => 5)
-      assert_equal [8,9,11], svn.commit_tokens(:after => 6)
-      assert_equal [8,9,11], svn.commit_tokens(:after => 7)
-      assert_equal [9,11], svn.commit_tokens(:after => 8)
-      assert_equal [11], svn.commit_tokens(:after => 9)
-      assert_equal [], svn.commit_tokens(:after => 11)
+      svn.commit_tokens.should eq([1,2,4,5,8,9,11])
+      svn.commit_tokens(:after => 1).should eq([2,4,5,8,9,11])
+      svn.commit_tokens(:after => 2).should eq([4,5,8,9,11])
+      svn.commit_tokens(:after => 3).should eq([4,5,8,9,11])
+      svn.commit_tokens(:after => 4).should eq([5,8,9,11])
+      svn.commit_tokens(:after => 5).should eq([8,9,11])
+      svn.commit_tokens(:after => 6).should eq([8,9,11])
+      svn.commit_tokens(:after => 7).should eq([8,9,11])
+      svn.commit_tokens(:after => 8).should eq([9,11])
+      svn.commit_tokens(:after => 9).should eq([11])
+      svn.commit_tokens(:after => 11).should eq([])
     end
   end
 
   it "chained_commit_count" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
-      assert_equal 7, svn.commit_count
-      assert_equal 6, svn.commit_count(:after => 1)
-      assert_equal 5, svn.commit_count(:after => 2)
-      assert_equal 5, svn.commit_count(:after => 3)
-      assert_equal 4, svn.commit_count(:after => 4)
-      assert_equal 3, svn.commit_count(:after => 5)
-      assert_equal 3, svn.commit_count(:after => 6)
-      assert_equal 3, svn.commit_count(:after => 7)
-      assert_equal 2, svn.commit_count(:after => 8)
-      assert_equal 1, svn.commit_count(:after => 9)
-      assert_equal 0, svn.commit_count(:after => 11)
+      svn.commit_count.should eq(7)
+      svn.commit_count(:after => 1).should eq(6)
+      svn.commit_count(:after => 2).should eq(5)
+      svn.commit_count(:after => 3).should eq(5)
+      svn.commit_count(:after => 4).should eq(4)
+      svn.commit_count(:after => 5).should eq(3)
+      svn.commit_count(:after => 6).should eq(3)
+      svn.commit_count(:after => 7).should eq(3)
+      svn.commit_count(:after => 8).should eq(2)
+      svn.commit_count(:after => 9).should eq(1)
+      svn.commit_count(:after => 11).should eq(0)
     end
   end
 
   it "chained_commits" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
-      assert_equal [1,2,4,5,8,9,11], svn.commits.map { |c| c.token }
-      assert_equal [2,4,5,8,9,11], svn.commits(:after => 1).map { |c| c.token }
-      assert_equal [4,5,8,9,11], svn.commits(:after => 2).map { |c| c.token }
-      assert_equal [4,5,8,9,11], svn.commits(:after => 3).map { |c| c.token }
-      assert_equal [5,8,9,11], svn.commits(:after => 4).map { |c| c.token }
-      assert_equal [8,9,11], svn.commits(:after => 5).map { |c| c.token }
-      assert_equal [8,9,11], svn.commits(:after => 6).map { |c| c.token }
-      assert_equal [8,9,11], svn.commits(:after => 7).map { |c| c.token }
-      assert_equal [9,11], svn.commits(:after => 8).map { |c| c.token }
-      assert_equal [11], svn.commits(:after => 9).map { |c| c.token }
-      assert_equal [], svn.commits(:after => 11).map { |c| c.token }
+      svn.commits.map { |c| c.token }.should eq([1,2,4,5,8,9,11])
+      svn.commits(:after => 1).map { |c| c.token }.should eq([2,4,5,8,9,11])
+      svn.commits(:after => 2).map { |c| c.token }.should eq([4,5,8,9,11])
+      svn.commits(:after => 3).map { |c| c.token }.should eq([4,5,8,9,11])
+      svn.commits(:after => 4).map { |c| c.token }.should eq([5,8,9,11])
+      svn.commits(:after => 5).map { |c| c.token }.should eq([8,9,11])
+      svn.commits(:after => 6).map { |c| c.token }.should eq([8,9,11])
+      svn.commits(:after => 7).map { |c| c.token }.should eq([8,9,11])
+      svn.commits(:after => 8).map { |c| c.token }.should eq([9,11])
+      svn.commits(:after => 9).map { |c| c.token }.should eq([11])
+      svn.commits(:after => 11).map { |c| c.token }.should eq([])
     end
   end
 
@@ -59,39 +59,39 @@ describe "SvnChain" do
     commits = []
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.each_commit do |c|
-        assert c.scm # To support checkout of chained commits, the
+        c.scm.should be_truthy # To support checkout of chained commits, the
                      # commit must include a link to its containing adapter.
         commits << c
       end
     end
 
-    assert_equal [1,2,4,5,8,9,11], commits.map { |c| c.token }
+    commits.map { |c| c.token }.should eq([1,2,4,5,8,9,11])
 
     # This repository spends a lot of energy moving directories around.
     # File edits actually occur in just 3 commits.
 
     # Revision 1: /trunk directory created, but it is empty
-    assert_equal 0, commits[0].diffs.size
+    commits[0].diffs.size.should eq(0)
 
     # Revision 2: /trunk/helloworld.c is added
-    assert_equal 1, commits[1].diffs.size
-    assert_equal "A", commits[1].diffs.first.action
-    assert_equal "/helloworld.c", commits[1].diffs.first.path
+    commits[1].diffs.size.should eq(1)
+    commits[1].diffs.first.action.should eq("A")
+    commits[1].diffs.first.path.should eq("/helloworld.c")
 
     # Revision 3: /trunk is deleted. We can"t see this revision.
 
     # Revision 4: /trunk is re-created by copying it from revision 2.
     # From our point of view, there has been no change at all, and thus no diffs.
-    assert_equal 0, commits[2].diffs.size
+    commits[2].diffs.size.should eq(0)
 
     # Revision 5: /branches/development is created by copying /trunk.
     # From our point of view, the contents of the repository are unchanged, so
     # no diffs result from the copy.
     # However, /branches/development/goodbyeworld.c is also created, so we should
     # have a diff for that.
-    assert_equal 1, commits[3].diffs.size
-    assert_equal "A", commits[3].diffs.first.action
-    assert_equal "/goodbyeworld.c", commits[3].diffs.first.path
+    commits[3].diffs.size.should eq(1)
+    commits[3].diffs.first.action.should eq("A")
+    commits[3].diffs.first.path.should eq("/goodbyeworld.c")
 
     # Revision 6: /trunk/goodbyeworld.c is created, but we only see activity
     # on /branches/development, so no commit reported.
@@ -100,18 +100,18 @@ describe "SvnChain" do
 
     # Revision 8: /branches/development is moved to become the new /trunk.
     # The directory contents are unchanged, so no diffs result.
-    assert_equal 0, commits[4].diffs.size
+    commits[4].diffs.size.should eq(0)
 
     # Revision 9: an edit to /trunk/helloworld.c
-    assert_equal 1, commits[5].diffs.size
-    assert_equal "M", commits[5].diffs.first.action
-    assert_equal "/helloworld.c", commits[5].diffs.first.path
+    commits[5].diffs.size.should eq(1)
+    commits[5].diffs.first.action.should eq("M")
+    commits[5].diffs.first.path.should eq("/helloworld.c")
 
     # Revision 10: /trunk/goodbyeworld.c & /trunk/helloworld.c are modified
     # on branches/development, hence no commit reported.
 
     # Revision 11: The trunk is reverted back to revision 9.
-    assert_equal 0, commits[6].diffs.size
+    commits[6].diffs.size.should eq(0)
   end
 
   # Specifically tests this case:
@@ -125,15 +125,15 @@ describe "SvnChain" do
   # "/myproject" is not an exact match for "/myproject/trunk".
   it "tree_move" do
     with_svn_chain_repository("svn_with_tree_move", "/myproject/trunk") do |svn|
-      assert_equal svn.url, svn.root + "/myproject/trunk"
-      assert_equal svn.branch_name, "/myproject/trunk"
+      svn.root + "/myproject/trunk".should eq(svn.url)
+      "/myproject/trunk".should eq(svn.branch_name)
 
       p = svn.parent_svn
-      assert_equal p.url, svn.root + "/all/myproject/trunk"
-      assert_equal p.branch_name, "/all/myproject/trunk"
-      assert_equal p.final_token, 1
+      svn.root + "/all/myproject/trunk".should eq(p.url)
+      "/all/myproject/trunk".should eq(p.branch_name)
+      1.should eq(p.final_token)
 
-      assert_equal [1, 2], svn.commit_tokens
+      svn.commit_tokens.should eq([1, 2])
     end
   end
 
@@ -141,34 +141,34 @@ describe "SvnChain" do
     with_svn_chain_repository("svn_with_branching","/trunk") do |svn|
 
       c = svn.verbose_commit(9)
-      assert_equal "modified helloworld.c", c.message
-      assert_equal ["/helloworld.c"], c.diffs.map { |d| d.path }
-      assert_equal "/trunk", c.scm.branch_name
+      c.message.should eq("modified helloworld.c")
+      c.diffs.map { |d| d.path }.should eq(["/helloworld.c"])
+      c.scm.branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(8)
-      assert_equal [], c.diffs
-      assert_equal "/trunk", c.scm.branch_name
+      c.diffs.should eq([])
+      c.scm.branch_name.should eq("/trunk")
 
       # Reaching these commits requires chaining
       c = svn.verbose_commit(5)
-      assert_equal "add a new branch, with goodbyeworld.c", c.message
-      assert_equal ["/goodbyeworld.c"], c.diffs.map { |d| d.path }
-      assert_equal "/branches/development", c.scm.branch_name
+      c.message.should eq("add a new branch, with goodbyeworld.c")
+      c.diffs.map { |d| d.path }.should eq(["/goodbyeworld.c"])
+      c.scm.branch_name.should eq("/branches/development")
 
       # Reaching these commits requires chaining twice
       c = svn.verbose_commit(4)
-      assert_equal [], c.diffs
-      assert_equal "/trunk", c.scm.branch_name
+      c.diffs.should eq([])
+      c.scm.branch_name.should eq("/trunk")
 
       # And now a fourth chain (to skip over /trunk deletion in rev 3)
       c = svn.verbose_commit(2)
-      assert_equal "Added helloworld.c to trunk", c.message
-      assert_equal ["/helloworld.c"], c.diffs.map { |d| d.path }
-      assert_equal "/trunk", c.scm.branch_name
+      c.message.should eq("Added helloworld.c to trunk")
+      c.diffs.map { |d| d.path }.should eq(["/helloworld.c"])
+      c.scm.branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(1)
-      assert_equal [], c.diffs
-      assert_equal "/trunk", c.scm.branch_name
+      c.diffs.should eq([])
+      c.scm.branch_name.should eq("/trunk")
     end
   end
 end

@@ -11,41 +11,41 @@ describe "GitRevList" do
   it "rev_list" do
     with_git_repository("git_walk") do |git|
       # Full history to a commit
-      assert_equal [:A],                         rev_list_helper(git, nil, :A)
-      assert_equal [:A, :B],                     rev_list_helper(git, nil, :B)
-      assert_equal [:A, :B, :G, :H, :C],         rev_list_helper(git, nil, :C)
-      assert_equal [:A, :B, :G, :H, :C, :I, :D], rev_list_helper(git, nil, :D)
-      assert_equal [:A, :G],                     rev_list_helper(git, nil, :G)
-      assert_equal [:A, :G, :H],                 rev_list_helper(git, nil, :H)
-      assert_equal [:A, :G, :H, :I],             rev_list_helper(git, nil, :I)
-      assert_equal [:A, :G, :H, :I, :J],         rev_list_helper(git, nil, :J)
+      rev_list_helper(git, nil, :A).should eq([:A])
+      rev_list_helper(git, nil, :B).should eq([:A, :B])
+      rev_list_helper(git, nil, :C).should eq([:A, :B, :G, :H, :C])
+      rev_list_helper(git, nil, :D).should eq([:A, :B, :G, :H, :C, :I, :D])
+      rev_list_helper(git, nil, :G).should eq([:A, :G])
+      rev_list_helper(git, nil, :H).should eq([:A, :G, :H])
+      rev_list_helper(git, nil, :I).should eq([:A, :G, :H, :I])
+      rev_list_helper(git, nil, :J).should eq([:A, :G, :H, :I, :J])
 
       # Limited history from one commit to another
-      assert_equal [],                           rev_list_helper(git, :A, :A)
-      assert_equal [:B],                         rev_list_helper(git, :A, :B)
-      assert_equal [:B, :G, :H, :C],             rev_list_helper(git, :A, :C)
-      assert_equal [:B, :G, :H, :C, :I, :D],     rev_list_helper(git, :A, :D)
-      assert_equal [:G, :H, :C, :I, :D],         rev_list_helper(git, :B, :D)
-      assert_equal [:I, :D],                     rev_list_helper(git, :C, :D)
-      assert_equal [:H, :I, :J],                 rev_list_helper(git, :G, :J)
+      rev_list_helper(git, :A, :A).should eq([])
+      rev_list_helper(git, :A, :B).should eq([:B])
+      rev_list_helper(git, :A, :C).should eq([:B, :G, :H, :C])
+      rev_list_helper(git, :A, :D).should eq([:B, :G, :H, :C, :I, :D])
+      rev_list_helper(git, :B, :D).should eq([:G, :H, :C, :I, :D])
+      rev_list_helper(git, :C, :D).should eq([:I, :D])
+      rev_list_helper(git, :G, :J).should eq([:H, :I, :J])
     end
   end
 
   it "trunk_only_rev_list" do
     with_git_repository("git_walk") do |git|
       # Full history to a commit
-      assert_equal [:A],             rev_list_trunk(git, nil, :A)
-      assert_equal [:A, :B],         rev_list_trunk(git, nil, :B)
-      assert_equal [:A, :B, :C],     rev_list_trunk(git, nil, :C)
-      assert_equal [:A, :B, :C, :D], rev_list_trunk(git, nil, :D)
+      rev_list_trunk(git, nil, :A).should eq([:A])
+      rev_list_trunk(git, nil, :B).should eq([:A, :B])
+      rev_list_trunk(git, nil, :C).should eq([:A, :B, :C])
+      rev_list_trunk(git, nil, :D).should eq([:A, :B, :C, :D])
 
       # Limited history from one commit to another
-      assert_equal [],               rev_list_trunk(git, :A, :A)
-      assert_equal [:B],             rev_list_trunk(git, :A, :B)
-      assert_equal [:B, :C],         rev_list_trunk(git, :A, :C)
-      assert_equal [:B, :C, :D],     rev_list_trunk(git, :A, :D)
-      assert_equal [:C, :D],         rev_list_trunk(git, :B, :D)
-      assert_equal [:D],             rev_list_trunk(git, :C, :D)
+      rev_list_trunk(git, :A, :A).should eq([])
+      rev_list_trunk(git, :A, :B).should eq([:B])
+      rev_list_trunk(git, :A, :C).should eq([:B, :C])
+      rev_list_trunk(git, :A, :D).should eq([:B, :C, :D])
+      rev_list_trunk(git, :B, :D).should eq([:C, :D])
+      rev_list_trunk(git, :C, :D).should eq([:D])
     end
   end
 

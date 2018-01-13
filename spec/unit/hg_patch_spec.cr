@@ -5,7 +5,7 @@ describe "HgPatch" do
     with_hg_repository("hg") do |repo|
       commit = repo.verbose_commit(1)
       data = File.read(File.join(DATA_DIR, "hg_patch.diff"))
-      assert_equal data, repo.patch_for_commit(commit)
+      repo.patch_for_commit(commit).should eq(data)
     end
   end
 end

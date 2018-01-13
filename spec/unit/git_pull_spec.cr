@@ -7,12 +7,12 @@ describe "GitPull" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = GitAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         dest.pull(src)
-        assert dest.exist?
+        dest.exist?.should be_truthy
 
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end
@@ -21,9 +21,9 @@ describe "GitPull" do
     with_svn_repository("svn_empty") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
         dest = GitAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
-        err = assert_raises(RuntimeError) { dest.pull(src) }
-        assert_match /Empty repository/, err.message
+        dest.exist?.should be_falsey
+        err = expect_raises(RuntimeError) { dest.pull(src) }
+        err.message.should match(/Empty repository/)
       end
     end
   end

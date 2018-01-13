@@ -10,7 +10,7 @@ describe "HgValidation" do
       "svn://www.selenic.com/repo/hello" # svn protocol not allowed
     ].each do |url|
       hg = HgAdapter.new(:url => url, :public_urls_only => true)
-      assert hg.validate_url.any?
+      hg.validate_url.any?.should be_truthy
     end
   end
 
@@ -20,7 +20,7 @@ describe "HgValidation" do
       "https://www.selenic.com/repo/hello",
     ].each do |url|
       hg = HgAdapter.new(:url => url, :public_urls_only => true)
-      assert !hg.validate_url
+      hg.validate_url.should be_falsey
     end
   end
 
@@ -32,27 +32,27 @@ describe "HgValidation" do
       "ssh://localhost/home/robin/hg"
     ].each do |url|
       hg = HgAdapter.new(:url => url, :public_urls_only => true)
-      assert hg.validate_url
+      hg.validate_url.should be_truthy
 
       hg = HgAdapter.new(:url => url)
-      assert !hg.validate_url
+      hg.validate_url.should be_falsey
     end
   end
 
   it "guess_forge" do
     hg = HgAdapter.new(:url => nil)
-    assert_equal nil, hg.guess_forge
+    hg.guess_forge.should eq(nil)
 
     hg = HgAdapter.new(:url => "/home/robin/hg")
-    assert_equal nil, hg.guess_forge
+    hg.guess_forge.should eq(nil)
 
     hg = HgAdapter.new( :url => "http://www.selenic.com/repo/hello")
-    assert_equal "www.selenic.com", hg.guess_forge
+    hg.guess_forge.should eq("www.selenic.com")
 
     hg = HgAdapter.new( :url => "http://algoc.hg.sourceforge.net:8000/hgroot/algoc")
-    assert_equal "sourceforge.net", hg.guess_forge
+    hg.guess_forge.should eq("sourceforge.net")
 
     hg = HgAdapter.new( :url => "http://poliqarp.sourceforge.net/hg/poliqarp/")
-    assert_equal "sourceforge.net", hg.guess_forge
+    hg.guess_forge.should eq("sourceforge.net")
   end
 end

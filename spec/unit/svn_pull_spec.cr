@@ -8,14 +8,14 @@ describe "SvnPull" do
       url = File.join(dir, "my_svn_repo")
       svn = SvnAdapter.new(:url => url).normalize
 
-      assert !svn.exist?
+      svn.exist?.should be_falsey
       svn.svnadmin_create
-      assert svn.exist?
+      svn.exist?.should be_truthy
 
       # Ensure that revision properties are settable
       # Note that only valid properties can be set
       svn.propset("log","bar")
-      assert_equal "bar", svn.propget("log")
+      svn.propget("log").should eq("bar")
     end
   end
 
@@ -24,12 +24,12 @@ describe "SvnPull" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = SvnAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         dest.pull(src)
-        assert dest.exist?
+        dest.exist?.should be_truthy
 
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end
@@ -38,9 +38,9 @@ describe "SvnPull" do
     OhlohScm::ScratchDir.new do |dir|
       svn = SvnAdapter.new(:url => "file://#{dir}")
       svn.svnadmin_create_local
-      assert svn.exist?
-      assert FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change"))
-      assert FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change"))
+      svn.exist?.should be_truthy
+      FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change")).should be_truthy
+      FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change")).should be_truthy
       svn.run File.join(dir, "hooks", "pre-revprop-change")
     end
   end
@@ -49,9 +49,9 @@ describe "SvnPull" do
     OhlohScm::ScratchDir.new do |dir|
       svn = SvnAdapter.new(:url => "svn+ssh://#{Socket.gethostname}#{dir}")
       svn.svnadmin_create_remote
-      assert svn.exist?
-      assert FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change"))
-      assert FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change"))
+      svn.exist?.should be_truthy
+      FileTest.exist?(File.join(dir, "hooks", "pre-revprop-change")).should be_truthy
+      FileTest.executable?(File.join(dir, "hooks", "pre-revprop-change")).should be_truthy
       svn.run File.join(dir, "hooks", "pre-revprop-change")
     end
   end

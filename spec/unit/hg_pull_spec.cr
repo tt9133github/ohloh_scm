@@ -7,19 +7,19 @@ describe "HgPull" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = HgAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         dest.pull(src)
-        assert dest.exist?
+        dest.exist?.should be_truthy
 
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
 
         # Commit some new code on the original and pull again
         src.run "cd '#{src.url}' && touch foo && hg add foo && hg commit -u test -m test"
-        assert_equal "test\n", src.commits.last.message
+        src.commits.last.message.should eq("test\n")
 
         dest.pull(src)
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end

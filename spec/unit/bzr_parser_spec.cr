@@ -3,7 +3,7 @@ require "../test_helper"
 describe "BzrParser" do
 
   it "empty_array" do
-    assert_equal([], BzrParser.parse(""))
+    BzrParser.parse("").should eq([])
   end
 
   it "default_log_parser" do
@@ -26,22 +26,22 @@ SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
-    assert commits
-    assert_equal 2, commits.size
+    commits.should be_truthy
+    commits.size.should eq(2)
 
-    assert_equal "2", commits[0].token
-    assert_equal "Robin", commits[0].committer_name
-    assert_equal "robin@ohloh.net", commits[0].committer_email
-    assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
-    assert_equal 0, commits[0].diffs.size
+    commits[0].token.should eq("2")
+    commits[0].committer_name.should eq("Robin")
+    commits[0].committer_email.should eq("robin@ohloh.net")
+    commits[0].message.should eq("Second Revision\n") # Note \n at end of comment
+    commits[0].committer_date.should eq(Time.utc(2009,2,4,0,49,42))
+    commits[0].diffs.size.should eq(0)
 
-    assert_equal "1", commits[1].token
-    assert_equal "Jason", commits[1].committer_name
-    assert_equal "jason@ohloh.net", commits[1].committer_email
-    assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
-    assert_equal 0, commits[1].diffs.size
+    commits[1].token.should eq("1")
+    commits[1].committer_name.should eq("Jason")
+    commits[1].committer_email.should eq("jason@ohloh.net")
+    commits[1].message.should eq("Initial Revision\n") # Note \n at end of comment
+    commits[1].committer_date.should eq(Time.utc(2009,2,4,0,25,40))
+    commits[1].diffs.size.should eq(0)
   end
 
   it "verbose_log_parser" do
@@ -71,32 +71,32 @@ SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
-    assert commits
-    assert_equal 2, commits.size
+    commits.should be_truthy
+    commits.size.should eq(2)
 
-    assert_equal "2", commits[0].token
-    assert_equal "Robin", commits[0].committer_name
-    assert_equal "robin@ohloh.net", commits[0].committer_email
-    assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
-    assert_equal 2, commits[0].diffs.size
+    commits[0].token.should eq("2")
+    commits[0].committer_name.should eq("Robin")
+    commits[0].committer_email.should eq("robin@ohloh.net")
+    commits[0].message.should eq("Second Revision\n") # Note \n at end of comment
+    commits[0].committer_date.should eq(Time.utc(2009,2,4,0,49,42))
+    commits[0].diffs.size.should eq(2)
 
-    assert_equal "file1.txt", commits[0].diffs[0].path
-    assert_equal "D", commits[0].diffs[0].action
-    assert_equal "file2.txt", commits[0].diffs[1].path
-    assert_equal "M", commits[0].diffs[1].action
+    commits[0].diffs[0].path.should eq("file1.txt")
+    commits[0].diffs[0].action.should eq("D")
+    commits[0].diffs[1].path.should eq("file2.txt")
+    commits[0].diffs[1].action.should eq("M")
 
-    assert_equal "1", commits[1].token
-    assert_equal "Jason", commits[1].committer_name
-    assert_equal "jason@ohloh.net", commits[1].committer_email
-    assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
-    assert_equal 2, commits[1].diffs.size
+    commits[1].token.should eq("1")
+    commits[1].committer_name.should eq("Jason")
+    commits[1].committer_email.should eq("jason@ohloh.net")
+    commits[1].message.should eq("Initial Revision\n") # Note \n at end of comment
+    commits[1].committer_date.should eq(Time.utc(2009,2,4,0,25,40))
+    commits[1].diffs.size.should eq(2)
 
-    assert_equal "file1.txt", commits[1].diffs[0].path
-    assert_equal "A", commits[1].diffs[0].action
-    assert_equal "file2.txt", commits[1].diffs[1].path
-    assert_equal "A", commits[1].diffs[1].action
+    commits[1].diffs[0].path.should eq("file1.txt")
+    commits[1].diffs[0].action.should eq("A")
+    commits[1].diffs[1].path.should eq("file2.txt")
+    commits[1].diffs[1].action.should eq("A")
   end
 
   it "verbose_log_parser_with_show_id" do
@@ -130,32 +130,32 @@ SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
-    assert commits
-    assert_equal 2, commits.size
+    commits.should be_truthy
+    commits.size.should eq(2)
 
-    assert_equal "info@ohloh.net-20090204004942-73rnw0izen42f154", commits[0].token
-    assert_equal "Robin", commits[0].committer_name
-    assert_equal "robin@ohloh.net", commits[0].committer_email
-    assert_equal "Second Revision\n", commits[0].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,49,42), commits[0].committer_date
-    assert_equal 2, commits[0].diffs.size
+    commits[0].token.should eq("info@ohloh.net-20090204004942-73rnw0izen42f154")
+    commits[0].committer_name.should eq("Robin")
+    commits[0].committer_email.should eq("robin@ohloh.net")
+    commits[0].message.should eq("Second Revision\n") # Note \n at end of comment
+    commits[0].committer_date.should eq(Time.utc(2009,2,4,0,49,42))
+    commits[0].diffs.size.should eq(2)
 
-    assert_equal "file1.txt", commits[0].diffs[0].path
-    assert_equal "D", commits[0].diffs[0].action
-    assert_equal "file2.txt", commits[0].diffs[1].path
-    assert_equal "M", commits[0].diffs[1].action
+    commits[0].diffs[0].path.should eq("file1.txt")
+    commits[0].diffs[0].action.should eq("D")
+    commits[0].diffs[1].path.should eq("file2.txt")
+    commits[0].diffs[1].action.should eq("M")
 
-    assert_equal "info@ohloh.net-20090204002540-gmana8tk5f9gboq9", commits[1].token
-    assert_equal "Jason", commits[1].committer_name
-    assert_equal "jason@ohloh.net", commits[1].committer_email
-    assert_equal "Initial Revision\n", commits[1].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,25,40), commits[1].committer_date
-    assert_equal 2, commits[1].diffs.size
+    commits[1].token.should eq("info@ohloh.net-20090204002540-gmana8tk5f9gboq9")
+    commits[1].committer_name.should eq("Jason")
+    commits[1].committer_email.should eq("jason@ohloh.net")
+    commits[1].message.should eq("Initial Revision\n") # Note \n at end of comment
+    commits[1].committer_date.should eq(Time.utc(2009,2,4,0,25,40))
+    commits[1].diffs.size.should eq(2)
 
-    assert_equal "file1.txt", commits[1].diffs[0].path
-    assert_equal "A", commits[1].diffs[0].action
-    assert_equal "file2.txt", commits[1].diffs[1].path
-    assert_equal "A", commits[1].diffs[1].action
+    commits[1].diffs[0].path.should eq("file1.txt")
+    commits[1].diffs[0].action.should eq("A")
+    commits[1].diffs[1].path.should eq("file2.txt")
+    commits[1].diffs[1].action.should eq("A")
   end
 
   it "verbose_log_parser_very_long_filename_with_show_id" do
@@ -175,18 +175,18 @@ SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
-    assert commits
-    assert_equal 1, commits.size
+    commits.should be_truthy
+    commits.size.should eq(1)
 
-    assert_equal "info@ohloh.net-20090204002540-gmana8tk5f9gboq9", commits[0].token
-    assert_equal "Jason", commits[0].committer_name
-    assert_equal "jason@ohloh.net", commits[0].committer_email
-    assert_equal "Initial Revision\n", commits[0].message # Note \n at end of comment
-    assert_equal Time.utc(2009,2,4,0,25,40), commits[0].committer_date
+    commits[0].token.should eq("info@ohloh.net-20090204002540-gmana8tk5f9gboq9")
+    commits[0].committer_name.should eq("Jason")
+    commits[0].committer_email.should eq("jason@ohloh.net")
+    commits[0].message.should eq("Initial Revision\n") # Note \n at end of comment
+    commits[0].committer_date.should eq(Time.utc(2009,2,4,0,25,40))
 
-    assert_equal 1, commits[0].diffs.size
-    assert_equal "a very long filename with space intended to cause log parsing problems", commits[0].diffs[0].path
-    assert_equal "A", commits[0].diffs[0].action
+    commits[0].diffs.size.should eq(1)
+    commits[0].diffs[0].path.should eq("a very long filename with space intended to cause log parsing problems")
+    commits[0].diffs[0].action.should eq("A")
   end
 
   it "verbose_log_with_nested_merge_commits" do
@@ -239,43 +239,43 @@ hello_world.c                  hello_world.c-20080625052902-61bbthtf22shh0p6-293
 SAMPLE
     commits = BzrParser.parse(sample_log)
 
-    assert commits
-    assert_equal 4, commits.size
+    commits.should be_truthy
+    commits.size.should eq(4)
 
-    assert_equal "robin@ohloh.net-20080629125019-qxk9qma8esphwwus", commits[0].token
-    assert_equal "robin@ohloh.net-20080629214643-5ru67mh04j09cmiz", commits[1].token
-    assert_equal "robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm", commits[2].token
-    assert_equal "robin@ohloh.net-20080629121849-2le5txjj7tkdq54f", commits[3].token
+    commits[0].token.should eq("robin@ohloh.net-20080629125019-qxk9qma8esphwwus")
+    commits[1].token.should eq("robin@ohloh.net-20080629214643-5ru67mh04j09cmiz")
+    commits[2].token.should eq("robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm")
+    commits[3].token.should eq("robin@ohloh.net-20080629121849-2le5txjj7tkdq54f")
 
-    assert_equal 1, commits[0].diffs.size
-    assert_equal "goodbye_world.c", commits[0].diffs[0].path
-    assert_equal "D", commits[0].diffs[0].action
+    commits[0].diffs.size.should eq(1)
+    commits[0].diffs[0].path.should eq("goodbye_world.c")
+    commits[0].diffs[0].action.should eq("D")
 
-    assert_equal 1, commits[1].diffs.size
-    assert_equal "hello_world.c", commits[1].diffs[0].path
-    assert_equal "M", commits[1].diffs[0].action
+    commits[1].diffs.size.should eq(1)
+    commits[1].diffs[0].path.should eq("hello_world.c")
+    commits[1].diffs[0].action.should eq("M")
 
-    assert_equal 1, commits[2].diffs.size
-    assert_equal "goodbye_world.c", commits[2].diffs[0].path
-    assert_equal "A", commits[2].diffs[0].action
+    commits[2].diffs.size.should eq(1)
+    commits[2].diffs[0].path.should eq("goodbye_world.c")
+    commits[2].diffs[0].action.should eq("A")
 
-    assert_equal 1, commits[3].diffs.size
-    assert_equal "hello_world.c", commits[3].diffs[0].path
-    assert_equal "M", commits[3].diffs[0].action
+    commits[3].diffs.size.should eq(1)
+    commits[3].diffs[0].path.should eq("hello_world.c")
+    commits[3].diffs[0].action.should eq("M")
   end
 
   it "parse_diffs" do
-    assert_equal "A", BzrParser.parse_diffs("A", "helloworld.c").first.action
-    assert_equal "helloworld.c", BzrParser.parse_diffs("A", "helloworld.c").first.path
+    BzrParser.parse_diffs("A", "helloworld.c").first.action.should eq("A")
+    BzrParser.parse_diffs("A", "helloworld.c").first.path.should eq("helloworld.c")
   end
 
   it "parse_diffs_rename" do
     diffs = BzrParser.parse_diffs(:rename, "helloworld.c => goodbyeworld.c")
-    assert_equal 2, diffs.size
-    assert_equal "D", diffs.first.action
-    assert_equal "helloworld.c", diffs.first.path
-    assert_equal "A", diffs.last.action
-    assert_equal "goodbyeworld.c", diffs.last.path
+    diffs.size.should eq(2)
+    diffs.first.action.should eq("D")
+    diffs.first.path.should eq("helloworld.c")
+    diffs.last.action.should eq("A")
+    diffs.last.path.should eq("goodbyeworld.c")
   end
 
   it "rename" do
@@ -292,23 +292,23 @@ helloworld.c => goodbyeworld.c
 
     commits = BzrParser.parse(log)
 
-    assert commits
-    assert_equal 1, commits.size
-    assert_equal 2, commits.first.diffs.size
+    commits.should be_truthy
+    commits.size.should eq(1)
+    commits.first.diffs.size.should eq(2)
 
-    assert_equal "D", commits.first.diffs.first.action
-    assert_equal "helloworld.c", commits.first.diffs.first.path
+    commits.first.diffs.first.action.should eq("D")
+    commits.first.diffs.first.path.should eq("helloworld.c")
 
-    assert_equal "A", commits.first.diffs.last.action
-    assert_equal "goodbyeworld.c", commits.first.diffs.last.path
+    commits.first.diffs.last.action.should eq("A")
+    commits.first.diffs.last.path.should eq("goodbyeworld.c")
   end
 
   it "remove_dupes_add_remove" do
     diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new(:action => "A", :path => "foo"),
                                       OhlohScm::Diff.new(:action => "D", :path => "foo") ])
-    assert_equal 1, diffs.size
-    assert_equal "M", diffs.first.action
-    assert_equal "foo", diffs.first.path
+    diffs.size.should eq(1)
+    diffs.first.action.should eq("M")
+    diffs.first.path.should eq("foo")
   end
 
   # A somewhat tricky case. A file is deleted, and another
@@ -338,11 +338,11 @@ helloworld.c
     diffs = BzrParser.parse(log).first.diffs
     diffs.sort! { |a,b| a.path <=> b.path }
 
-    assert_equal 2, diffs.size
-    assert_equal "D", diffs.first.action
-    assert_equal "goodbyeworld.c", diffs.first.path
-    assert_equal "M", diffs.last.action
-    assert_equal "helloworld.c", diffs.last.path
+    diffs.size.should eq(2)
+    diffs.first.action.should eq("D")
+    diffs.first.path.should eq("goodbyeworld.c")
+    diffs.last.action.should eq("M")
+    diffs.last.path.should eq("helloworld.c")
   end
 
   it "strip_trailing_asterisk_from_executables" do
@@ -362,9 +362,9 @@ helloworld* => goodbyeworld*
     diffs = BzrParser.parse(log).first.diffs
     diffs.sort! { |a,b| a.path <=> b.path }
 
-    assert_equal "goodbyeworld", diffs[0].path
-    assert_equal "helloworld", diffs[1].path
-    assert_equal "script", diffs[2].path
+    diffs[0].path.should eq("goodbyeworld")
+    diffs[1].path.should eq("helloworld")
+    diffs[2].path.should eq("script")
   end
 
   it "comment_that_contains_dashes" do
@@ -395,14 +395,14 @@ helloworld.c
 
     commits = BzrParser.parse(log)
 
-    assert_equal 2, commits.size
-    assert_equal "2", commits.first.token
-    assert_equal 1, commits.first.diffs.size
-    assert_equal "goodbyeworld.c", commits.first.diffs.first.path
+    commits.size.should eq(2)
+    commits.first.token.should eq("2")
+    commits.first.diffs.size.should eq(1)
+    commits.first.diffs.first.path.should eq("goodbyeworld.c")
 
-    assert_equal "1", commits.last.token
-    assert_equal 1, commits.last.diffs.size
-    assert_equal "helloworld.c", commits.last.diffs.first.path
+    commits.last.token.should eq("1")
+    commits.last.diffs.size.should eq(1)
+    commits.last.diffs.first.path.should eq("helloworld.c")
   end
 
   # In this example, directory "test/" is renamed to "/".
@@ -424,13 +424,13 @@ helloworld.c
 
     commits = BzrParser.parse(log)
 
-    assert_equal 1, commits.size
-    assert_equal "info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk", commits.first.token
-    assert_equal 2, commits.first.diffs.size
-    assert_equal "D", commits.first.diffs.first.action
-    assert_equal "test", commits.first.diffs.first.path
-    assert_equal "A", commits.first.diffs.last.action
-    assert_equal "", commits.first.diffs.last.path
+    commits.size.should eq(1)
+    commits.first.token.should eq("info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk")
+    commits.first.diffs.size.should eq(2)
+    commits.first.diffs.first.action.should eq("D")
+    commits.first.diffs.first.path.should eq("test")
+    commits.first.diffs.last.action.should eq("A")
+    commits.first.diffs.last.path.should eq("")
   end
 
   # It is possible for Bzr to report a file as both renamed and modified
@@ -450,12 +450,12 @@ newname
 
     commits = BzrParser.parse(log)
 
-    assert_equal 1, commits.size
-    assert_equal 2, commits.first.diffs.size
-    assert_equal "D", commits.first.diffs.first.action
-    assert_equal "oldname", commits.first.diffs.first.path
-    assert_equal "A", commits.first.diffs.last.action
-    assert_equal "newname", commits.first.diffs.last.path
+    commits.size.should eq(1)
+    commits.first.diffs.size.should eq(2)
+    commits.first.diffs.first.action.should eq("D")
+    commits.first.diffs.first.path.should eq("oldname")
+    commits.first.diffs.last.action.should eq("A")
+    commits.first.diffs.last.path.should eq("newname")
   end
 
   it "different_author_and_committer" do
@@ -472,10 +472,10 @@ message:
 
     commits = BzrParser.parse(log)
 
-    assert_equal 1, commits.size
-    assert_equal "Jason Allen", commits.first.author_name
-    assert_equal "jason@ohloh.net", commits.first.author_email
-    assert_equal "Robin Luckey", commits.first.committer_name
-    assert_equal "robin@ohloh.net", commits.first.committer_email
+    commits.size.should eq(1)
+    commits.first.author_name.should eq("Jason Allen")
+    commits.first.author_email.should eq("jason@ohloh.net")
+    commits.first.committer_name.should eq("Robin Luckey")
+    commits.first.committer_email.should eq("robin@ohloh.net")
   end
 end

@@ -12,9 +12,9 @@ main()
 printf("Hello, World!\\n");
 }
 EXPECTED
-      assert_equal expected, svn.cat_file(OhlohScm::Commit.new(:token => 1), OhlohScm::Diff.new(:path => "trunk/helloworld.c"))
+      svn.cat_file(OhlohScm::Commit.new(:token => 1), OhlohScm::Diff.new(:path => "trunk/helloworld.c")).should eq(expected)
 
-      assert_equal nil, svn.cat_file(OhlohScm::Commit.new(:token => 1), OhlohScm::Diff.new(:path => "file not found"))
+      svn.cat_file(OhlohScm::Commit.new(:token => 1), OhlohScm::Diff.new(:path => "file not found")).should be_nil
     end
   end
 end

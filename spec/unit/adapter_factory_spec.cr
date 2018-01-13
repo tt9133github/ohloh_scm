@@ -6,8 +6,8 @@ describe "Factory" do
     OhlohScm::ScratchDir.new do |path|
       `cd #{path} && hg init`
       hg = Factory.from_path(path)
-      assert hg.is_a?(HgAdapter)
-      assert_equal hg.url, path
+      hg.is_a?(HgAdapter).should be_truthy
+      path.should eq(hg.url)
     end
   end
 
@@ -15,8 +15,8 @@ describe "Factory" do
     OhlohScm::ScratchDir.new do |path|
       `cd #{path} && bzr init`
       bzr = Factory.from_path(path)
-      assert bzr.is_a?(BzrAdapter)
-      assert_equal bzr.url, path
+      bzr.is_a?(BzrAdapter).should be_truthy
+      path.should eq(bzr.url)
     end
   end
 
@@ -24,8 +24,8 @@ describe "Factory" do
     OhlohScm::ScratchDir.new do |path|
       `cd #{path} && git init`
       git = Factory.from_path(path)
-      assert git.is_a?(GitAdapter)
-      assert_equal git.url, path
+      git.is_a?(GitAdapter).should be_truthy
+      path.should eq(git.url)
     end
   end
 
@@ -33,8 +33,8 @@ describe "Factory" do
     OhlohScm::ScratchDir.new do |path|
       `cd #{path} && svnadmin create foo`
       svn = Factory.from_path(File.join(path, "foo"))
-      assert svn.is_a?(SvnAdapter)
-      assert_equal svn.url, "file://" + File.expand_path(File.join(path, "foo"))
+      svn.is_a?(SvnAdapter).should be_truthy
+      svn.url.should eq("file://" + File.expand_path(File.join(path, "foo")))
     end
   end
 
@@ -43,10 +43,10 @@ describe "Factory" do
       `cd #{path} && svnadmin create foo`
       `cd #{path} && svn co file://#{File.expand_path(File.join(path, "foo"))} bar`
       svn = Factory.from_path(File.join(path, "bar"))
-      assert svn.is_a?(SvnAdapter)
+      svn.is_a?(SvnAdapter).should be_truthy
       # Note that even though we gave checkout dir "bar" to the factory,
       # we get back a link to the original repo at "foo"
-      assert_equal svn.url, "file://" + File.expand_path(File.join(path, "foo"))
+      svn.url.should eq("file://" + File.expand_path(File.join(path, "foo")))
     end
   end
 
@@ -55,8 +55,8 @@ describe "Factory" do
       OhlohScm::ScratchDir.new do |path|
         `cd #{path} && cvsnt -d #{File.expand_path(cvs.url)} co simple 2> /dev/null`
         factory_response = Factory.from_path(File.join(path, "simple"))
-        assert factory_response.is_a?(CvsAdapter)
-        assert_equal cvs.url, factory_response.url
+        factory_response.is_a?(CvsAdapter).should be_truthy
+        factory_response.url.should eq(cvs.url)
       end
     end
   end

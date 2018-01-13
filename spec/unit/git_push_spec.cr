@@ -3,32 +3,32 @@ require "../test_helper"
 describe "GitPush" do
 
   it "hostname" do
-    assert_equal "foo", GitAdapter.new(:url => "foo:/bar").hostname
-    assert_equal "/bar", GitAdapter.new(:url => "foo:/bar").path
+    GitAdapter.new(:url => "foo:/bar").hostname.should eq("foo")
+    GitAdapter.new(:url => "foo:/bar").path.should eq("/bar")
 
-    assert !GitAdapter.new.hostname
-    assert !GitAdapter.new(:url => "/bar").hostname
-    assert_equal "http", GitAdapter.new(:url => "http://www.ohloh.net/bar").hostname
+    GitAdapter.new.hostname.should be_falsey
+    GitAdapter.new(:url => "/bar").hostname.should be_falsey
+    GitAdapter.new(:url => "http://www.ohloh.net/bar").hostname.should eq("http")
   end
 
   it "local" do
-    assert !GitAdapter.new(:url => "foo:/bar").local? # Assuming your machine is not named "foo" :-)
-    assert !GitAdapter.new(:url => "http://www.ohloh.net/foo").local?
-    assert GitAdapter.new(:url => "src").local?
-    assert GitAdapter.new(:url => "/Users/robin/src").local?
-    assert GitAdapter.new(:url => "#{`hostname`.strip}:src").local?
-    assert GitAdapter.new(:url => "#{`hostname`.strip}:/Users/robin/src").local?
+    GitAdapter.new(:url => "foo:/bar").local?.should be_falsey # Assuming your machine is not named "foo" :-)
+    GitAdapter.new(:url => "http://www.ohloh.net/foo").local?.should be_falsey
+    GitAdapter.new(:url => "src").local?.should be_truthy
+    GitAdapter.new(:url => "/Users/robin/src").local?.should be_truthy
+    GitAdapter.new(:url => "#{`hostname`.strip}:src").local?.should be_truthy
+    GitAdapter.new(:url => "#{`hostname`.strip}:/Users/robin/src").local?.should be_truthy
   end
 
   it "basic_push" do
     with_git_repository("git") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
         dest = GitAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         src.push(dest)
-        assert dest.exist?
-        assert_equal src.log, dest.log
+        dest.exist?.should be_truthy
+        dest.log.should eq(src.log)
 
         # Now push again. This tests a different code path!
         File.open(File.join(src.url, "foo"), "w") { }
@@ -36,8 +36,8 @@ describe "GitPush" do
 
         system("cd #{ dest_dir } && git config --bool core.bare true && git config receive.denyCurrentBranch refuse")
         src.push(dest)
-        assert dest.exist?
-        assert_equal src.log, dest.log
+        dest.exist?.should be_truthy
+        dest.log.should eq(src.log)
       end
     end
   end

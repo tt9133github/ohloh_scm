@@ -5,9 +5,9 @@ describe "GitToken" do
   it "no_token_returns_nil" do
     OhlohScm::ScratchDir.new do |dir|
       git = GitAdapter.new(:url => dir).normalize
-      assert !git.read_token
+      git.read_token.should be_falsey
       git.init_db
-      assert !git.read_token
+      git.read_token.should be_falsey
     end
   end
 
@@ -16,9 +16,9 @@ describe "GitToken" do
       git = GitAdapter.new(:url => dir).normalize
       git.init_db
       git.write_token("FOO")
-      assert !git.read_token # Token not valid until committed
+      git.read_token.should be_falsey # Token not valid until committed
       git.commit_all(OhlohScm::Commit.new)
-      assert_equal "FOO", git.read_token
+      git.read_token.should eq("FOO")
     end
   end
 
@@ -29,15 +29,13 @@ describe "GitToken" do
       c = OhlohScm::Commit.new
       c.token = "BAR"
       git.commit_all(c)
-      assert_equal c.token, git.read_token
+      git.read_token.should eq(c.token)
     end
   end
 
   it "read_token_encoding" do
     with_git_repository("git_with_invalid_encoding") do |git|
-      assert_nothing_raised do
-        git.read_token
-      end
+      git.read_token
     end
   end
 end

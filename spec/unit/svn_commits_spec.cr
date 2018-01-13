@@ -4,27 +4,27 @@ describe "SvnCommits" do
 
   it "commits" do
     with_svn_repository("svn") do |svn|
-      assert_equal 5, svn.commit_count
-      assert_equal 3, svn.commit_count(:after => 2)
-      assert_equal 0, svn.commit_count(:after => 1000)
+      svn.commit_count.should eq(5)
+      svn.commit_count(:after => 2).should eq(3)
+      svn.commit_count(:after => 1000).should eq(0)
 
-      assert_equal [1,2,3,4,5], svn.commit_tokens
-      assert_equal [3,4,5], svn.commit_tokens(:after => 2)
-      assert_equal [], svn.commit_tokens(:after => 1000)
+      svn.commit_tokens.should eq([1,2,3,4,5])
+      svn.commit_tokens(:after => 2).should eq([3,4,5])
+      svn.commit_tokens(:after => 1000).should eq([])
 
-      assert_equal [1,2,3,4,5], svn.commits.map { |c| c.token }
-      assert_equal [3,4,5], svn.commits(:after => 2).map { |c| c.token }
-      assert_equal [], svn.commits(:after => 1000)
-      assert !FileTest.exist?(svn.log_filename)
+      svn.commits.map { |c| c.token }.should eq([1,2,3,4,5])
+      svn.commits(:after => 2).map { |c| c.token }.should eq([3,4,5])
+      svn.commits(:after => 1000).should eq([])
+      FileTest.exist?(svn.log_filename).should be_falsey
     end
   end
 
   # Confirms that the sha1 matches those created by git exactly
   it "sha1" do
     with_svn_repository("svn") do |svn|
-      assert_equal "0000000000000000000000000000000000000000", svn.compute_sha1(nil)
-      assert_equal "0000000000000000000000000000000000000000", svn.compute_sha1("")
-      assert_equal "30d74d258442c7c65512eafab474568dd706c430", svn.compute_sha1("test")
+      svn.compute_sha1(nil).should eq("0000000000000000000000000000000000000000")
+      svn.compute_sha1("").should eq("0000000000000000000000000000000000000000")
+      svn.compute_sha1("test").should eq("30d74d258442c7c65512eafab474568dd706c430")
     end
   end
 
@@ -34,8 +34,8 @@ describe "SvnCommits" do
       c = OhlohScm::Commit.new(:token => 3)
       c.diffs = [OhlohScm::Diff.new(:path => "/trunk/helloworld.c", :action => "M")]
       svn.populate_commit_sha1s!(c)
-      assert_equal "f6adcae4447809b651c787c078d255b2b4e963c5", c.diffs.first.sha1
-      assert_equal "4c734ad53b272c9b3d719f214372ac497ff6c068", c.diffs.first.parent_sha1
+      c.diffs.first.sha1.should eq("f6adcae4447809b651c787c078d255b2b4e963c5")
+      c.diffs.first.parent_sha1.should eq("4c734ad53b272c9b3d719f214372ac497ff6c068")
     end
   end
 
@@ -44,45 +44,45 @@ describe "SvnCommits" do
     commit = OhlohScm::Commit.new
 
     # nil diffs before => nil diffs after
-    assert !svn.strip_commit_branch(commit).diffs
+    svn.strip_commit_branch(commit).diffs.should be_falsey
 
     # [] diffs before => [] diffs after
     commit.diffs = []
-    assert_equal [], svn.strip_commit_branch(commit).diffs
+    svn.strip_commit_branch(commit).diffs.should eq([])
 
     commit.diffs = [
       OhlohScm::Diff.new(:path => "/trunk"),
       OhlohScm::Diff.new(:path => "/trunk/helloworld.c"),
       OhlohScm::Diff.new(:path => "/branches/a")
     ]
-    assert_equal ["", "/helloworld.c"], svn.strip_commit_branch(commit).diffs.map { |d| d.path }.sort
+    svn.strip_commit_branch(commit).diffs.map { |d| d.path }.sort.should eq(["", "/helloworld.c"])
   end
 
   it "strip_diff_branch" do
     svn = SvnAdapter.new(:branch_name => "/trunk")
-    assert !svn.strip_diff_branch(OhlohScm::Diff.new)
-    assert !svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/branches/b"))
-    assert_equal "", svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk")).path
-    assert_equal "/helloworld.c", svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk/helloworld.c")).path
+    svn.strip_diff_branch(OhlohScm::Diff.new).should be_falsey
+    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/branches/b")).should be_falsey
+    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk")).path.should eq("")
+    svn.strip_diff_branch(OhlohScm::Diff.new(:path => "/trunk/helloworld.c")).path.should eq("/helloworld.c")
   end
 
   it "strip_path_branch" do
     # Returns nil for any path outside of SvnAdapter::branch_name
-    assert !SvnAdapter.new.strip_path_branch(nil)
-    assert !SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/branches/foo")
-    assert !SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/t")
+    SvnAdapter.new.strip_path_branch(nil).should be_falsey
+    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/branches/foo").should be_falsey
+    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/t").should be_falsey
 
     # If branch_name is empty or root, returns path unchanged
-    assert_equal "", SvnAdapter.new.strip_path_branch("")
-    assert_equal "/trunk", SvnAdapter.new.strip_path_branch("/trunk")
+    SvnAdapter.new.strip_path_branch("").should eq("")
+    SvnAdapter.new.strip_path_branch("/trunk").should eq("/trunk")
 
     # If path is equal to or is a subdirectory of branch_name, returns subdirectory portion only.
-    assert_equal "", SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk")
-    assert_equal "/foo", SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk/foo")
+    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk").should eq("")
+    SvnAdapter.new(:branch_name => "/trunk").strip_path_branch("/trunk/foo").should eq("/foo")
   end
 
   it "strip_path_branch_with_special_chars" do
-    assert_equal "/foo", SvnAdapter.new(:branch_name => "/trunk/hamcrest-c++").strip_path_branch("/trunk/hamcrest-c++/foo")
+    SvnAdapter.new(:branch_name => "/trunk/hamcrest-c++").strip_path_branch("/trunk/hamcrest-c++/foo").should eq("/foo")
   end
 
   it "remove_dupes_add_modify" do
@@ -91,8 +91,8 @@ describe "SvnCommits" do
                                     OhlohScm::Diff.new(:action => "M", :path => "foo") ])
 
     svn.remove_dupes(c)
-    assert_equal 1, c.diffs.size
-    assert_equal "A", c.diffs.first.action
+    c.diffs.size.should eq(1)
+    c.diffs.first.action.should eq("A")
   end
 
   it "remove_dupes_add_replace" do
@@ -101,8 +101,8 @@ describe "SvnCommits" do
                                     OhlohScm::Diff.new(:action => "A", :path => "foo") ])
 
     svn.remove_dupes(c)
-    assert_equal 1, c.diffs.size
-    assert_equal "A", c.diffs.first.action
+    c.diffs.size.should eq(1)
+    c.diffs.first.action.should eq("A")
   end
 
   # Had so many bugs around this case that a test was required
@@ -118,7 +118,7 @@ describe "SvnCommits" do
     with_svn_repository("deep_svn") do |svn|
 
       # The full repository contains 4 revisions...
-      assert_equal 4, svn.commit_count
+      svn.commit_count.should eq(4)
 
       # ...however, the current trunk contains only revisions 3 and 4.
       # That"s because the branch was moved to replace the trunk at revision 3.
@@ -127,8 +127,8 @@ describe "SvnCommits" do
       # revisions 1 and 2, it is not visible to Ohloh.
 
       trunk = SvnAdapter.new(:url => File.join(svn.url,"trunk"), :branch_name => "/trunk").normalize
-      assert_equal 2, trunk.commit_count
-      assert_equal [3,4], trunk.commit_tokens
+      trunk.commit_count.should eq(2)
+      trunk.commit_tokens.should eq([3,4])
 
 
       deep_commits = []
@@ -149,13 +149,13 @@ describe "SvnCommits" do
       # Also, after we are only tracking the /trunk and not /branches/b, then
       # there should not be anything referring to activity in /branches/b.
 
-      assert_equal 3, deep_commits.first.token # Make sure this is the right revision
-      assert_equal 2, deep_commits.first.diffs.size # Two files seen
+      deep_commits.first.token.should eq(3) # Make sure this is the right revision
+      deep_commits.first.diffs.size.should eq(2) # Two files seen
 
-      assert_equal "A", deep_commits.first.diffs[0].action
-      assert_equal "/subdir/bar.rb", deep_commits.first.diffs[0].path
-      assert_equal "A", deep_commits.first.diffs[1].action
-      assert_equal "/subdir/foo.rb", deep_commits.first.diffs[1].path
+      deep_commits.first.diffs[0].action.should eq("A")
+      deep_commits.first.diffs[0].path.should eq("/subdir/bar.rb")
+      deep_commits.first.diffs[1].action.should eq("A")
+      deep_commits.first.diffs[1].path.should eq("/subdir/foo.rb")
 
       # In Revision 4, a directory is renamed. This shows in the Subversion log as
       #
@@ -166,20 +166,20 @@ describe "SvnCommits" do
       # both delete and add events for all of the files in this directory, but does
       # not actually refer to the directories themselves.
 
-      assert_equal 4, deep_commits.last.token # Make sure we"re checking the right revision
+      deep_commits.last.token.should eq(4) # Make sure we"re checking the right revision
 
       # There should be 2 files removed and two files added
-      assert_equal 4, deep_commits.last.diffs.size
+      deep_commits.last.diffs.size.should eq(4)
 
-      assert_equal "A", deep_commits.last.diffs[0].action
-      assert_equal "/newdir/bar.rb", deep_commits.last.diffs[0].path
-      assert_equal "A", deep_commits.last.diffs[1].action
-      assert_equal "/newdir/foo.rb", deep_commits.last.diffs[1].path
+      deep_commits.last.diffs[0].action.should eq("A")
+      deep_commits.last.diffs[0].path.should eq("/newdir/bar.rb")
+      deep_commits.last.diffs[1].action.should eq("A")
+      deep_commits.last.diffs[1].path.should eq("/newdir/foo.rb")
 
-      assert_equal "D", deep_commits.last.diffs[2].action
-      assert_equal "/subdir/bar.rb", deep_commits.last.diffs[2].path
-      assert_equal "D", deep_commits.last.diffs[3].action
-      assert_equal "/subdir/foo.rb", deep_commits.last.diffs[3].path
+      deep_commits.last.diffs[2].action.should eq("D")
+      deep_commits.last.diffs[2].path.should eq("/subdir/bar.rb")
+      deep_commits.last.diffs[3].action.should eq("D")
+      deep_commits.last.diffs[3].path.should eq("/subdir/foo.rb")
     end
   end
 
@@ -190,84 +190,82 @@ describe "SvnCommits" do
     with_svn_repository("svn") do |svn|
       svn.each_commit do |e|
         commits << e
-        assert e.token.to_s =~ /\d+/
-        assert e.committer_name.length > 0
-        assert e.committer_date.is_a?(Time)
-        assert e.message
-        assert e.diffs.any?
+        e.token.to_s =~ /\d+/.should be_truthy
+        e.committer_name.length > 0.should be_truthy
+        e.committer_date.is_a?(Time).should be_truthy
+        e.message.should be_truthy
+        e.diffs.any?.should be_truthy
         e.diffs.each do |d|
-          assert d.action.length == 1
-          assert d.path.length > 0
+          d.action.length == 1.should be_truthy
+          d.path.length > 0.should be_truthy
         end
       end
-      assert !FileTest.exist?(svn.log_filename) # Make sure we cleaned up after ourselves
+      FileTest.exist?(svn.log_filename).should be_falsey # Make sure we cleaned up after ourselves
     end
 
-    assert_equal [1, 2, 3, 4, 5], commits.map { |c| c.token }
-    assert_equal ["robin","robin","robin","jason","jason"], commits.map { |c| c.committer_name }
+    commits.map { |c| c.token }.should eq([1, 2, 3, 4, 5])
+    commits.map { |c| c.committer_name }.should eq(["robin","robin","robin","jason","jason"])
 
-    assert_equal Time.utc(2006,6,11,18,28, 0), commits[0].committer_date
-    assert_equal Time.utc(2006,6,11,18,32,14), commits[1].committer_date
-    assert_equal Time.utc(2006,6,11,18,34,18), commits[2].committer_date
-    assert_equal Time.utc(2006,7,14,22,17, 9), commits[3].committer_date
-    assert_equal Time.utc(2006,7,14,23, 7,16), commits[4].committer_date
+    commits[0].committer_date.should eq(Time.utc(2006,6,11,18,28, 0))
+    commits[1].committer_date.should eq(Time.utc(2006,6,11,18,32,14))
+    commits[2].committer_date.should eq(Time.utc(2006,6,11,18,34,18))
+    commits[3].committer_date.should eq(Time.utc(2006,7,14,22,17, 9))
+    commits[4].committer_date.should eq(Time.utc(2006,7,14,23, 7,16))
 
-    assert_equal "Initial Checkin\n", commits[0].message
-    assert_equal "added makefile", commits[1].message
-    assert_equal "added some documentation and licensing info", commits[2].message
-    assert_equal "added bs COPYING to catch global licenses", commits[3].message
-    assert_equal "moving COPYING", commits[4].message
+    commits[0].message.should eq("Initial Checkin\n")
+    commits[1].message.should eq("added makefile")
+    commits[2].message.should eq("added some documentation and licensing info")
+    commits[3].message.should eq("added bs COPYING to catch global licenses")
+    commits[4].message.should eq("moving COPYING")
 
-    assert_equal 1, commits[0].diffs.size
-    assert_equal "A", commits[0].diffs[0].action
-    assert_equal "/trunk/helloworld.c", commits[0].diffs[0].path
+    commits[0].diffs.size.should eq(1)
+    commits[0].diffs[0].action.should eq("A")
+    commits[0].diffs[0].path.should eq("/trunk/helloworld.c")
 
-    assert_equal 1, commits[1].diffs.size
-    assert_equal "A", commits[1].diffs[0].action
-    assert_equal "/trunk/makefile", commits[1].diffs[0].path
+    commits[1].diffs.size.should eq(1)
+    commits[1].diffs[0].action.should eq("A")
+    commits[1].diffs[0].path.should eq("/trunk/makefile")
 
-    assert_equal 2, commits[2].diffs.size
-    assert_equal "A", commits[2].diffs[0].action
-    assert_equal "/trunk/README", commits[2].diffs[0].path
-    assert_equal "M", commits[2].diffs[1].action
-    assert_equal "/trunk/helloworld.c", commits[2].diffs[1].path
+    commits[2].diffs.size.should eq(2)
+    commits[2].diffs[0].action.should eq("A")
+    commits[2].diffs[0].path.should eq("/trunk/README")
+    commits[2].diffs[1].action.should eq("M")
+    commits[2].diffs[1].path.should eq("/trunk/helloworld.c")
 
-    assert_equal 1, commits[3].diffs.size
-    assert_equal "A", commits[3].diffs[0].action
-    assert_equal "/COPYING", commits[3].diffs[0].path
+    commits[3].diffs.size.should eq(1)
+    commits[3].diffs[0].action.should eq("A")
+    commits[3].diffs[0].path.should eq("/COPYING")
 
-    assert_equal 2, commits[4].diffs.size
-    assert_equal "D", commits[4].diffs[0].action
-    assert_equal "/COPYING", commits[4].diffs[0].path
-    assert_equal "A", commits[4].diffs[1].action
-    assert_equal "/trunk/COPYING", commits[4].diffs[1].path
+    commits[4].diffs.size.should eq(2)
+    commits[4].diffs[0].action.should eq("D")
+    commits[4].diffs[0].path.should eq("/COPYING")
+    commits[4].diffs[1].action.should eq("A")
+    commits[4].diffs[1].path.should eq("/trunk/COPYING")
   end
 
   it "log_valid_encoding" do
     with_invalid_encoded_svn_repository do |svn|
-      assert_equal true, svn.log.valid_encoding?
+      svn.log.valid_encoding?.should eq(true)
     end
   end
 
   it "commits_encoding" do
     with_invalid_encoded_svn_repository do |svn|
-      assert_nothing_raised do
-        svn.commits rescue raise Exception
-      end
+      svn.commits rescue raise Exception
     end
   end
 
   it "open_log_file_encoding" do
     with_invalid_encoded_svn_repository do |svn|
       svn.open_log_file do |io|
-        assert_equal true, io.read.valid_encoding?
+        io.read.valid_encoding?.should eq(true)
       end
     end
   end
 
   it "single_revision_xml_valid_encoding" do
     with_invalid_encoded_svn_repository do |svn|
-      assert_equal true, svn.single_revision_xml(:anything).valid_encoding?
+      svn.single_revision_xml(:anything).valid_encoding?.should eq(true)
     end
   end
 end

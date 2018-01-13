@@ -6,14 +6,14 @@ describe "HgMisc" do
     save_hg = nil
     with_hg_repository("hg") do |hg|
       save_hg = hg
-      assert save_hg.exist?
+      save_hg.exist?.should be_truthy
     end
-    assert !save_hg.exist?
+    save_hg.exist?.should be_falsey
   end
 
   it "ls_tree" do
     with_hg_repository("hg") do |hg|
-      assert_equal ["README","makefile", "two"], hg.ls_tree(hg.head_token).sort
+      hg.ls_tree(hg.head_token).sort.should eq(["README","makefile", "two"])
     end
   end
 
@@ -21,7 +21,7 @@ describe "HgMisc" do
     with_hg_repository("hg") do |hg|
       OhlohScm::ScratchDir.new do |dir|
         hg.export(dir)
-        assert_equal [".", "..", "README", "makefile", "two"], Dir.entries(dir).sort
+        Dir.entries(dir).sort.should eq([".", "..", "README", "makefile", "two"])
       end
     end
   end
@@ -31,7 +31,7 @@ describe "HgMisc" do
       filenames = hg.ls_tree("51ea5277ca27")
 
       filenames.each do |filename|
-        assert_equal true, filename.valid_encoding?
+        filename.valid_encoding?.should eq(true)
       end
     end
   end
@@ -39,7 +39,7 @@ describe "HgMisc" do
   it "tags" do
     with_hg_repository("hg") do |hg|
       time = Time.parse("Fri Jul 22 18:00:18 2016 +0530")
-      assert_equal  [["tip", "5", time]], hg.tags
+      hg.tags.should eq([["tip", "5", time]])
     end
   end
 end

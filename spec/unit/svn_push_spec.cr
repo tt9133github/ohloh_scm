@@ -8,12 +8,12 @@ describe "SvnPush" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = SvnAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         src.push(dest)
-        assert dest.exist?
+        dest.exist?.should be_truthy
 
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end
@@ -25,12 +25,12 @@ describe "SvnPush" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = SvnAdapter.new(:url => "svn+ssh://#{Socket.gethostname}#{File.expand_path(dest_dir)}").normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         src.push(dest)
-        assert dest.exist?
+        dest.exist?.should be_truthy
 
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end

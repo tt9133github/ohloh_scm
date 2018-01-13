@@ -3,34 +3,34 @@ require "../test_helper"
 describe "BzrPush" do
 
   it "hostname" do
-    assert !BzrAdapter.new.hostname
-    assert !BzrAdapter.new(:url => "http://www.ohloh.net/test").hostname
-    assert !BzrAdapter.new(:url => "/Users/test/foo").hostname
-    assert_equal "foo", BzrAdapter.new(:url => "bzr+ssh://foo/bar").hostname
+    BzrAdapter.new.hostname.should be_falsey
+    BzrAdapter.new(:url => "http://www.ohloh.net/test").hostname.should be_falsey
+    BzrAdapter.new(:url => "/Users/test/foo").hostname.should be_falsey
+    BzrAdapter.new(:url => "bzr+ssh://foo/bar").hostname.should eq("foo")
   end
 
   it "local" do
-    assert !BzrAdapter.new(:url => "foo:/bar").local? # Assuming your machine is not named "foo" :-)
-    assert !BzrAdapter.new(:url => "http://www.ohloh.net/foo").local?
-    assert !BzrAdapter.new(:url => "bzr+ssh://host/Users/test/src").local?
-    assert BzrAdapter.new(:url => "src").local?
-    assert BzrAdapter.new(:url => "/Users/test/src").local?
-    assert BzrAdapter.new(:url => "file:///Users/test/src").local?
-    assert BzrAdapter.new(:url => "bzr+ssh://#{Socket.gethostname}/Users/test/src").local?
+    BzrAdapter.new(:url => "foo:/bar").local?.should be_falsey # Assuming your machine is not named "foo" :-)
+    BzrAdapter.new(:url => "http://www.ohloh.net/foo").local?.should be_falsey
+    BzrAdapter.new(:url => "bzr+ssh://host/Users/test/src").local?.should be_falsey
+    BzrAdapter.new(:url => "src").local?.should be_truthy
+    BzrAdapter.new(:url => "/Users/test/src").local?.should be_truthy
+    BzrAdapter.new(:url => "file:///Users/test/src").local?.should be_truthy
+    BzrAdapter.new(:url => "bzr+ssh://#{Socket.gethostname}/Users/test/src").local?.should be_truthy
   end
 
   it "path" do
-    assert_equal nil, BzrAdapter.new().path
-    assert_equal nil, BzrAdapter.new(:url => "http://ohloh.net/foo").path
-    assert_equal nil, BzrAdapter.new(:url => "https://ohloh.net/foo").path
-    assert_equal "/Users/test/foo", BzrAdapter.new(:url => "file:///Users/test/foo").path
-    assert_equal "/Users/test/foo", BzrAdapter.new(:url => "bzr+ssh://localhost/Users/test/foo").path
-    assert_equal "/Users/test/foo", BzrAdapter.new(:url => "/Users/test/foo").path
+    BzrAdapter.new().path.should eq(nil)
+    BzrAdapter.new(:url => "http://ohloh.net/foo").path.should eq(nil)
+    BzrAdapter.new(:url => "https://ohloh.net/foo").path.should eq(nil)
+    BzrAdapter.new(:url => "file:///Users/test/foo").path.should eq("/Users/test/foo")
+    BzrAdapter.new(:url => "bzr+ssh://localhost/Users/test/foo").path.should eq("/Users/test/foo")
+    BzrAdapter.new(:url => "/Users/test/foo").path.should eq("/Users/test/foo")
   end
 
   it "bzr_path" do
-    assert_equal nil, BzrAdapter.new().bzr_path
-    assert_equal "/Users/test/src/.bzr", BzrAdapter.new(:url => "/Users/test/src").bzr_path
+    BzrAdapter.new().bzr_path.should eq(nil)
+    BzrAdapter.new(:url => "/Users/test/src").bzr_path.should eq("/Users/test/src/.bzr")
   end
 
   it "push" do
@@ -38,20 +38,20 @@ describe "BzrPush" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = BzrAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         src.push(dest)
-        assert dest.exist?
-        assert_equal src.log, dest.log
+        dest.exist?.should be_truthy
+        dest.log.should eq(src.log)
 
         # Commit some new code on the original and pull again
         src.run "cd '#{src.url}' && touch foo && bzr add foo && bzr whoami 'test <test@example.com>' && bzr commit -m test"
-        assert_equal "test", src.commits.last.message
-        assert_equal "test", src.commits.last.committer_name
-        assert_equal "test@example.com", src.commits.last.committer_email
+        src.commits.last.message.should eq("test")
+        src.commits.last.committer_name.should eq("test")
+        src.commits.last.committer_email.should eq("test@example.com")
 
         src.push(dest)
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end

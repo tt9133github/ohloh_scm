@@ -3,7 +3,7 @@ require "../test_helper"
 describe "GitParser" do
 
   it "empty_array" do
-    assert_equal([], GitParser.parse(""))
+    GitParser.parse("").should eq([])
   end
 
   it "log_parser_default" do
@@ -28,30 +28,30 @@ SAMPLE
 
     commits = GitParser.parse(sample_log)
 
-    assert commits
-    assert_equal 2, commits.size
+    commits.should be_truthy
+    commits.size.should eq(2)
 
-    assert_equal "1df547800dcd168e589bb9b26b4039bff3a7f7e4", commits[0].token
-    assert_equal "Jason Allen", commits[0].author_name
-    assert_equal "jason@ohloh.net", commits[0].author_email
-    assert_equal "moving COPYING", commits[0].message
-    assert_equal Time.utc(2006,7,14,23,7,15), commits[0].author_date
-    assert_equal 1, commits[0].diffs.size
+    commits[0].token.should eq("1df547800dcd168e589bb9b26b4039bff3a7f7e4")
+    commits[0].author_name.should eq("Jason Allen")
+    commits[0].author_email.should eq("jason@ohloh.net")
+    commits[0].message.should eq("moving COPYING")
+    commits[0].author_date.should eq(Time.utc(2006,7,14,23,7,15))
+    commits[0].diffs.size.should eq(1)
 
-    assert_equal "A", commits[0].diffs[0].action
-    assert_equal "COPYING", commits[0].diffs[0].path
+    commits[0].diffs[0].action.should eq("A")
+    commits[0].diffs[0].path.should eq("COPYING")
 
-    assert_equal "2e9366dd7a786fdb35f211fff1c8ea05c51968b1", commits[1].token
-    assert_equal "Robin Luckey", commits[1].author_name
-    assert_equal "robin@ohloh.net", commits[1].author_email
-    assert_equal "added some documentation and licensing info", commits[1].message # Note \n at end of comment
-    assert_equal Time.utc(2006,6,11,18,34,17), commits[1].author_date
-    assert_equal 2, commits[1].diffs.size
+    commits[1].token.should eq("2e9366dd7a786fdb35f211fff1c8ea05c51968b1")
+    commits[1].author_name.should eq("Robin Luckey")
+    commits[1].author_email.should eq("robin@ohloh.net")
+    commits[1].message.should eq("added some documentation and licensing info") # Note \n at end of comment
+    commits[1].author_date.should eq(Time.utc(2006,6,11,18,34,17))
+    commits[1].diffs.size.should eq(2)
 
-    assert_equal "M", commits[1].diffs[0].action
-    assert_equal "README", commits[1].diffs[0].path
-    assert_equal "D", commits[1].diffs[1].action
-    assert_equal "helloworld.c", commits[1].diffs[1].path
+    commits[1].diffs[0].action.should eq("M")
+    commits[1].diffs[0].path.should eq("README")
+    commits[1].diffs[1].action.should eq("D")
+    commits[1].diffs[1].path.should eq("helloworld.c")
   end
 
 end

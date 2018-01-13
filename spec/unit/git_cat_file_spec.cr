@@ -12,7 +12,7 @@ main()
 printf("Hello, World!\\n");
 }
 EXPECTED
-      assert_equal expected, git.cat_file(nil, OhlohScm::Diff.new(:sha1 => "4c734ad53b272c9b3d719f214372ac497ff6c068"))
+      git.cat_file(nil, OhlohScm::Diff.new(:sha1 => "4c734ad53b272c9b3d719f214372ac497ff6c068")).should eq(expected)
     end
   end
 

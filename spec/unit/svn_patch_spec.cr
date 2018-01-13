@@ -5,7 +5,7 @@ describe "SvnPatch" do
     with_svn_repository("svn") do |repo|
       commit = repo.verbose_commit(2)
       data = File.read(File.join(DATA_DIR, "svn_patch.diff"))
-      assert_equal data, repo.patch_for_commit(commit)
+      repo.patch_for_commit(commit).should eq(data)
     end
   end
 end

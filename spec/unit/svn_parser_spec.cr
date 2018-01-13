@@ -7,11 +7,11 @@ describe "SvnParser" do
   end
 
   it "empty_array" do
-    assert_equal([], SvnParser.parse(""))
+    SvnParser.parse("").should eq([])
   end
 
   it "empty_xml" do
-    assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnParser.parse("", :writer => XmlWriter.new))
+    SvnParser.parse("", :writer => XmlWriter.new).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n")
   end
 
   it "yield_instead_of_writer" do
@@ -19,8 +19,8 @@ describe "SvnParser" do
     result = SvnParser.parse(File.read(DATA_DIR + "/simple.svn_log")) do |commit|
       commits << commit.token
     end
-    assert_nil result
-    assert_equal [5, 4, 3, 2, 1], commits
+    result.should be_nil
+    commits.should eq([5, 4, 3, 2, 1])
   end
 
   it "log_parser" do
@@ -43,23 +43,23 @@ SAMPLE
 
     revs = SvnParser.parse(sample_log)
 
-    assert revs
-    assert_equal 3, revs.size
+    revs.should be_truthy
+    revs.size.should eq(3)
 
-    assert_equal 1, revs[0].token
-    assert_equal "robin", revs[0].committer_name
-    assert_equal "Initial Checkin\n", revs[0].message # Note \n at end of comment
-    assert_equal Time.utc(2006,6,11,18,28,00), revs[0].committer_date
+    revs[0].token.should eq(1)
+    revs[0].committer_name.should eq("robin")
+    revs[0].message.should eq("Initial Checkin\n") # Note \n at end of comment
+    revs[0].committer_date.should eq(Time.utc(2006,6,11,18,28,00))
 
-    assert_equal 2, revs[1].token
-    assert_equal "jason", revs[1].committer_name
-    assert_equal "added makefile", revs[1].message # Note no \n at end of comment
-    assert_equal Time.utc(2006,6,11,18,32,13), revs[1].committer_date
+    revs[1].token.should eq(2)
+    revs[1].committer_name.should eq("jason")
+    revs[1].message.should eq("added makefile") # Note no \n at end of comment
+    revs[1].committer_date.should eq(Time.utc(2006,6,11,18,32,13))
 
-    assert_equal 3, revs[2].token
-    assert_equal "robin", revs[2].committer_name
-    assert_equal "added some documentation and licensing info", revs[2].message
-    assert_equal Time.utc(2006,6,11,18,34,17), revs[2].committer_date
+    revs[2].token.should eq(3)
+    revs[2].committer_name.should eq("robin")
+    revs[2].message.should eq("added some documentation and licensing info")
+    revs[2].committer_date.should eq(Time.utc(2006,6,11,18,34,17))
   end
 
   # This is an excerpt from the log for Wireshark. It includes Subversion log excerpts in
@@ -101,11 +101,11 @@ UMTS RRC updated to 3GPP TS 25.331 V7.4.0 (2007-03) and moved to one directory
 LOG
     revs = SvnParser.parse(log)
 
-    assert revs
-    assert_equal 2, revs.size
+    revs.should be_truthy
+    revs.size.should eq(2)
 
-    assert_equal 21932, revs[0].token
-    assert_equal 21931, revs[1].token
+    revs[0].token.should eq(21932)
+    revs[1].token.should eq(21931)
 
     comment = <<COMMENT
 Update from samba tree revision 23054 to 23135
@@ -130,7 +130,7 @@ metze
 ------------------------------------------------------------------------
 ============================ Samba log end ==============
 COMMENT
-    assert_equal comment, revs[0].message
+    revs[0].message.should eq(comment)
   end
 
   it "svn_copy" do
@@ -144,10 +144,10 @@ the branch becomes the new trunk
     LOG
 
     commits = SvnParser.parse(log)
-    assert_equal 1, commits.size
-    assert_equal 1, commits.first.diffs.size
-    assert_equal "/trunk", commits.first.diffs.first.path
-    assert_equal "/branches/development", commits.first.diffs.first.from_path
-    assert_equal 7, commits.first.diffs.first.from_revision
+    commits.size.should eq(1)
+    commits.first.diffs.size.should eq(1)
+    commits.first.diffs.first.path.should eq("/trunk")
+    commits.first.diffs.first.from_path.should eq("/branches/development")
+    commits.first.diffs.first.from_revision.should eq(7)
   end
 end

@@ -12,52 +12,52 @@ describe "GitStyledParser" do
       commits << commit
     end
 
-    assert commits
-    assert_equal 4, commits.size
+    commits.should be_truthy
+    commits.size.should eq(4)
 
     commits.each do |commit|
       # puts commit.inspect
-      assert_equal 40, commit.token.length
+      commit.token.length.should eq(40)
 
       # 00000000.... is ok for parent_sha1 (if we have no parent), but not for us!
-      assert_not_equal "0000000000000000000000000000000000000000", commit.token
+      commit.token.should_not eq("0000000000000000000000000000000000000000")
 
-      assert_equal "robin", commit.author_name
+      commit.author_name.should eq("robin")
 
       commit.diffs.each do |d|
-        assert_equal 40, d.sha1.length
-        assert_equal 40, d.parent_sha1.length
-        assert d.path.length > 0
-        assert d.action =~ /[ACDMRTUXB]/
+        d.sha1.length.should eq(40)
+        d.parent_sha1.length.should eq(40)
+        d.path.length > 0.should be_truthy
+        d.action =~ /[ACDMRTUXB]/.should be_truthy
       end
     end
 
-    assert_equal Time.gm(2006,6,11,11,28,0), commits[0].author_date
-    assert_equal Time.gm(2006,6,11,18,32,13), commits[1].author_date
-    assert_equal Time.gm(2006,6,11, 9,34,17), commits[2].author_date
+    commits[0].author_date.should eq(Time.gm(2006,6,11,11,28,0))
+    commits[1].author_date.should eq(Time.gm(2006,6,11,18,32,13))
+    commits[2].author_date.should eq(Time.gm(2006,6,11, 9,34,17))
 
-    assert_equal "Initial Checkin", commits[0].message
-    assert_equal "added makefile", commits[1].message
-    assert_equal "added some documentation and licensing info", commits[2].message
+    commits[0].message.should eq("Initial Checkin")
+    commits[1].message.should eq("added makefile")
+    commits[2].message.should eq("added some documentation and licensing info")
 
-    assert_equal ".gitignore", commits[0].diffs[0].path
-    assert_equal "A", commits[0].diffs[0].action
-    assert_equal "helloworld.c", commits[0].diffs[1].path
-    assert_equal "A", commits[0].diffs[1].action
-    assert_equal "ohloh_token", commits[0].diffs[2].path
-    assert_equal "A", commits[0].diffs[2].action
+    commits[0].diffs[0].path.should eq(".gitignore")
+    commits[0].diffs[0].action.should eq("A")
+    commits[0].diffs[1].path.should eq("helloworld.c")
+    commits[0].diffs[1].action.should eq("A")
+    commits[0].diffs[2].path.should eq("ohloh_token")
+    commits[0].diffs[2].action.should eq("A")
 
-    assert_equal "makefile", commits[1].diffs[0].path
-    assert_equal "A", commits[1].diffs[0].action
-    assert_equal "ohloh_token", commits[1].diffs[1].path
-    assert_equal "M", commits[1].diffs[1].action
+    commits[1].diffs[0].path.should eq("makefile")
+    commits[1].diffs[0].action.should eq("A")
+    commits[1].diffs[1].path.should eq("ohloh_token")
+    commits[1].diffs[1].action.should eq("M")
 
-    assert_equal "README", commits[2].diffs[0].path
-    assert_equal "A", commits[2].diffs[0].action
-    assert_equal "helloworld.c", commits[2].diffs[1].path
-    assert_equal "M", commits[2].diffs[1].action
-    assert_equal "ohloh_token", commits[2].diffs[2].path
-    assert_equal "M", commits[2].diffs[2].action
+    commits[2].diffs[0].path.should eq("README")
+    commits[2].diffs[0].action.should eq("A")
+    commits[2].diffs[1].path.should eq("helloworld.c")
+    commits[2].diffs[1].action.should eq("M")
+    commits[2].diffs[2].path.should eq("ohloh_token")
+    commits[2].diffs[2].action.should eq("M")
   end
 
   # If the filename includes non-ASCII characters, the filename is in double quotes.
@@ -79,7 +79,7 @@ __END_COMMENT__
   GitStyledParser.parse( log ) do |commit|
     commits << commit
   end
-  assert_equal "Cin\303\251 Library/Cin\303\251 Library.nsi", commits[0].diffs[0].path
+  commits[0].diffs[0].path.should eq("Cin\303\251 Library/Cin\303\251 Library.nsi")
 end
 
 # Not all commits include file diffs. Need to support that case.
@@ -120,19 +120,19 @@ __END_COMMENT__
     commits << commit
   end
 
-  assert commits
-  assert_equal 3, commits.size
+  commits.should be_truthy
+  commits.size.should eq(3)
 
-  assert_equal "Remove reference to avr-gcc in depend rule (cut & paste error).", commits[0].message
-  assert_equal "Test commit in new public repository.  Before this time this repo\n"+
-                "existed on a private system.  Commits made by "bsd" on the old system\n"+
-                "were made by Brian Dean (bdean on the current system).", commits[1].message
+  commits[0].message.should eq("Remove reference to avr-gcc in depend rule (cut & paste error).")
+  commits[1].message.should eq("Test commit in new public repository.  Before this time this repo\n"+
+                               "existed on a private system.  Commits made by \"bsd\" on the old system\n"+
+                               "were made by Brian Dean (bdean on the current system).")
 
-  assert_equal "The last part of that last commit message should read:\n\nAll others - modify program description.\n", commits[2].message
+  commits[2].message.should eq("The last part of that last commit message should read:\n\nAll others - modify program description.\n")
 
-  assert_equal 1, commits[0].diffs.size
-  assert_equal 0, commits[1].diffs.size
-  assert_equal 0, commits[2].diffs.size
+  commits[0].diffs.size.should eq(1)
+  commits[1].diffs.size.should eq(0)
+  commits[2].diffs.size.should eq(0)
 end
 
 it "ignore_submodules" do
@@ -160,11 +160,11 @@ __END_COMMENT__
     commits << commit
   end
 
-  assert commits
-  assert_equal 2, commits.size
+  commits.should be_truthy
+  commits.size.should eq(2)
 
   commits.each do |commit|
-    assert_equal 0, commit.diffs.size
+    commit.diffs.size.should eq(0)
   end
 end
 
@@ -199,21 +199,21 @@ __END_COMMENT__
       commits << commit
     end
 
-    assert commits
-    assert_equal 2, commits.size
+    commits.should be_truthy
+    commits.size.should eq(2)
 
-    assert_equal "mickeyl", commits.first.author_name # Use name when present
-    assert_equal "mickeyl@openembedded.org", commits.last.author_name # Else use email
+    commits.first.author_name.should eq("mickeyl") # Use name when present
+    commits.last.author_name.should eq("mickeyl@openembedded.org") # Else use email
   end
 
   # Verifies OTWO-443
   it "empty_merge" do
     with_git_repository("git_with_empty_merge") do |git|
-      assert_equal 5, git.commit_count
-      assert_equal 5, git.commits.size
+      git.commit_count.should eq(5)
+      git.commits.size.should eq(5)
       c = git.verbose_commit("ff13970b54e5bc373abf932f0708b89e75c842b4")
-      assert_equal "Merge branch 'feature'\n", c.message
-      assert_equal 0, c.diffs.size
+      c.message.should eq("Merge branch 'feature'\n")
+      c.diffs.size.should eq(0)
     end
   end
 end

@@ -16,16 +16,16 @@ added some documentation and licensing info
     LOG
 
     # By default, the ArrayWriter is used, and an empty string is parsed
-    assert_equal [], SvnParser.parse
-    assert_equal [], SvnParser.parse("")
-    assert_equal [], SvnParser.parse("", :writer => ArrayWriter.new)
+    SvnParser.parse.should eq([])
+    SvnParser.parse("").should eq([])
+    SvnParser.parse("", :writer => ArrayWriter.new).should eq([])
 
     result = SvnParser.parse(log, :writer => ArrayWriter.new)
-    assert_equal 1, result.size
-    assert_equal "robin", result.first.committer_name
-    assert_equal 3, result.first.token
-    assert_equal 2, result.first.diffs.size
-    assert_equal "/trunk/README", result.first.diffs.first.path
-    assert_equal "A", result.first.diffs.first.action
+    result.size.should eq(1)
+    result.first.committer_name.should eq("robin")
+    result.first.token.should eq(3)
+    result.first.diffs.size.should eq(2)
+    result.first.diffs.first.path.should eq("/trunk/README")
+    result.first.diffs.first.action.should eq("A")
   end
 end

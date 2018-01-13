@@ -3,34 +3,34 @@ require "../test_helper"
 describe "HgPush" do
 
   it "hostname" do
-    assert !HgAdapter.new.hostname
-    assert !HgAdapter.new(:url => "http://www.ohloh.net/test").hostname
-    assert !HgAdapter.new(:url => "/Users/robin/foo").hostname
-    assert_equal "foo", HgAdapter.new(:url => "ssh://foo/bar").hostname
+    HgAdapter.new.hostname.should be_falsey
+    HgAdapter.new(:url => "http://www.ohloh.net/test").hostname.should be_falsey
+    HgAdapter.new(:url => "/Users/robin/foo").hostname.should be_falsey
+    HgAdapter.new(:url => "ssh://foo/bar").hostname.should eq("foo")
   end
 
   it "local" do
-    assert !HgAdapter.new(:url => "foo:/bar").local? # Assuming your machine is not named "foo" :-)
-    assert !HgAdapter.new(:url => "http://www.ohloh.net/foo").local?
-    assert !HgAdapter.new(:url => "ssh://host/Users/robin/src").local?
-    assert HgAdapter.new(:url => "src").local?
-    assert HgAdapter.new(:url => "/Users/robin/src").local?
-    assert HgAdapter.new(:url => "file:///Users/robin/src").local?
-    assert HgAdapter.new(:url => "ssh://#{Socket.gethostname}/Users/robin/src").local?
+    HgAdapter.new(:url => "foo:/bar").local?.should be_falsey # Assuming your machine is not named "foo" :-)
+    HgAdapter.new(:url => "http://www.ohloh.net/foo").local?.should be_falsey
+    HgAdapter.new(:url => "ssh://host/Users/robin/src").local?.should be_falsey
+    HgAdapter.new(:url => "src").local?.should be_truthy
+    HgAdapter.new(:url => "/Users/robin/src").local?.should be_truthy
+    HgAdapter.new(:url => "file:///Users/robin/src").local?.should be_truthy
+    HgAdapter.new(:url => "ssh://#{Socket.gethostname}/Users/robin/src").local?.should be_truthy
   end
 
   it "path" do
-    assert_equal nil, HgAdapter.new().path
-    assert_equal nil, HgAdapter.new(:url => "http://ohloh.net/foo").path
-    assert_equal nil, HgAdapter.new(:url => "https://ohloh.net/foo").path
-    assert_equal "/Users/robin/foo", HgAdapter.new(:url => "file:///Users/robin/foo").path
-    assert_equal "/Users/robin/foo", HgAdapter.new(:url => "ssh://localhost/Users/robin/foo").path
-    assert_equal "/Users/robin/foo", HgAdapter.new(:url => "/Users/robin/foo").path
+    HgAdapter.new().path.should eq(nil)
+    HgAdapter.new(:url => "http://ohloh.net/foo").path.should eq(nil)
+    HgAdapter.new(:url => "https://ohloh.net/foo").path.should eq(nil)
+    HgAdapter.new(:url => "file:///Users/robin/foo").path.should eq("/Users/robin/foo")
+    HgAdapter.new(:url => "ssh://localhost/Users/robin/foo").path.should eq("/Users/robin/foo")
+    HgAdapter.new(:url => "/Users/robin/foo").path.should eq("/Users/robin/foo")
   end
 
   it "hg_path" do
-    assert_equal nil, HgAdapter.new().hg_path
-    assert_equal "/Users/robin/src/.hg", HgAdapter.new(:url => "/Users/robin/src").hg_path
+    HgAdapter.new().hg_path.should eq(nil)
+    HgAdapter.new(:url => "/Users/robin/src").hg_path.should eq("/Users/robin/src/.hg")
   end
 
   it "push" do
@@ -38,18 +38,18 @@ describe "HgPush" do
       OhlohScm::ScratchDir.new do |dest_dir|
 
         dest = HgAdapter.new(:url => dest_dir).normalize
-        assert !dest.exist?
+        dest.exist?.should be_falsey
 
         src.push(dest)
-        assert dest.exist?
-        assert_equal src.log, dest.log
+        dest.exist?.should be_truthy
+        dest.log.should eq(src.log)
 
         # Commit some new code on the original and pull again
         src.run "cd '#{src.url}' && touch foo && hg add foo && hg commit -u test -m test"
-        assert_equal "test\n", src.commits.last.message
+        src.commits.last.message.should eq("test\n")
 
         src.push(dest)
-        assert_equal src.log, dest.log
+        dest.log.should eq(src.log)
       end
     end
   end

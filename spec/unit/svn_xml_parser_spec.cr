@@ -7,11 +7,11 @@ describe "SvnXmlParser" do
   end
 
   it "empty_array" do
-    assert_equal([], SvnXmlParser.parse(""))
+    SvnXmlParser.parse("").should eq([])
   end
 
   it "empty_xml" do
-    assert_equal("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n", SvnXmlParser.parse("", :writer => XmlWriter.new))
+    SvnXmlParser.parse("", :writer => XmlWriter.new).should eq("<?xml version=\"1.0\"?>\n<ohloh_log scm=\"svn\">\n</ohloh_log>\n")
   end
 
   it "copy_from" do
@@ -33,11 +33,11 @@ describe "SvnXmlParser" do
 </log>
     XML
     commits = SvnXmlParser.parse(xml)
-    assert_equal 1, commits.size
-    assert_equal 1, commits.first.diffs.size
-    assert_equal "/trunk", commits.first.diffs.first.path
-    assert_equal "/branches/development", commits.first.diffs.first.from_path
-    assert_equal 7, commits.first.diffs.first.from_revision
+    commits.size.should eq(1)
+    commits.first.diffs.size.should eq(1)
+    commits.first.diffs.first.path.should eq("/trunk")
+    commits.first.diffs.first.from_path.should eq("/branches/development")
+    commits.first.diffs.first.from_revision.should eq(7)
   end
 
 end

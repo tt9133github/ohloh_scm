@@ -7,25 +7,25 @@ describe "GitCommitAll" do
       git = GitAdapter.new(:url => dir).normalize
 
       git.init_db
-      assert !git.anything_to_commit?
+      git.anything_to_commit?.should be_falsey
 
       File.open(File.join(dir, "README"), "w") {}
-      assert git.anything_to_commit?
+      git.anything_to_commit?.should be_truthy
 
       c = OhlohScm::Commit.new
       c.author_name = "John Q. Developer"
       c.message = "Initial checkin."
       git.commit_all(c)
-      assert !git.anything_to_commit?
+      git.anything_to_commit?.should be_falsey
 
-      assert_equal 1, git.commits.size
+      git.commits.size.should eq(1)
 
-      assert_equal c.author_name, git.commits.first.author_name
+      git.commits.first.author_name.should eq(c.author_name)
       # Depending on version of Git used, we may or may not have trailing \n.
       # We don"t really care, so just compare the stripped versions.
-      assert_equal c.message.strip, git.commits.first.message.strip
+      git.commits.first.message.strip.should eq(c.message.strip)
 
-      assert_equal [".gitignore", "README"], git.commits.first.diffs.map { |d| d.path }.sort
+      git.commits.first.diffs.map { |d| d.path }.sort.should eq([".gitignore", "README"])
     end
   end
 

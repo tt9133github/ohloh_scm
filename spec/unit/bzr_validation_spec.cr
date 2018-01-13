@@ -11,7 +11,7 @@ describe "BzrValidation" do
       "lp://foobar", # lp requires no "//" after colon
     ].each do |url|
       bzr = BzrAdapter.new(:url => url, :public_urls_only => true)
-      assert bzr.validate_url.to_a.any?, "Didn't expect #{ url } to validate"
+      bzr.validate_url.to_a.any?, "Didn't expect #{ url } to validate".should be_truthy
     end
   end
 
@@ -24,7 +24,7 @@ describe "BzrValidation" do
       "lp:~foobar/bar",
     ].each do |url|
       bzr = BzrAdapter.new(:url => url, :public_urls_only => true)
-      assert !bzr.validate_url
+      bzr.validate_url.should be_falsey
     end
   end
 
@@ -36,24 +36,24 @@ describe "BzrValidation" do
       "bzr+ssh://localhost/home/test/bzr"
     ].each do |url|
       bzr = BzrAdapter.new(:url => url, :public_urls_only => true)
-      assert bzr.validate_url
+      bzr.validate_url.should be_truthy
 
       bzr = BzrAdapter.new(:url => url)
-      assert !bzr.validate_url
+      bzr.validate_url.should be_falsey
     end
   end
 
   it "guess_forge" do
     bzr = BzrAdapter.new(:url => nil)
-    assert_equal nil, bzr.guess_forge
+    bzr.guess_forge.should eq(nil)
 
     bzr = BzrAdapter.new(:url => "/home/test/bzr")
-    assert_equal nil, bzr.guess_forge
+    bzr.guess_forge.should eq(nil)
 
     bzr = BzrAdapter.new( :url => "bzr://www.selenic.com/repo/hello")
-    assert_equal "www.selenic.com", bzr.guess_forge
+    bzr.guess_forge.should eq("www.selenic.com")
 
     bzr = BzrAdapter.new( :url => "http://www.selenic.com/repo/hello")
-    assert_equal "www.selenic.com", bzr.guess_forge
+    bzr.guess_forge.should eq("www.selenic.com")
   end
 end

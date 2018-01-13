@@ -11,21 +11,21 @@ describe "HgRevList" do
   it "rev_list" do
     with_hg_repository("hg_walk") do |hg|
       # Full history to a commit
-      assert_equal [:A],                         rev_list_helper(hg, nil, :A)
-      assert_equal [:A, :B],                     rev_list_helper(hg, nil, :B)
-      assert_equal [:A, :B, :G, :H, :C],         rev_list_helper(hg, nil, :C)
-      assert_equal [:A, :B, :G, :H, :C, :I, :D], rev_list_helper(hg, nil, :D)
-      assert_equal [:A, :G],                     rev_list_helper(hg, nil, :G)
-      assert_equal [:A, :G, :H],                 rev_list_helper(hg, nil, :H)
-      assert_equal [:A, :G, :H, :I],             rev_list_helper(hg, nil, :I)
+      rev_list_helper(hg, nil, :A).should eq([:A])
+      rev_list_helper(hg, nil, :B).should eq([:A, :B])
+      rev_list_helper(hg, nil, :C).should eq([:A, :B, :G, :H, :C])
+      rev_list_helper(hg, nil, :D).should eq([:A, :B, :G, :H, :C, :I, :D])
+      rev_list_helper(hg, nil, :G).should eq([:A, :G])
+      rev_list_helper(hg, nil, :H).should eq([:A, :G, :H])
+      rev_list_helper(hg, nil, :I).should eq([:A, :G, :H, :I])
 
       # Limited history from one commit to another
-      assert_equal [],                           rev_list_helper(hg, :A, :A)
-      assert_equal [:B],                         rev_list_helper(hg, :A, :B)
-      assert_equal [:B, :G, :H, :C],             rev_list_helper(hg, :A, :C)
-      assert_equal [:B, :G, :H, :C, :I, :D],     rev_list_helper(hg, :A, :D)
-      assert_equal [:G, :H, :C, :I, :D],         rev_list_helper(hg, :B, :D)
-      assert_equal [:I, :D],                     rev_list_helper(hg, :C, :D)
+      rev_list_helper(hg, :A, :A).should eq([])
+      rev_list_helper(hg, :A, :B).should eq([:B])
+      rev_list_helper(hg, :A, :C).should eq([:B, :G, :H, :C])
+      rev_list_helper(hg, :A, :D).should eq([:B, :G, :H, :C, :I, :D])
+      rev_list_helper(hg, :B, :D).should eq([:G, :H, :C, :I, :D])
+      rev_list_helper(hg, :C, :D).should eq([:I, :D])
     end
   end
 
