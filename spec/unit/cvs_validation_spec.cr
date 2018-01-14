@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe "CvsValidation" do
   it "rejected_urls" do
-    [	nil, "", "foo", "http:/", "http:://", "http://", "http://a",
+    [  nil, "", "foo", "http:/", "http:://", "http://", "http://a",
       ":pserver", # that's not enough
       ":pserver:anonymous", #still not enough
       ":pserver:anonymous:@ipodder.cvs.sourceforge.net", # missing the path
@@ -30,7 +30,7 @@ describe "CvsValidation" do
   end
 
   it "accepted_urls" do
-    [	":pserver:anonymous:@ipodder.cvs.sourceforge.net:/cvsroot/ipodder",
+    [  ":pserver:anonymous:@ipodder.cvs.sourceforge.net:/cvsroot/ipodder",
       ":pserver:anonymous@cvs-mirror.mozilla.org:/cvsroot",
       ":pserver:anonymous:@cvs-mirror.mozilla.org:/cvsroot",
       ":pserver:guest:@cvs.dev.java.net:/shared/data/ccvs/repository",

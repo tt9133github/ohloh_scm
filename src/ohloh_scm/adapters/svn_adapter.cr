@@ -1,9 +1,9 @@
 module OhlohScm::Adapters
-	class SvnAdapter < AbstractAdapter
-		def english_name
-			"Subversion"
-		end
-	end
+  class SvnAdapter < AbstractAdapter
+    def english_name
+      "Subversion"
+    end
+  end
 end
 
 require "./svn/validation"

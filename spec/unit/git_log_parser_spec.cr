@@ -72,7 +72,7 @@ __BEGIN_COMMENT__
 Supprime le dossier des bibliotheques du projet
 <unknown>
 __END_COMMENT__
-:100644 100644 8ffcfcbb647ab353e7e885fb3fd897eef719d64f e4eaafd3ed351461cef016bf606f0ce6af057380 M	"Cin\303\251 Library/Cin\303\251 Library.nsi"
+:100644 100644 8ffcfcbb647ab353e7e885fb3fd897eef719d64f e4eaafd3ed351461cef016bf606f0ce6af057380 M  "Cin\303\251 Library/Cin\303\251 Library.nsi"
   LOG
 
   commits = Array(Nil).new
@@ -93,7 +93,7 @@ __BEGIN_COMMENT__
 Remove reference to avr-gcc in depend rule (cut & paste error).
 <unknown>
 __END_COMMENT__
-:100644 100644 a35924054b56a3dd308ac92505b811bdfecee777 f4f4738ae0f49a56d97ba61d7feb09aa35d9e69d M	Makefile
+:100644 100644 a35924054b56a3dd308ac92505b811bdfecee777 f4f4738ae0f49a56d97ba61d7feb09aa35d9e69d M  Makefile
 __BEGIN_COMMIT__
 Commit: 10ed46d82c279d090b664c48a88a95e7ad76de2f
 Author: bdean

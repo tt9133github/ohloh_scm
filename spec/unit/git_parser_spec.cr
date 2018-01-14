@@ -14,7 +14,7 @@ Date:   Fri, 14 Jul 2006 16:07:15 -0700
 
   moving COPYING
 
-A	COPYING
+A  COPYING
 
 commit 2e9366dd7a786fdb35f211fff1c8ea05c51968b1
 Author: Robin Luckey <robin@ohloh.net>
@@ -22,8 +22,8 @@ Date:   Sun, 11 Jun 2006 11:34:17 -0700
 
   added some documentation and licensing info
 
-M	README
-D	helloworld.c
+M  README
+D  helloworld.c
 SAMPLE
 
     commits = GitParser.parse(sample_log)

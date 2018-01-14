@@ -18,7 +18,7 @@ describe "SvnValidation" do
   end
 
   it "rejected_urls" do
-    [	nil, "", "foo", "http:/", "http:://", "http://",
+    [  nil, "", "foo", "http:/", "http:://", "http://",
     "sourceforge.net/svn/project/trunk", # missing a protocol prefix
     "http://robin@svn.sourceforge.net/", # must not include a username with the url
     "/home/robin/cvs", # local file paths not allowed
@@ -37,7 +37,7 @@ describe "SvnValidation" do
   end
 
   it "accepted_urls" do
-    [	"https://svn.sourceforge.net/svnroot/opende/trunk", # https protocol OK
+    [  "https://svn.sourceforge.net/svnroot/opende/trunk", # https protocol OK
     "svn://svn.gajim.org/gajim/trunk", # svn protocol OK
     "http://svn.mythtv.org/svn/trunk/mythtv", # http protocol OK
     "https://svn.sourceforge.net/svnroot/vienna-rss/trunk/2.0.0", # periods, numbers and dashes OK

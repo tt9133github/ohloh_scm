@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe "GitValidation" do
   it "rejected_urls" do
-    [	nil, "", "foo", "http:/", "http:://", "http://", "http://a",
+    [  nil, "", "foo", "http:/", "http:://", "http://", "http://a",
     "kernel.org/linux/linux.git", # missing a protocol prefix
     "http://kernel.org/linux/lin%32ux.git", # no encoded strings allowed
     "http://kernel.org/linux/linux.git malicious code", # no spaces allowed

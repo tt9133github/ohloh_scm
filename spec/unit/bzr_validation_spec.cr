@@ -2,7 +2,7 @@ require "../spec_helper"
 
 describe "BzrValidation" do
   it "rejected_urls" do
-    [	nil, "", "foo", "http:/", "http:://", "http://", "http://a",
+    [  nil, "", "foo", "http:/", "http:://", "http://", "http://a",
       "www.selenic.com/repo/hello", # missing a protool prefix
       "http://www.selenic.com/repo/hello%20world", # no encoded strings allowed
       "http://www.selenic.com/repo/hello world", # no spaces allowed

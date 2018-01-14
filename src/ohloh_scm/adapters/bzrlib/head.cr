@@ -1,9 +1,9 @@
 module OhlohScm::Adapters
-	class BzrlibAdapter < BzrAdapter
+  class BzrlibAdapter < BzrAdapter
 
-		def parent_tokens(commit)
+    def parent_tokens(commit)
       bzr_client.parent_tokens(commit.token)
-		end
+    end
 
-	end
+  end
 end

@@ -1,9 +1,9 @@
 module OhlohScm::Adapters
-	class GitAdapter < AbstractAdapter
-		def english_name
-			"Git"
-		end
-	end
+  class GitAdapter < AbstractAdapter
+    def english_name
+      "Git"
+    end
+  end
 end
 
 require "./git/validation"

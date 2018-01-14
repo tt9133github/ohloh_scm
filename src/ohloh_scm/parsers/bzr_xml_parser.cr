@@ -2,24 +2,24 @@ require "rexml/document"
 require "rexml/streamlistener"
 
 module OhlohScm::Parsers
-	class BazaarListener
-		include REXML::StreamListener
-		property :callback
+  class BazaarListener
+    include REXML::StreamListener
+    property :callback
 
-		def initialize(callback)
-			@callback = callback
+    def initialize(callback)
+      @callback = callback
       @merge_commit = Array(OhlohScm::Commit).new
       @state = :none
       @authors = Array(Nil).new
-		end
+    end
 
-		property :text, :commit, :diff
+    property :text, :commit, :diff
 
-		def tag_start(name, attrs)
+    def tag_start(name, attrs)
       case name
       when "log"
-				@commit = OhlohScm::Commit.new
-				@commit.diffs = Array(Nil).new
+        @commit = OhlohScm::Commit.new
+        @commit.diffs = Array(Nil).new
       when "affected-files"
         @diffs = Array(Nil).new
       when "added", "modified", "removed", "renamed"
@@ -33,26 +33,26 @@ module OhlohScm::Parsers
       when "authors"
         @state = :collect_authors
         @authors = [] of Hash(Symbol, String)
-			end
-		end
+      end
+    end
 
-		def tag_end(name)
-			case name
-			when "log"
-				@callback.call(@commit)
+    def tag_end(name)
+      case name
+      when "log"
+        @callback.call(@commit)
       when "revisionid"
         @commit.token = @text
       when "message"
         @commit.message = @cdata
-			when "committer"
+      when "committer"
         committer = BzrXmlParser.capture_name(@text)
-				@commit.committer_name = committer[0]
-				@commit.committer_email = committer[1]
-			when "author"
+        @commit.committer_name = committer[0]
+        @commit.committer_email = committer[1]
+      when "author"
         author = BzrXmlParser.capture_name(@text)
-				@authors << {:author_name => author[0], :author_email => author[1]}
-			when "timestamp"
-				@commit.committer_date = Time.parse(@text)
+        @authors << {:author_name => author[0], :author_email => author[1]}
+      when "timestamp"
+        @commit.committer_date = Time.parse(@text)
       when "file"
         if @state == :collect_files
           @diffs.concat(parse_diff(@action, @text, @before_path))
@@ -62,23 +62,23 @@ module OhlohScm::Parsers
       when "added", "modified", "removed", "renamed"
         @state = :none
       when "affected-files"
-			  @commit.diffs = remove_dupes(@diffs)
+        @commit.diffs = remove_dupes(@diffs)
       when "merge"
         @commit = @merge_commit.pop
       when "authors"
         @commit.author_name = @authors[0][:author_name]
         @commit.author_email = @authors[0][:author_email]
         @authors.clear
-			end
-		end
+      end
+    end
 
     def cdata(data)
       @cdata = data
     end
 
-		def text(text)
-			@text = text
-		end
+    def text(text)
+      @text = text
+    end
 
     # Parse one single diff
     private def parse_diff(action, path, before_path)
@@ -113,21 +113,21 @@ module OhlohScm::Parsers
       BzrXmlParser.remove_dupes(diffs)
     end
 
-	end
+  end
 
-	class BzrXmlParser < Parser
+  class BzrXmlParser < Parser
     NAME_REGEX = /^(.+?)(\s+<(.+)>\s*)?$/
-		def self.internal_parse(buffer, opts)
-			buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
-			begin
-				REXML::Document.parse_stream(buffer, BazaarListener.new(-> { |c| yield c if block_given? }))
-			rescue EOFError
-			end
-		end
+    def self.internal_parse(buffer, opts)
+      buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
+      begin
+        REXML::Document.parse_stream(buffer, BazaarListener.new(-> { |c| yield c if block_given? }))
+      rescue EOFError
+      end
+    end
 
-		def self.scm
-			"bzr"
-		end
+    def self.scm
+      "bzr"
+    end
 
     def self.remove_dupes(diffs)
       # Bazaar may report that a file was added and modified in a single commit.
@@ -153,5 +153,5 @@ module OhlohScm::Parsers
       email = parts[3]
       [name, email]
     end
-	end
+  end
 end

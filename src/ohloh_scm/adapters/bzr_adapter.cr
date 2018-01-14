@@ -1,9 +1,9 @@
 module OhlohScm::Adapters
-	class BzrAdapter < AbstractAdapter
-		def english_name
-			"Bazaar"
-		end
-	end
+  class BzrAdapter < AbstractAdapter
+    def english_name
+      "Bazaar"
+    end
+  end
 end
 
 require "./bzr/validation"

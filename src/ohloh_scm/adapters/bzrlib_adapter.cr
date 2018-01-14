@@ -2,7 +2,7 @@ require "rubygems"
 
 require "./bzrlib/bzrlib_pipe_client"
 module OhlohScm::Adapters
-	class BzrlibAdapter < BzrAdapter
+  class BzrlibAdapter < BzrAdapter
 
     def setup
       bzr_client = BzrPipeClient.new(url)
@@ -18,7 +18,7 @@ module OhlohScm::Adapters
       @bzr_client.shutdown
     end
 
-	end
+  end
 end
 
 require "./bzrlib/head"

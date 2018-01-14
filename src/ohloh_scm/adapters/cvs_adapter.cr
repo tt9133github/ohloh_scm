@@ -1,16 +1,16 @@
 module OhlohScm::Adapters
-	class CvsAdapter < AbstractAdapter
-		property :module_name
+  class CvsAdapter < AbstractAdapter
+    property :module_name
 
-		def english_name
-			"CVS"
-		end
+    def english_name
+      "CVS"
+    end
 
-		def initialize(params=Hash(Nil,Nil).new)
-			super
-			@module_name = params[:module_name]
-		end
-	end
+    def initialize(params=Hash(Nil,Nil).new)
+      super
+      @module_name = params[:module_name]
+    end
+  end
 end
 
 require "./cvs/validation"
