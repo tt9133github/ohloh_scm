@@ -26,7 +26,7 @@ module OhlohScm::Parsers
 					case l
 					when /^changeset:\s+([0-9a-f]+)/
 						e = OhlohScm::Commit.new
-						e.diffs = []
+						e.diffs = Array(Nil).new
 						e.token = $1
 					when /^user:\s+(.+?)(\s+<(.+)>)?$/
 						e.committer_name = $1

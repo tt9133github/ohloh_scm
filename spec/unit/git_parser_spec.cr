@@ -3,7 +3,7 @@ require "../spec_helper"
 describe "GitParser" do
 
   it "empty_array" do
-    GitParser.parse("").should eq([])
+    GitParser.parse("").should eq(Array(Nil).new)
   end
 
   it "log_parser_default" do

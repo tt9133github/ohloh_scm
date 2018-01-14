@@ -14,7 +14,7 @@ describe "SvnChain" do
       svn.commit_tokens({:after => 7}).should eq([8,9,11])
       svn.commit_tokens({:after => 8}).should eq([9,11])
       svn.commit_tokens({:after => 9}).should eq([11])
-      svn.commit_tokens({:after => 11}).should eq([])
+      svn.commit_tokens({:after => 11}).should eq(Array(Nil).new)
     end
   end
 
@@ -46,7 +46,7 @@ describe "SvnChain" do
       svn.commits({:after => 7}).map { |c| c.token }.should eq([8,9,11])
       svn.commits({:after => 8}).map { |c| c.token }.should eq([9,11])
       svn.commits({:after => 9}).map { |c| c.token }.should eq([11])
-      svn.commits({:after => 11}).map { |c| c.token }.should eq([])
+      svn.commits({:after => 11}).map { |c| c.token }.should eq(Array(Nil).new)
     end
   end
 
@@ -56,7 +56,7 @@ describe "SvnChain" do
   # point of view the code is unchanged; only the base directory
   # has moved.
   it "chained_each_commit" do
-    commits = []
+    commits = Array(Nil).new
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.each_commit do |c|
         c.scm.should be_truthy # To support checkout of chained commits, the
@@ -146,7 +146,7 @@ describe "SvnChain" do
       c.scm.branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(8)
-      c.diffs.should eq([])
+      c.diffs.should eq(Array(Nil).new)
       c.scm.branch_name.should eq("/trunk")
 
       # Reaching these commits requires chaining
@@ -157,7 +157,7 @@ describe "SvnChain" do
 
       # Reaching these commits requires chaining twice
       c = svn.verbose_commit(4)
-      c.diffs.should eq([])
+      c.diffs.should eq(Array(Nil).new)
       c.scm.branch_name.should eq("/trunk")
 
       # And now a fourth chain (to skip over /trunk deletion in rev 3)
@@ -167,7 +167,7 @@ describe "SvnChain" do
       c.scm.branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(1)
-      c.diffs.should eq([])
+      c.diffs.should eq(Array(Nil).new)
       c.scm.branch_name.should eq("/trunk")
     end
   end

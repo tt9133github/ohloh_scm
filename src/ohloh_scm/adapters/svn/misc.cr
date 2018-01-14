@@ -61,7 +61,7 @@ module OhlohScm::Adapters
 		end
 
 		def info(path=nil, revision=final_token || "HEAD")
-			@info ||= {}
+			@info ||= Hash(Nil,Nil).new
 			uri = if path
 							File.join(root, branch_name.to_s, path)
 						else
@@ -90,7 +90,7 @@ module OhlohScm::Adapters
 				return nil
 			end
 
-			files = []
+			files = Array(String).new
 			stdout.each_line do |s|
 				s.chomp!
 				files << s if s.length > 0 && s != "CVSROOT/"

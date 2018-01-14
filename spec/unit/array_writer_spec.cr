@@ -16,9 +16,9 @@ added some documentation and licensing info
     LOG
 
     # By default, the ArrayWriter is used, and an empty string is parsed
-    SvnParser.parse.should eq([])
-    SvnParser.parse("").should eq([])
-    SvnParser.parse("", { :writer => ArrayWriter.new }).should eq([])
+    SvnParser.parse.should eq(Array(Nil).new)
+    SvnParser.parse("").should eq(Array(Nil).new)
+    SvnParser.parse("", { :writer => ArrayWriter.new }).should eq(Array(Nil).new)
 
     result = SvnParser.parse(log, { :writer => ArrayWriter.new })
     result.size.should eq(1)

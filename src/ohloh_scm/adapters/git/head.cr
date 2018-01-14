@@ -11,7 +11,7 @@ module OhlohScm::Adapters
 		end
 
 		def parent_tokens(commit)
-			run("cd '#{url}' && git cat-file commit #{commit.token} | grep ^parent | cut -f 2 -d ' '").split("\n") || []
+			run("cd '#{url}' && git cat-file commit #{commit.token} | grep ^parent | cut -f 2 -d ' '").split("\n") || Array(Nil).new
 		end
 
 		def parents(commit)

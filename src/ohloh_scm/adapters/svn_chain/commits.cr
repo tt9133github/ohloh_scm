@@ -2,18 +2,18 @@ module OhlohScm::Adapters
 	class SvnChainAdapter < SvnAdapter
 
 		# Returns the count of commits following revision number 'after'.
-		def commit_count(opts={})
+		def commit_count(opts=Hash(Nil,Nil).new)
 			(parent_svn(opts[:after]) ? parent_svn(opts[:after]).commit_count(opts) : 0) + super(opts)
 		end
 
 		# Returns an array of revision numbers for all commits following revision number 'after'.
-		def commit_tokens(opts={})
-			(parent_svn(opts[:after]) ? parent_svn(opts[:after]).commit_tokens(opts) : []) + super(opts)
+		def commit_tokens(opts=Hash(Nil,Nil).new)
+			(parent_svn(opts[:after]) ? parent_svn(opts[:after]).commit_tokens(opts) : Array(Nil).new) + super(opts)
 		end
 
 		# Returns an array of commits following revision number 'after'.
-		def commits(opts={})
-			(parent_svn(opts[:after]) ? parent_svn(opts[:after]).commits(opts) : []) + super(opts)
+		def commits(opts=Hash(Nil,Nil).new)
+			(parent_svn(opts[:after]) ? parent_svn(opts[:after]).commits(opts) : Array(Nil).new) + super(opts)
 		end
 
 		def verbose_commit(rev=0)

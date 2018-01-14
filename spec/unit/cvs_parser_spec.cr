@@ -7,7 +7,7 @@ describe "CvsParser" do
   end
 
   it "empty_array" do
-    CvsParser.parse("").should eq([])
+    CvsParser.parse("").should eq(Array(Nil).new)
   end
 
   it "empty_xml" do

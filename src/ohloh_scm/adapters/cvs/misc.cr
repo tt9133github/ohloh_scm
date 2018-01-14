@@ -16,7 +16,7 @@ module OhlohScm::Adapters
 
 			stdout, stderr = run_with_err(cmd)
 
-			files = []
+			files = Array(String).new
 			stdout.each_line do |s|
 				s.strip!
 				s = $1 + "/" if s =~ /^D\/(.*)\/\/\/\/$/
@@ -112,7 +112,7 @@ module OhlohScm::Adapters
 			# then return an empty string (ie, the default root directory) if so.
 			return [""] if self.url =~ /^\//
 
-				list = []
+				list = Array(String).new
 			directories.map{ |a| trim_directory(a.to_s).to_s }.each do |d|
 				# We always ignore Attic directories, which just contain deleted files
 				# Update the parent directory of the Attic instead.

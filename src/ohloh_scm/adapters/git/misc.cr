@@ -75,7 +75,7 @@ module OhlohScm::Adapters
     end
 
     def tags
-      return [] if no_tags?
+      return Array(Nil).new if no_tags?
       tag_strings = run("cd #{url} && git tag --format='%(creatordate:iso-strict) %(objectname) %(refname)' | sed 's/refs\\/tags\\///'").split(/\n/)
       tag_strings.map do |tag_string|
         timestamp_string, commit_hash, tag_name = tag_string.split(/\s/)

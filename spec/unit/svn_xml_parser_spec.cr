@@ -7,7 +7,7 @@ describe "SvnXmlParser" do
   end
 
   it "empty_array" do
-    SvnXmlParser.parse("").should eq([])
+    SvnXmlParser.parse("").should eq(Array(Nil).new)
   end
 
   it "empty_xml" do

@@ -8,9 +8,9 @@ module OhlohScm::Parsers
 
 		def initialize(callback)
 			@callback = callback
-      @merge_commit = []
+      @merge_commit = Array(OhlohScm::Commit).new
       @state = :none
-      @authors = []
+      @authors = Array(Nil).new
 		end
 
 		property :text, :commit, :diff
@@ -19,9 +19,9 @@ module OhlohScm::Parsers
       case name
       when "log"
 				@commit = OhlohScm::Commit.new
-				@commit.diffs = []
+				@commit.diffs = Array(Nil).new
       when "affected-files"
-        @diffs = []
+        @diffs = Array(Nil).new
       when "added", "modified", "removed", "renamed"
         @action = name
         @state = :collect_files
@@ -32,7 +32,7 @@ module OhlohScm::Parsers
         @merge_commit.push(@commit)
       when "authors"
         @state = :collect_authors
-        @authors = []
+        @authors = [] of Hash(Symbol, String)
 			end
 		end
 
@@ -82,7 +82,7 @@ module OhlohScm::Parsers
 
     # Parse one single diff
     private def parse_diff(action, path, before_path)
-      diffs = []
+      diffs = Array(Nil).new
       case action
         # A rename action requires two diffs: one to remove the old filename,
         # another to add the new filename.

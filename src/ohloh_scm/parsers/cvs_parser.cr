@@ -10,7 +10,7 @@ module OhlohScm::Parsers
 		# If a branch_name is specified, only commits along that branch will be returned,
 		# otherwise only commits along the head will be returned.
 		def self.internal_parse(io, opts)
-			commits = {}
+			commits = Hash(String, OhlohScm::Commit).new
 			branch_name = opts[:branch_name]
 			branch_name = nil if branch_name == "HEAD" || branch_name == ""
 
@@ -30,7 +30,7 @@ module OhlohScm::Parsers
 				# that combination.
 
 				key = c.committer_name + ":" + c.message
-				if commits.has_key? key
+				if commits[key]?
 					# We have already seen this developer/message combination
 					match = false
 					commits[key].each_index do |i|

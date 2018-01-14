@@ -31,11 +31,11 @@ module OhlohScm
 		# These attributes store the path and revision number of the source of the copy.
 		property :from_path, :from_revision
 
-		def initialize(params={})
+		def initialize(params=Hash(Nil,Nil).new)
 			params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
 		end
 
-		# eql?() and hash() are implemented so that [].uniq() will work on an array of Diffs.
+		# eql?() and hash() are implemented so that Array(Nil).new.uniq() will work on an array of Diffs.
 		def eql?(a)
 			@action.eql?(a.action) && @path.eql?(a.path) && @sha1.eql?(a.sha1) && @parent_sha1.eql?(a.parent_sha1)
 		end

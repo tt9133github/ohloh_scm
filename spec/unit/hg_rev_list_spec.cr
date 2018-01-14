@@ -20,7 +20,7 @@ describe "HgRevList" do
       rev_list_helper(hg, nil, :I).should eq([:A, :G, :H, :I])
 
       # Limited history from one commit to another
-      rev_list_helper(hg, :A, :A).should eq([])
+      rev_list_helper(hg, :A, :A).should eq(Array(Nil).new)
       rev_list_helper(hg, :A, :B).should eq([:B])
       rev_list_helper(hg, :A, :C).should eq([:B, :G, :H, :C])
       rev_list_helper(hg, :A, :D).should eq([:B, :G, :H, :C, :I, :D])

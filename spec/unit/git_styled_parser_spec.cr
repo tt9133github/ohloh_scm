@@ -3,7 +3,7 @@ require "../spec_helper"
 describe "GitStyledParser" do
 
   it "empty_array" do
-    GitStyledParser.parse("").should eq([])
+    GitStyledParser.parse("").should eq(Array(Nil).new)
   end
 
   it "log_parser_nil_date" do

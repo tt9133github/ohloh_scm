@@ -18,7 +18,7 @@ describe "CvsCommits" do
       cvs.commits({:after => "2006-06-29 18:45:29"}).map { |c| c.token }.should eq(
         ["2006-06-29 18:48:54", "2006-06-29 18:52:23"])
 
-      cvs.commits({:after => "2006/06/29 18:52:23"}).map { |c| c.token }.should eq([])
+      cvs.commits({:after => "2006/06/29 18:52:23"}).map { |c| c.token }.should eq(Array(Nil).new)
     end
   end
 

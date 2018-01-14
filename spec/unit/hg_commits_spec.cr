@@ -31,7 +31,7 @@ describe "HgCommits" do
       hg.commit_tokens({:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4"}).should eq(
         ["655f04cf6ad708ab58c7b941672dce09dd369a18"])
 
-      hg.commit_tokens({:after => "655f04cf6ad708ab58c7b941672dce09dd369a18"}).should eq([])
+      hg.commit_tokens({:after => "655f04cf6ad708ab58c7b941672dce09dd369a18"}).should eq(Array(Nil).new)
     end
   end
 
@@ -47,9 +47,9 @@ describe "HgCommits" do
         ["655f04cf6ad708ab58c7b941672dce09dd369a18"])
 
       # Check that the diffs are not populated
-      hg.commits({:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4"}).first.diffs.should eq([])
+      hg.commits({:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4"}).first.diffs.should eq(Array(Nil).new)
 
-      hg.commits({:after => "655f04cf6ad708ab58c7b941672dce09dd369a18"}).should eq([])
+      hg.commits({:after => "655f04cf6ad708ab58c7b941672dce09dd369a18"}).should eq(Array(Nil).new)
     end
   end
 
@@ -65,9 +65,9 @@ describe "HgCommits" do
         ["4d54c3f0526a1ec89214a70615a6b1c6129c665c"])
 
       # Check that the diffs are not populated
-      hg.commits({:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4"}).first.diffs.should eq([])
+      hg.commits({:after => "75532c1e1f1de55c2271f6fd29d98efbe35397c4"}).first.diffs.should eq(Array(Nil).new)
 
-      hg.commits({:after => "4d54c3f0526a1ec89214a70615a6b1c6129c665c"}).should eq([])
+      hg.commits({:after => "4d54c3f0526a1ec89214a70615a6b1c6129c665c"}).should eq(Array(Nil).new)
     end
   end
 
@@ -105,7 +105,7 @@ describe "HgCommits" do
         # "525de321d8085bc1d4a3c7608fda6b4020027985", # On branch
         "72fe74d643bdcb30b00da3b58796c50f221017d0"])
 
-      hg.commit_tokens({:after => "72fe74d643bdcb30b00da3b58796c50f221017d0", :trunk_only => true}).should eq([])
+      hg.commit_tokens({:after => "72fe74d643bdcb30b00da3b58796c50f221017d0", :trunk_only => true}).should eq(Array(Nil).new)
     end
   end
 
@@ -120,7 +120,7 @@ describe "HgCommits" do
   end
 
   it "each_commit" do
-    commits = []
+    commits = Array(Nil).new
     with_hg_repository("hg") do |hg|
       hg.each_commit do |c|
         c.token.length == 40.should be_truthy
@@ -147,7 +147,7 @@ describe "HgCommits" do
   end
 
   it "each_commit_for_branch" do
-    commits = []
+    commits = Array(Nil).new
 
     with_hg_repository("hg", "develop") do |hg|
       commits = hg.each_commit
@@ -162,7 +162,7 @@ describe "HgCommits" do
 
 
   it "each_commit_after" do
-    commits = []
+    commits = Array(Nil).new
     with_hg_repository("hg") do |hg|
       hg.each_commit({:after => "468336c6671cbc58237a259d1b7326866afc2817"}) do |c|
         commits << c

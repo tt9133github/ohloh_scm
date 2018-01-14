@@ -3,7 +3,7 @@ require "../spec_helper"
 describe "BzrParser" do
 
   it "empty_array" do
-    BzrParser.parse("").should eq([])
+    BzrParser.parse("").should eq(Array(Nil).new)
   end
 
   it "default_log_parser" do

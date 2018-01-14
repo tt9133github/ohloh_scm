@@ -20,24 +20,24 @@ module OhlohScm::Adapters
 		property :final_token
 
 		# Returns the count of commits following revision number 'after'.
-		def commit_count(opts={})
-			after = (opts[:after] || 0).to_i
+		def commit_count(opts=Hash(Nil,Nil).new)
+			after = (opts[:after]? || 0).to_i
 			return 0 if final_token && after >= final_token
 			run(%(svn log --trust-server-cert --non-interactive -q -r #{after.to_i + 1}:#{final_token || "HEAD"} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || "HEAD"}' | grep -E -e '^r[0-9]+ ' | wc -l)).strip.to_i
 		end
 
 		# Returns an array of revision numbers for all commits following revision number 'after'.
-		def commit_tokens(opts={})
-			after = (opts[:after] || 0).to_i
-			return [] if final_token && after >= final_token
+		def commit_tokens(opts=Hash(Nil,Nil).new)
+			after = (opts[:after]? || 0).to_i
+			return Array(Nil).new if final_token && after >= final_token
 			cmd = %(svn log --trust-server-cert --non-interactive -q -r #{after + 1}:#{final_token || "HEAD"} --stop-on-copy '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{final_token || "HEAD"}' | grep -E -e '^r[0-9]+ ' | cut -f 1 -d '|' | cut -c 2-)
 			run(cmd).split.map { |r| r.to_i }
 		end
 
 		# Returns an array of commits following revision number 'after'.
 		# These commit objects do not include diffs.
-		def commits(opts={})
-			list = []
+		def commits(opts=Hash(Nil,Nil).new)
+			list = Array(String).new
 			open_log_file(opts) do |io|
 				list = OhlohScm::Parsers::SvnXmlParser.parse(io)
 			end
@@ -52,7 +52,7 @@ module OhlohScm::Adapters
 		# directories, the complexity (and time) of this method comes in expanding directories with a recursion
 		# through every file in the directory.
 		#
-		def each_commit(opts={})
+		def each_commit(opts=Hash(Nil,Nil).new)
 			commit_tokens(opts).each do |rev|
 				yield verbose_commit(rev)
 			end
@@ -142,13 +142,13 @@ module OhlohScm::Adapters
 		# Log-related code ; get log for entire file or single revision
 		#---------------------------------------------------------------------
 
-		def log(opts={})
-			after = (opts[:after] || 0).to_i
+		def log(opts=Hash(Nil,Nil).new)
+			after = (opts[:after]? || 0).to_i
 			run %(svn log --trust-server-cert --non-interactive --xml --stop-on-copy -r #{after.to_i + 1}:#{final_token || "HEAD"} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name.to_s))}@#{final_token || "HEAD"}' #{opt_auth} | #{ string_encoder })
 		end
 
-		def open_log_file(opts={})
-			after = (opts[:after] || 0).to_i
+		def open_log_file(opts=Hash(Nil,Nil).new)
+			after = (opts[:after]? || 0).to_i
 			begin
 				if (final_token && after >= final_token) || after >= head_token
 					# As a time optimization, just create an empty file rather than fetch a log we know will be empty.
@@ -184,7 +184,7 @@ module OhlohScm::Adapters
 				return nil
 			end
 
-			files = []
+			files = Array(String).new
 			stdout.each_line do |s|
 				s.chomp!.force_encoding("UTF-8")
 				files << s if s.length > 0 && s !~ /CVSROOT\// && s[-1..-1] != "/"

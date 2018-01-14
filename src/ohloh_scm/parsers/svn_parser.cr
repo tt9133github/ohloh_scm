@@ -25,7 +25,7 @@ module OhlohScm::Parsers
 
 				elsif state == :diffs
 					if l =~ /^   (\w) ([^\(\)]+)( \(from (.+):(\d+)\))?$/
-						e.diffs ||= []
+						e.diffs ||= Array(OhlohScm::Diff).new
 						e.diffs << OhlohScm::Diff.new({:action => $1, :path => $2, :from_path => $4, :from_revision => $5.to_i})
 					else
 						next_state = :comment

@@ -42,7 +42,7 @@ module OhlohScm
 		# actually sees this.
 		property :directories
 
-		def initialize(params={})
+		def initialize(params=Hash(Nil,Nil).new)
 			params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
 		end
 	end

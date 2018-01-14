@@ -7,7 +7,7 @@ describe "SvnParser" do
   end
 
   it "empty_array" do
-    SvnParser.parse("").should eq([])
+    SvnParser.parse("").should eq(Array(Nil).new)
   end
 
   it "empty_xml" do
@@ -15,7 +15,7 @@ describe "SvnParser" do
   end
 
   it "yield_instead_of_writer" do
-    commits = []
+    commits = Array(Nil).new
     result = SvnParser.parse(File.read(DATA_DIR + "/simple.svn_log")) do |commit|
       commits << commit.token
     end

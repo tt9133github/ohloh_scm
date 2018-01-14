@@ -1,8 +1,8 @@
 module OhlohScm::Adapters
 	class CvsAdapter
-		def commits(opts={})
+		def commits(opts=Hash(Nil,Nil).new)
 			after = opts[:after]
-			result = []
+			result = Array(String).new
 
 			open_log_file(opts) do |io|
 				result = OhlohScm::Parsers::CvsParser.parse(io, :branch_name => branch_name)
@@ -30,7 +30,7 @@ module OhlohScm::Adapters
 			result.each_index do |i|
 				if result[i].token =~ re # We found the match for after
 					if i == result.size-1
-						return [] # There aren't any new commits.
+						return Array(Nil).new # There aren't any new commits.
 					else
 						return result[i+1..-1]
 					end
@@ -59,7 +59,7 @@ module OhlohScm::Adapters
 		# In any case, to be sure not to miss any commits, this method subtracts 10 seconds from the provided timestamp.
 		# This means that the returned log might actually contain a few revisions that predate the requested time.
 		# That's better than missing revisions completely! Just be sure to check for duplicates.
-		def open_log_file(opts={})
+		def open_log_file(opts=Hash(Nil,Nil).new)
 			after = opts[:after]
 			begin
         ensure_host_key

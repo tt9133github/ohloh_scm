@@ -8,7 +8,7 @@ module OhlohScm::Parsers
 			@buffer = buffer
 		end
 
-		def write_preamble(opts = {})
+		def write_preamble(opts = Hash(Nil,Nil).new)
 			@buffer << "<?xml version=\"1.0\"?>\n"
 			@buffer << "<ohloh_log"
 			opts.each_key do |key|

@@ -134,7 +134,7 @@ describe "SvnMisc" do
 
   it "tags_with_non_tagged_repository" do
     with_svn_repository("svn") do |svn|
-      [].should eq(svn.tags)
+      Array(Nil).new.should eq(svn.tags)
     end
   end
 end

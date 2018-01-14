@@ -3,7 +3,7 @@ require "../spec_helper"
 describe "BzrXmlParser" do
 
   it "empty_array" do
-    BzrXmlParser.parse("").should eq([])
+    BzrXmlParser.parse("").should eq(Array(Nil).new)
   end
 
   it "empty_xml" do

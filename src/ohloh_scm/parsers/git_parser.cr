@@ -28,7 +28,7 @@ module OhlohScm::Parsers
 						sha1 = $1
 						yield e if e
 						e = OhlohScm::Commit.new
-						e.diffs = []
+						e.diffs = Array(Nil).new
 						e.token = sha1
 						e.author_name = ANONYMOUS
 					when /^Author: (.+) <(.*)>$/

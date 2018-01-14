@@ -10,11 +10,11 @@ describe "SvnCommits" do
 
       svn.commit_tokens.should eq([1,2,3,4,5])
       svn.commit_tokens({:after => 2}).should eq([3,4,5])
-      svn.commit_tokens({:after => 1000}).should eq([])
+      svn.commit_tokens({:after => 1000}).should eq(Array(Nil).new)
 
       svn.commits.map { |c| c.token }.should eq([1,2,3,4,5])
       svn.commits({:after => 2}).map { |c| c.token }.should eq([3,4,5])
-      svn.commits({:after => 1000}).should eq([])
+      svn.commits({:after => 1000}).should eq(Array(Nil).new)
       FileTest.exist?(svn.log_filename).should be_falsey
     end
   end
@@ -46,9 +46,9 @@ describe "SvnCommits" do
     # nil diffs before => nil diffs after
     svn.strip_commit_branch(commit).diffs.should be_falsey
 
-    # [] diffs before => [] diffs after
-    commit.diffs = []
-    svn.strip_commit_branch(commit).diffs.should eq([])
+    # Array(Nil).new diffs before => Array(Nil).new diffs after
+    commit.diffs = Array(Nil).new
+    svn.strip_commit_branch(commit).diffs.should eq(Array(Nil).new)
 
     commit.diffs = [
       OhlohScm::Diff.new({:path => "/trunk"}),
@@ -131,7 +131,7 @@ describe "SvnCommits" do
       trunk.commit_tokens.should eq([3,4])
 
 
-      deep_commits = []
+      deep_commits = Array(Nil).new
       trunk.each_commit { |c| deep_commits << c }
 
       # When the branch is moved to replace the trunk in revision 3,
@@ -186,7 +186,7 @@ describe "SvnCommits" do
   # A mini-integration test.
   # Check that SHA1 values are populated, directories are recursed, and outside branches are ignored.
   it "each_commit" do
-    commits = []
+    commits = Array(Nil).new
     with_svn_repository("svn") do |svn|
       svn.each_commit do |e|
         commits << e

@@ -18,7 +18,7 @@ module OhlohScm::Parsers
 					when /^changeset:\s+\d+:([0-9a-f]+)/
 						yield e if e && block_given?
 						e = OhlohScm::Commit.new
-						e.diffs = []
+						e.diffs = Array(Nil).new
 						e.token = $1
 					when /^user:\s+(.+?)(\s+<(.+)>)?$/
 						e.committer_name = $1

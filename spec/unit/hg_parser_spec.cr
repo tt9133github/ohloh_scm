@@ -3,7 +3,7 @@ require "../spec_helper"
 describe "HgParser" do
 
   it "empty_array" do
-    HgParser.parse("").should eq([])
+    HgParser.parse("").should eq(Array(Nil).new)
   end
 
   it "log_parser_default" do
@@ -163,7 +163,7 @@ SAMPLE
       commits[1].diffs[0].action.should eq("D")
       commits[1].diffs[0].path.should eq("helloworld.c")
     else
-      commits[1].diffs.should eq([])
+      commits[1].diffs.should eq(Array(Nil).new)
     end
 
     commits[2].token.should eq("468336c6671cbc58237a259d1b7326866afc2817")
@@ -176,7 +176,7 @@ SAMPLE
       commits[2].diffs[1].action.should eq("A")
       commits[2].diffs[1].path.should eq("README")
     else
-      commits[0].diffs.should eq([])
+      commits[0].diffs.should eq(Array(Nil).new)
     end
   end
 end

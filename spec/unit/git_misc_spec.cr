@@ -68,7 +68,7 @@ describe "GitMisc" do
 
   it "tags_with_non_tagged_repository" do
     with_git_repository("git_walk") do |git|
-      [].should eq(git.tags)
+      Array(Nil).new.should eq(git.tags)
     end
   end
 end

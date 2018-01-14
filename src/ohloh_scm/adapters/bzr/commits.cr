@@ -2,12 +2,12 @@ module OhlohScm::Adapters
 	class BzrAdapter < AbstractAdapter
 
 		# Return the number of commits in the repository following +after+.
-		def commit_count(opts={})
+		def commit_count(opts=Hash(Nil,Nil).new)
 			commit_tokens(opts).size
 		end
 
 		# Return the list of commit tokens following +after+.
-		def commit_tokens(opts={})
+		def commit_tokens(opts=Hash(Nil,Nil).new)
       commits(opts).map(&:token)
 		end
 
@@ -16,7 +16,7 @@ module OhlohScm::Adapters
 		# we encounter massive repositories.  If you need all commits
 		# including diffs, you should use the each_commit() iterator,
 		# which only holds one commit in memory at a time.
-		def commits(opts={})
+		def commits(opts=Hash(Nil,Nil).new)
 			after = opts[:after]
 			log = run("#{rev_list_command(opts)} | cat")
 			a = OhlohScm::Parsers::BzrXmlParser.parse(log)
@@ -39,7 +39,7 @@ module OhlohScm::Adapters
 		# This is designed to prevent excessive RAM usage when we
 		# encounter a massive repository.  Only a single commit is ever
 		# held in memory at once.
-    def each_commit(opts={})
+    def each_commit(opts=Hash(Nil,Nil).new)
       after = opts[:after]
       skip_commits = !!after # Don't emit any commits until the 'after' resume point passes
 
@@ -60,7 +60,7 @@ module OhlohScm::Adapters
 
 
 		# Not used by Ohloh proper, but handy for debugging and testing
-		def log(opts={})
+		def log(opts=Hash(Nil,Nil).new)
 			run "#{rev_list_command(opts)} -v"
 		end
 
@@ -69,7 +69,7 @@ module OhlohScm::Adapters
 		# +after+. However, bzr doesn't work that way; it returns
 		# everything after and INCLUDING +after+. Therefore, consumers
 		# of this file should check for and reject the duplicate commit.
-		def open_log_file(opts={})
+		def open_log_file(opts=Hash(Nil,Nil).new)
 			after = opts[:after]
 			begin
 				if after == head_token # There are no new commits
@@ -90,7 +90,7 @@ module OhlohScm::Adapters
 		end
 
     # Uses xmllog command for output to be used by BzrXmlParser.
-		def rev_list_command(opts={})
+		def rev_list_command(opts=Hash(Nil,Nil).new)
 			after = opts[:after]
 			trunk_only = opts[:trunk_only] ? "--levels=1" : "--include-merges"
 			"cd '#{self.url}' && bzr xmllog --show-id --forward #{trunk_only} -r #{to_rev_param(after)}.."

@@ -4,7 +4,7 @@ require "date"
 describe "GitStyledParser" do
 
   it "basic" do
-    commits = []
+    commits = Array(Nil).new
 
     helloworld = File.new(File.dirname(__FILE__) + "/../data/helloworld.log").read
 
@@ -75,7 +75,7 @@ __END_COMMENT__
 :100644 100644 8ffcfcbb647ab353e7e885fb3fd897eef719d64f e4eaafd3ed351461cef016bf606f0ce6af057380 M	"Cin\303\251 Library/Cin\303\251 Library.nsi"
   LOG
 
-  commits = []
+  commits = Array(Nil).new
   GitStyledParser.parse( log ) do |commit|
     commits << commit
   end
@@ -115,7 +115,7 @@ All others - modify program description.
 __END_COMMENT__
   LOG
 
-  commits = []
+  commits = Array(Nil).new
   GitStyledParser.parse( log ) do |commit|
     commits << commit
   end
@@ -155,7 +155,7 @@ __END_COMMENT__
 :000000 160000 0000000000000000000000000000000000000000 f4f4738ae0f49a56d97ba61d7feb09aa35d9e69d A  submodule
   LOG
 
-  commits = []
+  commits = Array(Nil).new
   GitStyledParser.parse( log ) do |commit|
     commits << commit
   end
@@ -194,7 +194,7 @@ __END_COMMENT__
 
     LOG
 
-    commits = []
+    commits = Array(Nil).new
     GitStyledParser.parse( log ) do |commit|
       commits << commit
     end

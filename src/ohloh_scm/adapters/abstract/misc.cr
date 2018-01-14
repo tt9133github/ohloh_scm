@@ -6,7 +6,7 @@ module OhlohScm::Adapters
     end
 
     def tags
-      []
+      Array(Nil).new
     end
 
   end

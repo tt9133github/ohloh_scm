@@ -12,7 +12,7 @@ module OhlohScm::Adapters
 		end
 
 		def validate
-			@errors = []
+			@errors = [] of Array(Symbol | String)
 			@errors << validate_url
 			@errors << validate_branch_name
 			@errors << validate_username

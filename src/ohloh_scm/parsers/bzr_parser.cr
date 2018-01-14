@@ -31,7 +31,7 @@ module OhlohScm::Parsers
 						yield e
 					end
 					e = OhlohScm::Commit.new
-					e.diffs = []
+					e.diffs = Array(Nil).new
 					next_state = :data
 				when /^#{indent}revno:\s+(\d+)$/
 					e.token = $1

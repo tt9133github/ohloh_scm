@@ -20,7 +20,7 @@ describe "GitCommits" do
       git.commit_tokens({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).should eq(
         ["1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commit_tokens({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq([])
+      git.commit_tokens({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq(Array(Nil).new)
     end
   end
 
@@ -34,7 +34,7 @@ describe "GitCommits" do
       git.commits({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).map { |c| c.token }.should eq(
         ["1df547800dcd168e589bb9b26b4039bff3a7f7e4"])
 
-      git.commits({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq([])
+      git.commits({:after => "1df547800dcd168e589bb9b26b4039bff3a7f7e4"}).should eq(Array(Nil).new)
     end
   end
 
@@ -48,7 +48,7 @@ describe "GitCommits" do
       git.commits({:after => "2e9366dd7a786fdb35f211fff1c8ea05c51968b1"}).map(&:token).should eq(
         ["b4046b9a80fead62fa949232f2b87b0cb78fffcc"])
 
-      git.commits({:after => "b4046b9a80fead62fa949232f2b87b0cb78fffcc"}).should eq([])
+      git.commits({:after => "b4046b9a80fead62fa949232f2b87b0cb78fffcc"}).should eq(Array(Nil).new)
     end
   end
 
@@ -80,7 +80,7 @@ describe "GitCommits" do
         ["ad6bb43112706c462e53a9a8a8cd3b05f8e9260f", "41c4b1044ebffc968d363e5f5e883134e624f846"])
 
       # All trunk commit_tokens, with :after == HEAD
-      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq([])
+      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq(Array(Nil).new)
     end
   end
 
@@ -99,7 +99,7 @@ describe "GitCommits" do
       git.commits({after: "a0a2b8623941562031a7d7f95d984feb4a2d719c", trunk_only: true}).map { |c| c.token }.should eq(
         ["ad6bb43112706c462e53a9a8a8cd3b05f8e9260f", "41c4b1044ebffc968d363e5f5e883134e624f846"])
 
-      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq([])
+      git.commit_tokens({:after => "41c4b1044ebffc968d363e5f5e883134e624f846", :trunk_only => true}).should eq(Array(Nil).new)
     end
   end
 
@@ -117,14 +117,14 @@ describe "GitCommits" do
     with_git_repository("git_with_null_merge") do |git|
       c = git.verbose_commit("d3bd0bedbf4b197b2c4eb827e1ec4c35b834482f")
       # This commit"s tree is identical to its parent"s. Thus it should contain no diffs.
-      c.diffs.should eq([])
+      c.diffs.should eq(Array(Nil).new)
     end
   end
 
   it "each_commit_with_null_merge" do
     with_git_repository("git_with_null_merge") do |git|
       git.each_commit do |c|
-        c.diffs if c.token == "d3bd0bedbf4b197b2c4eb827e1ec4c35b834482f".should eq([])
+        c.diffs if c.token == "d3bd0bedbf4b197b2c4eb827e1ec4c35b834482f".should eq(Array(Nil).new)
       end
     end
   end

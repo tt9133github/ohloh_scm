@@ -16,7 +16,7 @@ module OhlohScm::Parsers
 			case name
 			when "logentry"
 				@commit = OhlohScm::Commit.new
-				@commit.diffs = []
+				@commit.diffs = Array(Nil).new
 				@commit.token = attrs["revision"].to_i
 			when "path"
 				@diff = OhlohScm::Diff.new(:action => attrs["action"],

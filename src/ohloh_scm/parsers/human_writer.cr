@@ -8,7 +8,7 @@ module OhlohScm::Parsers
 			@buffer = buffer
 		end
 
-		def write_preamble(opts = {})
+		def write_preamble(opts = Hash(Nil,Nil).new)
 		end
 
 		def write_commit(commit)

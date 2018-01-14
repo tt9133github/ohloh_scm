@@ -3,7 +3,7 @@ module OhlohScm::Adapters
 
 		# Returns the entire SvnAdapter ancestry chain as a simple array.
 		def chain
-			(parent_svn ? parent_svn.chain : []) << self
+			(parent_svn ? parent_svn.chain : Array(Nil).new) << self
 		end
 
 		# If this adapter's branch was created by copying or renaming another branch,
@@ -12,9 +12,9 @@ module OhlohScm::Adapters
 		# Only commits following +after+ are considered, so if the copy or rename
 		# occured on or before +after+, then no parent will be found or returned.
 		def parent_svn(after=0)
-			@parent_svn ||={} # Poor man's memoize
+			@parent_svn ||= Hash(Nil,Nil).new # Poor man's memoize
 
-			@parent_svn[after] ||= begin
+			@parent_svn[after]? ||= begin
 				parent = nil
 				c = first_commit(after)
 				if c
@@ -72,7 +72,7 @@ module OhlohScm::Adapters
 		end
 
 		def first_commit(after=0)
-			@first_commit ||={} # Poor man's memoize
+			@first_commit ||= Hash(Nil,Nil).new # Poor man's memoize
 			@first_commit[after] ||= OhlohScm::Parsers::SvnXmlParser.parse(next_revision_xml(after)).first
 		end
 

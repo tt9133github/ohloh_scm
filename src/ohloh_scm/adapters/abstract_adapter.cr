@@ -3,7 +3,7 @@ module OhlohScm::Adapters
 		property :url, :branch_name, :username, :password, :errors, :public_urls_only
     setter :temp_folder
 
-		def initialize(params={})
+		def initialize(params=Hash(Nil,Nil).new)
 			params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
 		end
 

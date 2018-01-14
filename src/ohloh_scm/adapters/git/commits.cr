@@ -2,12 +2,12 @@ module OhlohScm::Adapters
 	class GitAdapter < AbstractAdapter
 
 		# Returns the number of commits in the repository following the commit with SHA1 'after'.
-		def commit_count(opts={})
+		def commit_count(opts=Hash(Nil,Nil).new)
 			run("#{rev_list_command(opts)} | wc -l").to_i
 		end
 
 		# Returns the SHA1 hash for every commit in the repository following the commit with SHA1 'after'.
-		def commit_tokens(opts={})
+		def commit_tokens(opts=Hash(Nil,Nil).new)
 			run(rev_list_command(opts)).split("\n")
 		end
 
@@ -15,15 +15,15 @@ module OhlohScm::Adapters
 		# Officially, this method isn't required to provide diffs with these commits,
     # and the Subversion equivalent of this method does not,
 		# so if you really require the diffs you should be using each_commit() instead.
-		def commits(opts={})
-			result = []
+		def commits(opts=Hash(Nil,Nil).new)
+			result = Array(String).new
 			each_commit(opts) { |c| result << c }
 			result
 		end
 
 		# Yields each commit in the repository following the commit with SHA1 'after'.
 		# These commits are populated with diffs.
-		def each_commit(opts={})
+		def each_commit(opts=Hash(Nil,Nil).new)
 
 			# Bug fix (hack) follows.
 			#
@@ -68,16 +68,16 @@ module OhlohScm::Adapters
     def fixup_null_merge(c)
       first_parent_token = parent_tokens(c).first
       if first_parent_token && get_commit_tree(first_parent_token) == get_commit_tree(c.token)
-        c.diffs = []
+        c.diffs = Array(Nil).new
       end
       c
     end
 
 		# Retrieves the git log in the format expected by GitStyledParser.
 		# We get the log forward chronological order (oldest first)
-		def log(opts={})
+		def log(opts=Hash(Nil,Nil).new)
 			if has_branch?
-				if opts[:after] && opts[:after]==self.head_token
+				if opts[:after]? && opts[:after]==self.head_token
 					"" # Nothing new.
 				else
 					run "#{rev_list_command(opts)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder }"
@@ -90,9 +90,9 @@ module OhlohScm::Adapters
 
 		# Same as log() method above, except that it writes the log to
     # a file.
-		def open_log_file(opts={})
+		def open_log_file(opts=Hash(Nil,Nil).new)
 			if has_branch?
-				if opts[:after] && opts[:after]==self.head_token
+				if opts[:after]? && opts[:after]==self.head_token
 					"" # Nothing new.
 				else
           begin
@@ -111,11 +111,11 @@ module OhlohScm::Adapters
       File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
     end
 
-		def rev_list_command(opts={})
-      up_to = opts[:up_to] || branch_name
-			range = opts[:after] ? "#{opts[:after]}..#{up_to}" : up_to
+		def rev_list_command(opts=Hash(Nil,Nil).new)
+      up_to = opts[:up_to]? || branch_name
+			range = opts[:after]? ? "#{opts[:after]}..#{up_to}" : up_to
 
-      trunk_only = opts[:trunk_only] ? "--first-parent" : ""
+      trunk_only = opts[:trunk_only]? ? "--first-parent" : ""
 
 			"cd '#{url}' && git rev-list --topo-order --reverse #{trunk_only} #{range}"
 		end

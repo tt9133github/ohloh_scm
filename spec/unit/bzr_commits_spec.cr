@@ -35,23 +35,23 @@ describe "BzrCommits" do
   it "commit_tokens_after" do
     with_bzr_repository("bzr") do |bzr|
       bzr.commit_tokens.should eq(revision_ids)
-      bzr.commit_tokens({:after => revision_ids.first}).should eq(revision_ids[1..6])
-      bzr.commit_tokens({:after => revision_ids[5]}).should eq(revision_ids[6..6])
-      bzr.commit_tokens({:after => revision_ids.last}).should eq([])
+      bzr.commit_tokens({:after => revision_ids.first).should eq(revision_ids[1..6]})
+      bzr.commit_tokens({:after => revision_ids[5]).should eq(revision_ids[6..6]})
+      bzr.commit_tokens({:after => revision_ids.last}).should eq(Array(Nil).new)
     end
   end
 
   it "commit_tokens_after_merge" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq([])
+      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq(Array(Nil).new)
     end
   end
 
   it "commit_tokens_after_nested_merge" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq([])
+      bzr.commit_tokens({:trunk_only => false, :after => last_commit.token}).should eq(Array(Nil).new)
     end
   end
 
@@ -135,14 +135,14 @@ describe "BzrCommits" do
   it "commits_after_merge" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq([])
+      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq(Array(Nil).new)
     end
   end
 
   it "commits_after_nested_merge" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       last_commit = bzr.commits.last
-      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq([])
+      bzr.commits({:trunk_only => false, :after => last_commit.token}).should eq(Array(Nil).new)
     end
   end
 
@@ -183,16 +183,16 @@ describe "BzrCommits" do
     with_bzr_repository("bzr") do |bzr|
       bzr.commits.map { |c| c.token }.should eq(revision_ids)
       bzr.commits({:after => revision_ids[5]}).map { |c| c.token }.should eq(revision_ids[6..6])
-      bzr.commits({:after => revision_ids.last}).map { |c| c.token }.should eq([])
+      bzr.commits({:after => revision_ids.last}).map { |c| c.token }.should eq(Array(Nil).new)
 
       # Check that the diffs are not populated
-      bzr.commits.first.diffs.should eq([])
+      bzr.commits.first.diffs.should eq(Array(Nil).new)
     end
   end
 
   it "each_commit" do
     with_bzr_repository("bzr") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit do |c|
         c.committer_name.should be_truthy
         c.committer_date.is_a?(Time).should be_truthy
@@ -216,7 +216,7 @@ describe "BzrCommits" do
 
   it "each_commit_trunk_only_false" do
     with_bzr_repository("bzr_with_branch") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => false}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
@@ -229,7 +229,7 @@ describe "BzrCommits" do
 
   it "each_commit_trunk_only_true" do
     with_bzr_repository("bzr_with_branch") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => true}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "test@example.com-20090206214301-s93cethy9atcqu9h",
@@ -244,9 +244,9 @@ describe "BzrCommits" do
     with_bzr_repository("bzr_with_branch") do |bzr|
       last_commit = bzr.commits.last
 
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => false, :after => last_commit.token}) { |c| commits << c }
-      commits.should eq([])
+      commits.should eq(Array(Nil).new)
     end
   end
 
@@ -254,9 +254,9 @@ describe "BzrCommits" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
       last_commit = bzr.commits.last
 
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => false, :after => last_commit.token}) { |c| commits << c }
-      commits.should eq([])
+      commits.should eq(Array(Nil).new)
     end
   end
 
@@ -265,7 +265,7 @@ describe "BzrCommits" do
       last_commit = bzr.commits.last
       next_to_last_commit = bzr.commits[-2]
 
-      yielded_commits = []
+      yielded_commits = Array(Nil).new
       bzr.each_commit({:trunk_only => false, :after => next_to_last_commit.token}) { |c| yielded_commits << c }
       yielded_commits.map(&:token).should eq([last_commit.token])
     end
@@ -273,7 +273,7 @@ describe "BzrCommits" do
 
   it "nested_branches_each_commit_trunk_only_false" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => false}) { |c| commits << c}
       commits.map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
@@ -294,7 +294,7 @@ describe "BzrCommits" do
 
   it "nested_branches_each_commit_trunk_only_true" do
     with_bzr_repository("bzr_with_nested_branches") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit({:trunk_only => true}) { |c| commits << c }
       commits.map { |c| c.token }.should eq([
         "obnox@samba.org-20090204002342-5r0q4gejk69rk6uv",
@@ -315,7 +315,7 @@ describe "BzrCommits" do
   # Ohloh doesn"t care about directories, so only /foo/helloworld.c should be reported.
   it "each_commit_excludes_directories" do
     with_bzr_repository("bzr_with_subdirectories") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit do |c|
         commits << c
       end
@@ -334,7 +334,7 @@ describe "BzrCommits" do
 
   it "committer_and_author_name" do
     with_bzr_repository("bzr_with_authors") do |bzr|
-      commits = []
+      commits = Array(Nil).new
       bzr.each_commit do |c|
         commits << c
       end

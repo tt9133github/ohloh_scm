@@ -21,7 +21,7 @@ describe "GitRevList" do
       rev_list_helper(git, nil, :J).should eq([:A, :G, :H, :I, :J])
 
       # Limited history from one commit to another
-      rev_list_helper(git, :A, :A).should eq([])
+      rev_list_helper(git, :A, :A).should eq(Array(Nil).new)
       rev_list_helper(git, :A, :B).should eq([:B])
       rev_list_helper(git, :A, :C).should eq([:B, :G, :H, :C])
       rev_list_helper(git, :A, :D).should eq([:B, :G, :H, :C, :I, :D])
@@ -40,7 +40,7 @@ describe "GitRevList" do
       rev_list_trunk(git, nil, :D).should eq([:A, :B, :C, :D])
 
       # Limited history from one commit to another
-      rev_list_trunk(git, :A, :A).should eq([])
+      rev_list_trunk(git, :A, :A).should eq(Array(Nil).new)
       rev_list_trunk(git, :A, :B).should eq([:B])
       rev_list_trunk(git, :A, :C).should eq([:B, :C])
       rev_list_trunk(git, :A, :D).should eq([:B, :C, :D])
