@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "GitPatch" do
   it "patch_for_commit" do

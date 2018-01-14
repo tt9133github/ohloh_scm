@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "CvsValidation" do
   it "rejected_urls" do

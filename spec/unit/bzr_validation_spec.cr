@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "BzrValidation" do
   it "rejected_urls" do

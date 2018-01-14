@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "SvnValidation" do
   it "valid_usernames" do

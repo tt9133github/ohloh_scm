@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 # Repository git_walk has the following structure:
 #

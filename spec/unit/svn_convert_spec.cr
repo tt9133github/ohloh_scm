@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "SvnConvert" do
   it "basic_convert" do

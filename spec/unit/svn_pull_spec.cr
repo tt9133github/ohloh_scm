@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 require "socket"
 
 describe "SvnPull" do

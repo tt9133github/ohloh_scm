@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "StringEncoderCommandLine" do
   it "length_of_content_unchanged" do

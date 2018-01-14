@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 # Repository hg_walk has the following structure:
 #

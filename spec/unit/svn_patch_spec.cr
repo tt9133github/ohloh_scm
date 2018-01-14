@@ -1,4 +1,4 @@
-require "../test_helper"
+require "../spec_helper"
 
 describe "SvnPatch" do
   it "patch_for_commit" do
