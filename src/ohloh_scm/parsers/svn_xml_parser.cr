@@ -1,38 +1,31 @@
-require "rexml/document"
-require "rexml/streamlistener"
-
 module OhlohScm::Parsers
   class SubversionListener
-    include REXML::StreamListener
-
-    property :callback
-    def initialize(callback)
-      @callback = callback
+    def initialize
+      @commit = Commit.new
+      @text = ""
+      @diff = Diff.new
     end
-
-    property :text, :commit, :diff
 
     def tag_start(name, attrs)
       case name
       when "logentry"
-        @commit = OhlohScm::Commit.new
-        @commit.diffs = Array(Nil).new
-        @commit.token = attrs["revision"].to_i
+        @commit = Commit.new
+        @commit.token = attrs["revision"]?
       when "path"
-        @diff = OhlohScm::Diff.new(:action => attrs["action"],
-                              :from_path => attrs["copyfrom-path"],
-                              :from_revision => attrs["copyfrom-rev"].to_i)
+        @diff = Diff.new(action: attrs["action"]?,
+                         from_path: attrs["copyfrom-path"]?,
+                         from_revision: attrs["copyfrom-rev"].try(&.to_i))
       end
     end
 
     def tag_end(name)
       case name
       when "logentry"
-        @callback.call(@commit)
+        yield @commit
       when "author"
         @commit.committer_name = @text
       when "date"
-        @commit.committer_date = Time.parse(@text).round.utc
+        @commit.committer_date = Time.parse(@text, "%FT%T.%z", Time::Kind::Utc).to_utc
       when "path"
         @diff.path = @text
         @commit.diffs << @diff
@@ -47,12 +40,10 @@ module OhlohScm::Parsers
   end
 
   class SvnXmlParser < Parser
-    def self.internal_parse(buffer, opts)
-      buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
-      begin
-        REXML::Document.parse_stream(buffer, SubversionListener.new(-> { |c| yield c if block_given? }))
-      rescue EOFError
-      end
+    def self.internal_parse(buffer)
+      buffer = IO::Memory.new("<?xml?>") if buffer.is_a?(IO) && buffer.size < 2
+      XmlStreamer.parse(buffer, SubversionListener.new) { |c| yield c }
+    rescue IO::EOFError
     end
 
     def self.scm

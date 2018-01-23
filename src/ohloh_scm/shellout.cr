@@ -6,9 +6,9 @@ class Shellout
   def self.execute(cmd)
     output = IO::Memory.new
     error = IO::Memory.new
-    process = Process.run(command: cmd, shell: true, output: output, error: error)
+    process_status = Process.run(command: cmd, shell: true, output: output, error: error)
 
-    return process, output.to_s, error.to_s
+    return process_status, output.to_s, error.to_s
   end
 
   def run(cmd)

@@ -1,4 +1,4 @@
-require "fileutils"
+require "file_utils"
 
 # A utility class to manage the creation and automatic cleanup of temporary directories.
 module OhlohScm

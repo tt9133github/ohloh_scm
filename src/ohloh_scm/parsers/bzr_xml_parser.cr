@@ -1,27 +1,26 @@
-require "rexml/document"
-require "rexml/streamlistener"
+# TODO: Add more specs to cover all tag scenarios.
 
 module OhlohScm::Parsers
   class BazaarListener
-    include REXML::StreamListener
-    property :callback
+    @action : StringOrNil
+    @before_path : StringOrNil
+    @cdata : StringOrNil
 
-    def initialize(callback)
-      @callback = callback
-      @merge_commit = Array(OhlohScm::Commit).new
+    def initialize
+      @merge_commit = Array(Commit).new
       @state = :none
-      @authors = Array(Nil).new
+      @authors = [] of Hash(Symbol, String | Nil)
+      @text = ""
+      @commit = Commit.new
+      @diffs = Array(Diff).new
     end
-
-    property :text, :commit, :diff
 
     def tag_start(name, attrs)
       case name
       when "log"
-        @commit = OhlohScm::Commit.new
-        @commit.diffs = Array(Nil).new
+        @commit = Commit.new
       when "affected-files"
-        @diffs = Array(Nil).new
+        @diffs = Array(Diff).new
       when "added", "modified", "removed", "renamed"
         @action = name
         @state = :collect_files
@@ -32,14 +31,14 @@ module OhlohScm::Parsers
         @merge_commit.push(@commit)
       when "authors"
         @state = :collect_authors
-        @authors = [] of Hash(Symbol, String)
+        @authors = [] of Hash(Symbol, String | Nil)
       end
     end
 
     def tag_end(name)
       case name
       when "log"
-        @callback.call(@commit)
+        yield @commit
       when "revisionid"
         @commit.token = @text
       when "message"
@@ -52,13 +51,11 @@ module OhlohScm::Parsers
         author = BzrXmlParser.capture_name(@text)
         @authors << {:author_name => author[0], :author_email => author[1]}
       when "timestamp"
-        @commit.committer_date = Time.parse(@text)
+        @commit.committer_date = Time.parse(@text, "%a %F %T %z")
       when "file"
         if @state == :collect_files
           @diffs.concat(parse_diff(@action, @text, @before_path))
         end
-        @before_path = nil
-        @text = nil
       when "added", "modified", "removed", "renamed"
         @state = :none
       when "affected-files"
@@ -82,7 +79,7 @@ module OhlohScm::Parsers
 
     # Parse one single diff
     private def parse_diff(action, path, before_path)
-      diffs = Array(Nil).new
+      diffs = Array(Diff).new
       case action
         # A rename action requires two diffs: one to remove the old filename,
         # another to add the new filename.
@@ -90,14 +87,14 @@ module OhlohScm::Parsers
         # Note that is possible to be renamed to the empty string!
         # This happens when a subdirectory is moved to become the root.
       when "renamed"
-        diffs = [ OhlohScm::Diff.new({:action => "D", :path => before_path}),
-                  OhlohScm::Diff.new({:action => "A", :path => path || ""})]
+        diffs = [ Diff.new(action: "D", path: before_path),
+                  Diff.new(action: "A", path: path || "")]
       when "added"
-        diffs = [OhlohScm::Diff.new({:action => "A", :path => path})]
+        diffs = [Diff.new(action: "A", path: path)]
       when "modified"
-        diffs = [OhlohScm::Diff.new({:action => "M", :path => path})]
+        diffs = [Diff.new(action: "M", path: path)]
       when "removed"
-        diffs = [OhlohScm::Diff.new({:action => "D", :path => path})]
+        diffs = [Diff.new(action: "D", path: path)]
       end
       diffs.each do |d|
         d.path = strip_trailing_asterisk(d.path)
@@ -106,23 +103,21 @@ module OhlohScm::Parsers
     end
 
     private def strip_trailing_asterisk(path)
+      return unless path
       path[-1..-1] == "*" ? path[0..-2] : path
     end
 
     private def remove_dupes(diffs)
       BzrXmlParser.remove_dupes(diffs)
     end
-
   end
 
   class BzrXmlParser < Parser
     NAME_REGEX = /^(.+?)(\s+<(.+)>\s*)?$/
-    def self.internal_parse(buffer, opts)
-      buffer = "<?xml?>" if buffer.is_a?(StringIO) && buffer.length < 2
-      begin
-        REXML::Document.parse_stream(buffer, BazaarListener.new(-> { |c| yield c if block_given? }))
-      rescue EOFError
-      end
+    def self.internal_parse(buffer)
+      buffer = IO::Memory.new("<?xml?>") if buffer.is_a?(IO) && buffer.size < 2
+      XmlStreamer.parse(buffer, BazaarListener.new) { |c| yield c }
+    rescue IO::EOFError
     end
 
     def self.scm
@@ -132,14 +127,15 @@ module OhlohScm::Parsers
     def self.remove_dupes(diffs)
       # Bazaar may report that a file was added and modified in a single commit.
       # Reduce these cases to a single "A" action.
-      diffs.delete_if do |d|
+      diffs.reject! do |d|
         d.action == "M" && diffs.select { |x| x.path == d.path && x.action == "A" }.any?
       end
 
       # Bazaar may report that a file was both deleted and added in a single commit.
       # Reduce these cases to a single "M" action.
-      diffs.each do |d|
-        d.action = "M" if diffs.select { |x| x.path == d.path }.size > 1
+      diffs.map do |diff|
+        diff.action = "M" if diffs.select { |x| x.path == diff.path }.size > 1
+        diff
       end.uniq
     end
 
@@ -148,8 +144,8 @@ module OhlohScm::Parsers
     # However, we find many variations in the real world including
     # ones where only email is specified as name.
     def self.capture_name(text)
-      parts = text.match(NAME_REGEX).to_a
-      name = parts[1] || parts[0]
+      parts = text.match(NAME_REGEX).try(&.to_a) || Array(Nil).new
+      name = parts[1]? || parts[0]
       email = parts[3]
       [name, email]
     end
