@@ -4,6 +4,7 @@ require "fileutils"
 module OhlohScm
   class ScratchDir
     getter :path
+    @path : String
 
     # Creates a uniquely named directory in the system tmp directory.
     #
@@ -22,38 +23,15 @@ module OhlohScm
     #
     def initialize
       @path = `mktemp -d /tmp/ohloh_scm_XXXXXX`.strip
-      if block_given?
-        begin
-          return yield(@path)
-        ensure
-          FileUtils.rm_rf(@path)
-        end
+    end
+
+    def initialize(&block)
+      @path = `mktemp -d /tmp/ohloh_scm_XXXXXX`.strip
+      begin
+        return yield(@path)
+      ensure
+        FileUtils.rm_rf(@path)
       end
     end
-  end
-
-  if $0 == __FILE__
-    path = nil
-
-    ScratchDir.new do |d|
-      path = d
-      filename = File.join(d,"test")
-      File.open(filename, "w") do |io|
-        io.write "test"
-      end
-    end
-    raise RuntimeError.new("Directory wasn't cleaned up") if FileTest.directory?(path)
-
-    begin
-      ScratchDir.new do |d|
-        path = d
-        STDOUT.puts "Created scratch direcory #{d}"
-        raise RuntimeError.new("This error should not prevent cleanup")
-      end
-    rescue
-    end
-    raise RuntimeError.new("Directory wasn't cleaned up") if FileTest.directory?(path)
-
-    STDOUT.puts "Tests passed."
   end
 end
