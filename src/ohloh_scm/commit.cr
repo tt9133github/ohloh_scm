@@ -19,9 +19,14 @@ module OhlohScm
     # This object supports the idea of distinct authors and committers, a la
     # Git.  However, Ohloh will retain only one of them in its database. It
     # prefers author, but will fall back to committer if no author is given.
-    property :author_name, :author_email, :author_date, :committer_name, :committer_email, :committer_date
+    property author_date : TimeOrNil
+    property committer_date : TimeOrNil
 
-    property :message
+    property message : StringOrNil
+    property author_name : StringOrNil
+    property author_email : StringOrNil
+    property committer_name : StringOrNil
+    property committer_email : StringOrNil
 
     property :diffs
 
@@ -32,18 +37,22 @@ module OhlohScm
     # For Git, the token is the commit SHA1 hash.
     # For CVS, which does not support atomic commits with unique IDs, we use
     # the approximate timestamp of the change.
-    property :token
+    property token : StringOrNil
 
     # A pointer back to the adapter that contains this commit.
-    property :scm
+    property scm : Adapters::AbstractAdapter | Nil
 
     # Hack. To optimize CVS updates, we will store the names of all the
     # directories that require updating during this commit. Ohloh itself never
     # actually sees this.
-    property :directories
+    property directories
 
-    def initialize(params=Hash(Nil,Nil).new)
-      params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
+    def initialize(@token = nil, @message = nil, @author_name = nil, @author_date = nil, @author_email = nil, @diffs = Array(Diff).new)
+      @directories = Array(String).new
+    end
+
+    def null?
+      false
     end
   end
 end

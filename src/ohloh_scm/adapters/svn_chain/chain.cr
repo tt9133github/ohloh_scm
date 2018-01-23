@@ -3,7 +3,7 @@ module OhlohScm::Adapters
 
     # Returns the entire SvnAdapter ancestry chain as a simple array.
     def chain
-      (parent_svn ? parent_svn.chain : Array(Nil).new) << self
+      (parent_svn ? parent_svn.as(self).chain : Array(self).new) << self
     end
 
     # If this adapter's branch was created by copying or renaming another branch,
@@ -12,9 +12,10 @@ module OhlohScm::Adapters
     # Only commits following +after+ are considered, so if the copy or rename
     # occured on or before +after+, then no parent will be found or returned.
     def parent_svn(after=0)
-      @parent_svn ||= Hash(Nil,Nil).new # Poor man's memoize
+      after = after.try(&.to_i) || 0
+      @parent_svn ||= Hash(Int32, SvnChainAdapter | Nil).new # Poor man's memoize
 
-      @parent_svn[after]? ||= begin
+      @parent_svn.as(Hash)[after] ||= begin
         parent = nil
         c = first_commit(after)
         if c
@@ -38,7 +39,7 @@ module OhlohScm::Adapters
           #
           # Therefore, we must sort diffs by descending filename length, so
           # that we choose the longest match.
-          c.diffs.sort { |a,b| b.path.length <=> a.path.length }.each do |d|
+          c.diffs.sort { |a,b| b.path.to_s.size <=> a.path.to_s.size }.each do |d|
 
             # If this diff actually creates this branch, then a parent is impossible.
             # Stop looking for parents.
@@ -53,11 +54,9 @@ module OhlohScm::Adapters
             end
 
             if (b = parent_branch_name(d))
-              parent = SvnChainAdapter.new(
-                :url => File.join(root, b), :branch_name => b,
-                :username => username, :password => password,
-                :final_token => d.from_revision).normalize
-                break
+              parent = SvnChainAdapter.new(url: File.join(root, b), branch_name: b, username: username,
+                                           password: password, final_token: d.from_revision.try(&.to_i)).normalize
+              break
             end
 
           end
@@ -72,29 +71,30 @@ module OhlohScm::Adapters
     end
 
     def first_commit(after=0)
-      @first_commit ||= Hash(Nil,Nil).new # Poor man's memoize
-      @first_commit[after] ||= OhlohScm::Parsers::SvnXmlParser.parse(next_revision_xml(after)).first
+      after = after.try(&.to_i) || 0
+      @first_commit ||= Hash(Int32, Commit | Nil).new # Poor man's memoize
+      @first_commit.as(Hash)[after] ||= OhlohScm::Parsers::SvnXmlParser.parse(next_revision_xml(after)).first?
     end
 
     # Returns the first commit with a revision number greater than the provided revision number
     def next_revision_xml(after=0)
-      return "<?xml?>" if after.to_i >= head_token
-      run %(svn log --trust-server-cert --non-interactive --verbose --xml --stop-on-copy -r #{after.to_i+1}:#{final_token || "HEAD"} --limit 1 #{opt_auth} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name.to_s))}@#{final_token || "HEAD"}' | #{ string_encoder })
+      return "<?xml?>" if after >= (head_token || 0)
+      run %(svn log --trust-server-cert --non-interactive --verbose --xml --stop-on-copy -r #{after+1}:#{final_token || "HEAD"} --limit 1 #{opt_auth} '#{SvnAdapter.uri_encode(File.join(self.root, self.branch_name.to_s))}@#{final_token || "HEAD"}' | #{ string_encoder })
     end
 
     # If the passed diff represents the wholesale movement of the entire
     # code tree from one directory to another, this method returns the name
     # of the previous directory.
     def parent_branch_name(d)
-      if %w(A R).include?(d.action) && branch_name[0, d.path.size] == d.path && d.from_path && d.from_revision
-        d.from_path + branch_name[d.path.size..-1]
+      if %w(A R).includes?(d.action) && branch_name.to_s[0, d.path.to_s.size] == d.path && d.from_path && d.from_revision
+        "#{d.from_path}#{branch_name.to_s[d.path.to_s.size..-1]}"
       end
     end
 
     # True if the passed diff represents the initial creation of the
     # branch -- not a move or copy from somewhere else.
     def diff_creates_branch(d)
-      d.action == "A" && branch_name[0, d.path.size] == d.path && !d.from_path
+      d.action == "A" && branch_name.to_s[0, d.path.to_s.size] == d.path && !d.from_path
     end
   end
 end

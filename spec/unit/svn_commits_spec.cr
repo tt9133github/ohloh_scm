@@ -5,17 +5,17 @@ describe "SvnCommits" do
   it "commits" do
     with_svn_repository("svn") do |svn|
       svn.commit_count.should eq(5)
-      svn.commit_count({:after => 2}).should eq(3)
-      svn.commit_count({:after => 1000}).should eq(0)
+      svn.commit_count(after: 2).should eq(3)
+      svn.commit_count(after: 1000).should eq(0)
 
       svn.commit_tokens.should eq([1,2,3,4,5])
-      svn.commit_tokens({:after => 2}).should eq([3,4,5])
-      svn.commit_tokens({:after => 1000}).should eq(Array(Nil).new)
+      svn.commit_tokens(after: 2).should eq([3,4,5])
+      svn.commit_tokens(after: 1000).should eq(Array(Nil).new)
 
-      svn.commits.map { |c| c.token }.should eq([1,2,3,4,5])
-      svn.commits({:after => 2}).map { |c| c.token }.should eq([3,4,5])
-      svn.commits({:after => 1000}).should eq(Array(Nil).new)
-      FileTest.exist?(svn.log_filename).should be_falsey
+      svn.commits.map { |c| c.as(Commit).token }.should eq(%w[1 2 3 4 5])
+      svn.commits(after: "2").map { |c| c.as(Commit).token }.should eq(%w[3 4 5])
+      svn.commits(after: "1000").should eq(Array(Nil).new)
+      File.exists?(svn.log_filename).should be_falsey
     end
   end
 
@@ -31,8 +31,8 @@ describe "SvnCommits" do
   # Given a commit with diffs, fill in all of the SHA1 values.
   it "populate_sha1" do
     with_svn_repository("svn") do |svn|
-      c = OhlohScm::Commit.new({:token => 3})
-      c.diffs = [OhlohScm::Diff.new({:path => "/trunk/helloworld.c", :action => "M"})]
+      c = OhlohScm::Commit.new(token: "3")
+      c.diffs = [OhlohScm::Diff.new(path: "/trunk/helloworld.c", action: "M")]
       svn.populate_commit_sha1s!(c)
       c.diffs.first.sha1.should eq("f6adcae4447809b651c787c078d255b2b4e963c5")
       c.diffs.first.parent_sha1.should eq("4c734ad53b272c9b3d719f214372ac497ff6c068")
@@ -40,55 +40,55 @@ describe "SvnCommits" do
   end
 
   it "strip_commit_branch" do
-    svn = SvnAdapter.new({:branch_name => "/trunk"})
+    svn = SvnAdapter.new(branch_name: "/trunk")
     commit = OhlohScm::Commit.new
 
     # nil diffs before => nil diffs after
-    svn.strip_commit_branch(commit).diffs.should be_falsey
+    svn.strip_commit_branch(commit).diffs.empty?.should be_true
 
     # Array(Nil).new diffs before => Array(Nil).new diffs after
-    commit.diffs = Array(Nil).new
+    commit.diffs = Array(OhlohScm::Diff).new
     svn.strip_commit_branch(commit).diffs.should eq(Array(Nil).new)
 
     commit.diffs = [
-      OhlohScm::Diff.new({:path => "/trunk"}),
-      OhlohScm::Diff.new({:path => "/trunk/helloworld.c"}),
-      OhlohScm::Diff.new({:path => "/branches/a"})
+      OhlohScm::Diff.new(path: "/trunk"),
+      OhlohScm::Diff.new(path: "/trunk/helloworld.c"),
+      OhlohScm::Diff.new(path: "/branches/a")
     ]
-    svn.strip_commit_branch(commit).diffs.map { |d| d.path }.sort.should eq(["", "/helloworld.c"])
+    svn.strip_commit_branch(commit).diffs.map { |d| d.path.as(String) }.sort.should eq(["", "/helloworld.c"])
   end
 
   it "strip_diff_branch" do
-    svn = SvnAdapter.new({:branch_name => "/trunk"})
+    svn = SvnAdapter.new(branch_name: "/trunk")
     svn.strip_diff_branch(OhlohScm::Diff.new).should be_falsey
-    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/branches/b"})).should be_falsey
-    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/trunk"})).path.should eq("")
-    svn.strip_diff_branch(OhlohScm::Diff.new({:path => "/trunk/helloworld.c"})).path.should eq("/helloworld.c")
+    svn.strip_diff_branch(OhlohScm::Diff.new(path: "/branches/b")).should be_falsey
+    svn.strip_diff_branch(OhlohScm::Diff.new(path: "/trunk")).as(OhlohScm::Diff).path.should eq("")
+    svn.strip_diff_branch(OhlohScm::Diff.new(path: "/trunk/helloworld.c")).as(OhlohScm::Diff).path.should eq("/helloworld.c")
   end
 
   it "strip_path_branch" do
-    # Returns nil for any path outside of SvnAdapter::branch_name
+    # Returns nil for any path outside of SvnAdapter.branch_name
     SvnAdapter.new.strip_path_branch(nil).should be_falsey
-    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/branches/foo").should be_falsey
-    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/t").should be_falsey
+    SvnAdapter.new(branch_name: "/trunk").strip_path_branch("/branches/foo").should be_falsey
+    SvnAdapter.new(branch_name: "/trunk").strip_path_branch("/t").should be_falsey
 
     # If branch_name is empty or root, returns path unchanged
     SvnAdapter.new.strip_path_branch("").should eq("")
     SvnAdapter.new.strip_path_branch("/trunk").should eq("/trunk")
 
     # If path is equal to or is a subdirectory of branch_name, returns subdirectory portion only.
-    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/trunk").should eq("")
-    SvnAdapter.new({:branch_name => "/trunk"}).strip_path_branch("/trunk/foo").should eq("/foo")
+    SvnAdapter.new(branch_name: "/trunk").strip_path_branch("/trunk").should eq("")
+    SvnAdapter.new(branch_name: "/trunk").strip_path_branch("/trunk/foo").should eq("/foo")
   end
 
   it "strip_path_branch_with_special_chars" do
-    SvnAdapter.new({:branch_name => "/trunk/hamcrest-c++"}).strip_path_branch("/trunk/hamcrest-c++/foo").should eq("/foo")
+    SvnAdapter.new(branch_name: "/trunk/hamcrest-c++").strip_path_branch("/trunk/hamcrest-c++/foo").should eq("/foo")
   end
 
   it "remove_dupes_add_modify" do
     svn = SvnAdapter.new
-    c = OhlohScm::Commit.new({:diffs => [OhlohScm::Diff.new({:action => "A", :path => "foo"}),
-                                         OhlohScm::Diff.new({:action => "M", :path => "foo"})]})
+    c = OhlohScm::Commit.new(diffs: [OhlohScm::Diff.new(action: "A", path: "foo"),
+                                     OhlohScm::Diff.new(action: "M", path: "foo")])
 
     svn.remove_dupes(c)
     c.diffs.size.should eq(1)
@@ -97,8 +97,8 @@ describe "SvnCommits" do
 
   it "remove_dupes_add_replace" do
     svn = SvnAdapter.new
-    c = OhlohScm::Commit.new({:diffs => [OhlohScm::Diff.new({:action => "R", :path => "foo"}),
-                                         OhlohScm::Diff.new({:action => "A", :path => "foo"})]})
+    c = OhlohScm::Commit.new(diffs: [OhlohScm::Diff.new(action: "R", path: "foo"),
+                                     OhlohScm::Diff.new(action: "A", path: "foo")])
 
     svn.remove_dupes(c)
     c.diffs.size.should eq(1)
@@ -108,8 +108,8 @@ describe "SvnCommits" do
   # Had so many bugs around this case that a test was required
   it "deepen_commit_with_nil_diffs" do
     with_svn_repository("svn") do |svn|
-      c = svn.commits.first # Doesn"t matter which
-      c.diffs = nil
+      c = svn.commits.first.as(OhlohScm::Commit) # Doesn"t matter which
+      c.diffs = Array(OhlohScm::Diff).new
       svn.populate_commit_sha1s!(svn.deepen_commit(c)) # If we don"t crash we pass the test.
     end
   end
@@ -126,12 +126,12 @@ describe "SvnCommits" do
       # Even though there was a different trunk directory present in
       # revisions 1 and 2, it is not visible to Ohloh.
 
-      trunk = SvnAdapter.new({:url => File.join(svn.url,"trunk"), :branch_name => "/trunk"}).normalize
+      trunk = SvnAdapter.new(url: File.join(svn.url,"trunk"), branch_name: "/trunk").normalize
       trunk.commit_count.should eq(2)
       trunk.commit_tokens.should eq([3,4])
 
 
-      deep_commits = Array(Nil).new
+      deep_commits = Array(OhlohScm::Commit).new
       trunk.each_commit { |c| deep_commits << c }
 
       # When the branch is moved to replace the trunk in revision 3,
@@ -149,7 +149,7 @@ describe "SvnCommits" do
       # Also, after we are only tracking the /trunk and not /branches/b, then
       # there should not be anything referring to activity in /branches/b.
 
-      deep_commits.first.token.should eq(3) # Make sure this is the right revision
+      deep_commits.first.token.should eq("3") # Make sure this is the right revision
       deep_commits.first.diffs.size.should eq(2) # Two files seen
 
       deep_commits.first.diffs[0].action.should eq("A")
@@ -166,7 +166,7 @@ describe "SvnCommits" do
       # both delete and add events for all of the files in this directory, but does
       # not actually refer to the directories themselves.
 
-      deep_commits.last.token.should eq(4) # Make sure we"re checking the right revision
+      deep_commits.last.token.should eq("4") # Make sure we"re checking the right revision
 
       # There should be 2 files removed and two files added
       deep_commits.last.diffs.size.should eq(4)
@@ -186,31 +186,31 @@ describe "SvnCommits" do
   # A mini-integration test.
   # Check that SHA1 values are populated, directories are recursed, and outside branches are ignored.
   it "each_commit" do
-    commits = Array(Nil).new
+    commits = Array(OhlohScm::Commit).new
     with_svn_repository("svn") do |svn|
       svn.each_commit do |e|
         commits << e
         e.token.to_s =~ /\d+/.should be_truthy
-        e.committer_name.length > 0.should be_truthy
+        e.committer_name.to_s.empty?.should be_false
         e.committer_date.is_a?(Time).should be_truthy
         e.message.should be_truthy
         e.diffs.any?.should be_truthy
         e.diffs.each do |d|
-          d.action.length == 1.should be_truthy
-          d.path.length > 0.should be_truthy
+          d.action.to_s.size.should eq 1
+          d.path.to_s.size.should be > 0
         end
       end
-      FileTest.exist?(svn.log_filename).should be_falsey # Make sure we cleaned up after ourselves
+      File.exists?(svn.log_filename).should be_falsey # Make sure we cleaned up after ourselves
     end
 
-    commits.map { |c| c.token }.should eq([1, 2, 3, 4, 5])
+    commits.map { |c| c.token }.should eq(%w[1 2 3 4 5])
     commits.map { |c| c.committer_name }.should eq(["robin","robin","robin","jason","jason"])
 
     commits[0].committer_date.should eq(Time.utc(2006,6,11,18,28, 0))
-    commits[1].committer_date.should eq(Time.utc(2006,6,11,18,32,14))
-    commits[2].committer_date.should eq(Time.utc(2006,6,11,18,34,18))
-    commits[3].committer_date.should eq(Time.utc(2006,7,14,22,17, 9))
-    commits[4].committer_date.should eq(Time.utc(2006,7,14,23, 7,16))
+    commits[1].committer_date.should eq(Time.utc(2006,6,11,18,32,13))
+    commits[2].committer_date.should eq(Time.utc(2006,6,11,18,34,17))
+    commits[3].committer_date.should eq(Time.utc(2006,7,14,22,17, 8))
+    commits[4].committer_date.should eq(Time.utc(2006,7,14,23, 7,15))
 
     commits[0].message.should eq("Initial Checkin\n")
     commits[1].message.should eq("added makefile")
@@ -251,14 +251,14 @@ describe "SvnCommits" do
 
   it "commits_encoding" do
     with_invalid_encoded_svn_repository do |svn|
-      svn.commits rescue raise Exception
+      svn.commits rescue raise Exception.new
     end
   end
 
   it "open_log_file_encoding" do
     with_invalid_encoded_svn_repository do |svn|
-      svn.open_log_file do |io|
-        io.read.valid_encoding?.should eq(true)
+      svn.open_log_file(0) do |io|
+        File.read(io.path).valid_encoding?.should eq(true)
       end
     end
   end

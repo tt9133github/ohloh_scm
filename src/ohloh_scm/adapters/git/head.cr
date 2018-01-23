@@ -2,7 +2,7 @@ module OhlohScm::Adapters
   class GitAdapter < AbstractAdapter
 
     def head_token
-      run("git ls-remote --heads '#{url}' #{branch_name}") =~ /^(^[a-z0-9]{40})\s+\S+$/
+      run("git ls-remote --heads '#{url}' #{branch_name}") =~ /^(^[a-z0-9]{40})\s+\S+$/m
       $1
     end
 
@@ -11,7 +11,7 @@ module OhlohScm::Adapters
     end
 
     def parent_tokens(commit)
-      run("cd '#{url}' && git cat-file commit #{commit.token} | grep ^parent | cut -f 2 -d ' '").split("\n") || Array(Nil).new
+      run("cd '#{url}' && git cat-file commit #{commit.token} | grep ^parent | cut -f 2 -d ' '").split("\n", remove_empty: true)
     end
 
     def parents(commit)

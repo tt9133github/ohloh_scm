@@ -4,6 +4,5 @@ module OhlohScm::Adapters
     def parent_tokens(commit)
       bzr_client.parent_tokens(commit.token)
     end
-
   end
 end

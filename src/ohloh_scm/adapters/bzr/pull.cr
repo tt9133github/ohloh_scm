@@ -1,11 +1,11 @@
 module OhlohScm::Adapters
   class BzrAdapter < AbstractAdapter
 
-    def pull(from, &block)
+    def pull(from)
       raise ArgumentError.new("Cannot pull from #{from.inspect}") unless from.is_a?(BzrAdapter)
       logger.info { "Pulling #{from.url}" }
 
-      yield(0,1) if block_given? # Progress bar callback
+      yield(0,1)
 
       unless self.exist?
         run "mkdir -p '#{self.url}'"
@@ -15,7 +15,7 @@ module OhlohScm::Adapters
         run "cd '#{self.url}' && bzr revert && bzr pull --overwrite '#{from.url}'"
       end
 
-      yield(1,1) if block_given? # Progress bar callback
+      yield(1,1)
     end
 
   end

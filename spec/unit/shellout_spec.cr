@@ -1,6 +1,10 @@
 require "../spec_helper"
 
 describe "Shellout" do
+  it "#escape should escape invalid patterns" do
+    Shellout.escape("file:///p<t)h/scm*_?.txt $(rm -rf /*)").should eq("file:///p<t)h/scm*_%3F.txt%20%24(rm%20-rf%20/*)")
+  end
+
   it "execute_must_pipe_the_results_accurately" do
     status, out_message, err_message = Shellout.execute("ruby -e 'puts %[hello world]; STDERR.puts(%[some error])'")
 

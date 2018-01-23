@@ -7,8 +7,8 @@ module OhlohScm::Parsers
       "hg"
     end
 
-    def self.internal_parse(buffer, opts)
-      e = nil
+    def self.internal_parse(buffer)
+      e = OhlohScm::NullCommit.new
       state = :data
 
       buffer.each_line do |l|
@@ -16,18 +16,18 @@ module OhlohScm::Parsers
         if state == :data
           case l
           when /^changeset:\s+\d+:([0-9a-f]+)/
-            yield e if e && block_given?
+            yield e unless e.null?
             e = OhlohScm::Commit.new
-            e.diffs = Array(Nil).new
+            e.diffs = Array(Diff).new
             e.token = $1
           when /^user:\s+(.+?)(\s+<(.+)>)?$/
             e.committer_name = $1
-            e.committer_email = $3
+            e.committer_email = $3?
           when /^date:\s+(.+)/
-            e.committer_date = Time.parse($1).utc
+            e.committer_date = Time.parse($1, "%a, %b %d %Y %T %z").to_utc
           when /^files:\s+(.+)/
             ($1 || "").split(" ").each do |file|
-              e.diffs << OhlohScm::Diff.new({:action => "?", :path => file})
+              e.diffs << OhlohScm::Diff.new(action: "?", path: file)
             end
           when /^summary:\s+(.+)/
             e.message = $1
@@ -36,27 +36,25 @@ module OhlohScm::Parsers
           end
 
         elsif state == :long_comment
-          if l == "\n"
+          if l.chomp.empty?
             next_state = :long_comment_following_blank
           else
-            e.message ||= ""
-            e.message << l
+            e.message = "#{e.message}#{l}"
           end
 
         elsif state == :long_comment_following_blank
-          if l == "\n" # A second blank line in a row terminates the comment.
-            yield e if block_given?
-            e = nil
+          if l.chomp.empty? # A second blank line in a row terminates the comment.
+            yield e unless e.null?
+            e = OhlohScm::NullCommit.new
             next_state = :data
           else # Otherwise resume parsing comments.
-            e.message << "\n"
-            e.message << l
+            e.message = "#{e.message}\n#{l}"
             next_state = :long_comment
           end
         end
         state = next_state
       end
-      yield e if e && block_given?
+      yield e unless e.null?
     end
 
   end

@@ -19,7 +19,7 @@ module OhlohScm::Adapters
     end
 
     def parent_tokens(commit)
-      run("cd '#{url}' && hg parents -r #{commit.token} --template '{node}\\n'").split("\n")
+      run("cd '#{url}' && hg parents -r #{commit.token} --template '{node}\\n'").split("\n", remove_empty: true)
     end
 
     def parents(commit)

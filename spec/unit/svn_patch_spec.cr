@@ -9,4 +9,3 @@ describe "SvnPatch" do
     end
   end
 end
-end

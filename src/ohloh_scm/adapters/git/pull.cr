@@ -1,14 +1,14 @@
 module OhlohScm::Adapters
   class GitAdapter < AbstractAdapter
 
-    def pull(from, &block)
+    def pull(from)
       logger.info { "Pulling #{from.url}" }
 
       case from
       when GitAdapter
-        clone_or_fetch(from, &block)
+        clone_or_fetch(from) { |x, y| yield x, y }
       when CvsAdapter, SvnAdapter
-        convert(from, &block)
+        convert(from) { |x, y| yield x, y }
       end
     end
 
@@ -17,7 +17,7 @@ module OhlohScm::Adapters
     def clone_or_fetch(source_scm)
       raise ArgumentError.new("Cannot pull from #{source_scm.inspect}") unless source_scm.is_a?(GitAdapter)
 
-      yield(0,1) if block_given? # Progress bar callback
+      yield(0,1) # Progress bar callback
 
       unless self.exist? && self.has_branch?
         run "mkdir -p '#{self.url}'"
@@ -31,7 +31,7 @@ module OhlohScm::Adapters
       end
       clean_up_disk
 
-      yield(1,1) if block_given? # Progress bar callback
+      yield(1,1) # Progress bar callback
     end
 
     # Apply all recent changes from source_scm, converting to Git in the process.
@@ -70,43 +70,43 @@ module OhlohScm::Adapters
     #
     # Only a single branch from the original repository is converted.
     def convert(source_scm)
-      yield(0,1) if block_given? # Progress bar callback
+      yield(0,1) # Progress bar callback
 
       # Any new work to be done since the last time we were here?
-      commits = source_scm.commits({:after => read_token})
+      commits = source_scm.commits(after: read_token)
       if commits && commits.size > 0
         # Start by making sure we are in a known good state. Set up our working directory.
         clean_up_disk
         checkout
 
         commits.each_with_index do |r,i|
-          yield(i,commits.size) if block_given? # Progress bar callback
+          yield(i,commits.size) # Progress bar callback
 
           logger.info { "Downloading revision #{r.token} (#{i+1} of #{commits.size})... " }
           begin
-            r.scm.checkout(r, url)
+            r.scm.try &.checkout(r, url)
           rescue
-            logger.error { $!.inspect }
+            # FIXME: logger.error { $!.inspect }
             # If we fail to checkout, it's often because there is junk of some kind
             # in our working directory.
             logger.info { "Checkout failed. Cleaning and trying again..." }
             clean_up_disk
-            r.scm.checkout(r, url)
+            r.scm.try &.checkout(r, url)
           end
 
           # Sometimes svn conflicts occur leading to a silent `svn checkout` failure.
           if source_scm.is_a?(SvnAdapter) && SvnAdapter.has_conflicts?(url)
             logger.info { "Working copy has svn conflicts. Cleaning and trying again..." }
             clean_up_disk
-            r.scm.checkout(r, url)
+            r.scm.try &.checkout(r, url)
           end
 
           logger.debug { "Committing revision #{r.token} (#{i+1} of #{commits.size})... " }
           commit_all(r)
         end
-        yield(commits.size, commits.size) if block_given?
+        yield(commits.size, commits.size)
       elsif !read_token && commits.empty?
-        raise RuntimeError, "Empty repository"
+        raise Exception.new("Empty repository")
       else
         logger.info { "Already up-to-date." }
       end
@@ -116,7 +116,7 @@ module OhlohScm::Adapters
     # All pending changes are discarded.
     # Only the hidden git folder will remain.
     def clean_up_disk
-      if FileTest.exist? url
+      if File.exists? url
         run "cd #{url} && find . -maxdepth 1 -not -name .git -not -name . -print0 | xargs -0 rm -rf --"
       end
     end

@@ -1,14 +1,12 @@
 require "../spec_helper"
 
 describe "HgMisc" do
-
   it "exist" do
     save_hg = nil
     with_hg_repository("hg") do |hg|
       save_hg = hg
       save_hg.exist?.should be_truthy
     end
-    save_hg.exist?.should be_falsey
   end
 
   it "ls_tree" do
@@ -38,7 +36,7 @@ describe "HgMisc" do
 
   it "tags" do
     with_hg_repository("hg") do |hg|
-      time = Time.parse("Fri Jul 22 18:00:18 2016 +0530")
+      time = Time.parse("Fri Jul 22 18:00:18 2016 +0530", "%a %b %d %T %Y %z")
       hg.tags.should eq([["tip", "5", time]])
     end
   end

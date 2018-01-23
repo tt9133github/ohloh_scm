@@ -1,8 +1,14 @@
-require "open-uri"
-require "nokogiri"
+require "uri"
 
 module OhlohScm::Adapters
   class SvnAdapter < AbstractAdapter
+    property final_token : IntOrNil
+
+    def initialize(@url = "", @branch_name = nil, @module_name = nil, @username = nil, @password = nil, @final_token = nil, @public_urls_only = false)
+      super(@url, @branch_name, @module_name, @username, @password, @public_urls_only)
+      @info = Hash(Array(String), String).new
+    end
+
     # Converts an URL of form file://local/path to simply /local/path.
     def path
       case url
@@ -34,12 +40,12 @@ module OhlohScm::Adapters
       list = ls
       return self.url unless list
 
-      if list.include? "trunk/"
+      if list.includes? "trunk/"
         self.url = File.join(self.url, "trunk")
-        self.branch_name = File.join(self.branch_name, "trunk")
+        self.branch_name = File.join(self.branch_name.to_s, "trunk")
       elsif list.size == 1 && list.first[-1..-1] == "/"
         self.url = File.join(self.url, list.first[0..-2])
-        self.branch_name = File.join(self.branch_name, list.first[0..-2])
+        self.branch_name = File.join(self.branch_name.to_s, list.first[0..-2])
         return restrict_url_to_trunk
       end
       self.url
@@ -48,34 +54,33 @@ module OhlohScm::Adapters
     # It appears that the default URI encoder does not encode some characters.
     # This fixes it for us.
     def self.uri_encode(uri)
-      URI.encode(uri,/#{URI::UNSAFE}|[\[\]';\? ]/) # Add [ ] ' ; ? and space
+      Shellout.escape(uri)
     end
 
     def exist?
       begin
         !!(head_token)
       rescue
-        logger.debug { $! }
+        # FIXME: logger.debug { $! }
         false
       end
     end
 
     def info(path=nil, revision=final_token || "HEAD")
-      @info ||= Hash(Nil,Nil).new
       uri = if path
               File.join(root, branch_name.to_s, path)
             else
               url
             end
-      @info[[path, revision]] ||= run "svn info --trust-server-cert --non-interactive -r #{revision} #{opt_auth} '#{SvnAdapter.uri_encode(uri)}@#{revision}'"
+      @info[[path.to_s, revision.to_s]] ||= run "svn info --trust-server-cert --non-interactive -r #{revision} #{opt_auth} '#{SvnAdapter.uri_encode(uri)}@#{revision}'"
     end
 
     def root
-      $1 if self.info =~ /^Repository Root: (.+)$/
+      self.info =~ /^Repository Root: ([^\n]+)$/m ? $1 : ""
     end
 
     def uuid
-      $1 if self.info =~ /^Repository UUID: (.+)$/
+      $1 if self.info =~ /^Repository UUID: ([^\n]+)$/m
     end
 
     # Returns an array of file and directory names.
@@ -92,35 +97,35 @@ module OhlohScm::Adapters
 
       files = Array(String).new
       stdout.each_line do |s|
-        s.chomp!
-        files << s if s.length > 0 && s != "CVSROOT/"
+        s = s.chomp
+        files << s if s.size > 0 && s != "CVSROOT/"
       end
       files.sort
     end
 
     def node_kind(path=nil, revision=final_token || "HEAD")
-      $1 if self.info(path, revision) =~ /Node Kind: (\w+)\W/
+      $1 if self.info(path, revision) =~ /Node Kind: (\w+)\W/m
     end
 
-    def is_directory?(path=nil, revision=final_token || "HEAD")
+    def is_directory?(path="", revision=final_token || "HEAD")
       begin
         return node_kind(path, revision) == "directory"
-      rescue Exception
-        if $!.message =~ /svn: E200009: Could not display info for all targets because some targets don't exist/
+      rescue ex : Exception
+        if ex.message =~ /svn: E200009: Could not display info for all targets because some targets don't exist/
           return false
         else
-          raise
+          raise Exception.new
         end
       end
     end
 
     def checkout(rev, dest_dir)
-      FileUtils.mkdir_p(File.dirname(dest_dir)) unless FileTest.exist?(File.dirname(dest_dir))
+      FileUtils.mkdir_p(File.dirname(dest_dir)) unless File.exists?(File.dirname(dest_dir))
       run "svn checkout --trust-server-cert --non-interactive -r #{rev.token} '#{SvnAdapter.uri_encode(self.url)}@#{rev.token}' '#{dest_dir}' --ignore-externals #{opt_auth}"
     end
 
     def export(dest_dir, commit_id = final_token || "HEAD")
-      FileUtils.mkdir_p(File.dirname(dest_dir)) unless FileTest.exist?(File.dirname(dest_dir))
+      FileUtils.mkdir_p(File.dirname(dest_dir)) unless File.exists?(File.dirname(dest_dir))
       run "svn export --trust-server-cert --non-interactive --ignore-externals --force -r #{commit_id} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}' '#{dest_dir}'"
     end
 
@@ -130,7 +135,7 @@ module OhlohScm::Adapters
     end
 
     def ls_tree(token)
-      run("svn ls --trust-server-cert --non-interactive -R -r #{token} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{token}'").split("\n")
+      run("svn ls --trust-server-cert --non-interactive -R -r #{token} '#{SvnAdapter.uri_encode(File.join(root, branch_name.to_s))}@#{token}'").split("\n", remove_empty: true)
     end
 
     def opt_auth
@@ -145,19 +150,18 @@ module OhlohScm::Adapters
     #      http://svn.apache.org/repos/asf/maven/plugin-testing/trunk
     #      all have the same root value(https://svn.apache.org/repos/asf)
     def tags
-      doc = Nokogiri::XML(`svn ls --xml #{ base_path}/tags`)
-      doc.xpath("//lists/list/entry").map do |entry|
-        tag_name = entry.xpath("name").text
-        revision = entry.xpath("commit").attr("revision").text
-        date_string = Time.parse(entry.xpath("commit/date").text)
-        [tag_name, revision, date_string]
+      doc = XML.parse(`svn ls --xml #{ base_path}/tags`)
+      doc.xpath_nodes("//lists/list/entry").map do |entry|
+        tag_name = entry.xpath_node("name").as(XML::Node).text
+        revision = entry.xpath_node("commit").as(XML::Node)["revision"]
+        date_string = entry.xpath_node("commit/date").as(XML::Node).text
+        date = Time.parse(date_string, "%FT%T.%z")
+        {tag_name, revision, date}
       end
     end
 
-    class << self
-      def has_conflicts?(working_copy_url)
-        system("cd '#{ working_copy_url }' && svn status | grep 'Summary of conflicts'")
-      end
+    def self.has_conflicts?(working_copy_url)
+      system("cd '#{ working_copy_url }' && svn status | grep 'Summary of conflicts'")
     end
 
     private def base_path

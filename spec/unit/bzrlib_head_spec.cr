@@ -1,6 +1,6 @@
 require "../spec_helper"
 
-describe "BzrBzrlibHead" do
+describe "BzrlibHead" do
 
   it "head_and_parents" do
     with_bzrlib_repository("bzr") do |bzr|

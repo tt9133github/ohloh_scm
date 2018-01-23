@@ -5,11 +5,6 @@ module OhlohScm::Adapters
     def english_name
       "CVS"
     end
-
-    def initialize(params=Hash(Nil,Nil).new)
-      super
-      @module_name = params[:module_name]
-    end
   end
 end
 

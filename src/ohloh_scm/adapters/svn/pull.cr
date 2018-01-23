@@ -3,7 +3,7 @@ module OhlohScm::Adapters
 
     def pull(from)
       logger.warn { "Pulling #{from.url}" }
-      yield(0,1) if block_given? # Progress bar callback
+      yield(0,1) # Progress bar callback
 
       unless self.exist?
         svnadmin_create
@@ -11,7 +11,7 @@ module OhlohScm::Adapters
       end
       SvnAdapter.svnsync_sync(from, self)
 
-      yield(1,1) if block_given? # Progress bar callback
+      yield(1,1) # Progress bar callback
     end
 
     # Initialize a new Subversion repository on disk.
@@ -34,15 +34,15 @@ module OhlohScm::Adapters
 
     # The destination location for the Subversion hook
     def pre_revprop_change_path
-      File.join(path, "hooks", "pre-revprop-change")
+      File.join(path.to_s, "hooks", "pre-revprop-change")
     end
 
     def svnadmin_create_local
-      FileUtils.mkdir_p path
-      FileUtils.rmdir path
+      FileUtils.mkdir_p path.to_s
+      FileUtils.rmdir path.to_s
       run "svnadmin create #{path}"
       FileUtils.cp pre_revprop_change_template, pre_revprop_change_path
-      FileUtils.chmod 0755, pre_revprop_change_path
+      File.chmod pre_revprop_change_path, 0o755
     end
 
     def svnadmin_create_remote
@@ -66,7 +66,7 @@ module OhlohScm::Adapters
     end
 
     def propget(propname)
-      run("svn propget --trust-server-cert --non-interactive #{opt_auth} --revprop -r 0 svn:#{propname} '#{SvnAdapter.uri_encode(root)}'").strip!
+      run("svn propget --trust-server-cert --non-interactive #{opt_auth} --revprop -r 0 svn:#{propname} '#{SvnAdapter.uri_encode(root)}'").strip
     end
 
     def propset(propname, value)

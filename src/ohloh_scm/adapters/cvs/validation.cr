@@ -15,22 +15,22 @@ module OhlohScm::Adapters
     end
 
     def validate_module_name
-      return [:module_name, "The module name can't be blank."] if @module_name.to_s.length == 0
-      return [:module_name, "The module name must not be longer than 120 characters."] unless @module_name.length <= 120
-      return [:module_name, "The module name may contain only letters, numbers, spaces, and the special characters '_', '-', '+', '/', and '.'"] unless @module_name =~ /^[A-Za-z0-9_\-\+\.\/\ ]+$/
+      return ["module_name", "The module name can't be blank."] if @module_name.to_s.size == 0
+      return ["module_name", "The module name must not be longer than 120 characters."] unless @module_name.to_s.size <= 120
+      return ["module_name", "The module name may contain only letters, numbers, spaces, and the special characters '_', '-', '+', '/', and '.'"] unless @module_name.to_s =~ /^[A-Za-z0-9_\-\+\.\/\ ]+$/
     end
 
     def normalize
       super
-      @module_name = @module_name.strip if @module_name
+      @module_name = @module_name.try &.strip
 
       # Some CVS forges publish an URL which is actually a symlink, which causes CVSNT to crash.
       # For some forges, we can work around this by using an alternate directory.
       case guess_forge
       when "java.net", "netbeans.org"
-        @url.gsub!(/:\/cvs\/?$/, ":/shared/data/ccvs/repository")
+        @url = @url.gsub(/:\/cvs\/?$/, ":/shared/data/ccvs/repository")
       when "gna.org"
-        @url.gsub!(/:\/cvs\b/, ":/var/cvs")
+        @url = @url.gsub(/:\/cvs\b/, ":/var/cvs")
       end
 
       sync_pserver_username_password
@@ -65,7 +65,7 @@ module OhlohScm::Adapters
     def validate_server_connection
       return unless valid?
       if ls.nil?
-        @errors << [:failed, "The cvs server did not respond to an 'ls' command. Are the URL and module name correct?"]
+        @errors << ["failed", "The cvs server did not respond to an 'ls' command. Are the URL and module name correct?"]
       end
     end
 

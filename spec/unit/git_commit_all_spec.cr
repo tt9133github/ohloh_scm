@@ -4,7 +4,7 @@ describe "GitCommitAll" do
 
   it "commit_all" do
     OhlohScm::ScratchDir.new do |dir|
-      git = GitAdapter.new({:url => dir}).normalize
+      git = GitAdapter.new(url: dir).normalize
 
       git.init_db
       git.anything_to_commit?.should be_falsey
@@ -23,9 +23,9 @@ describe "GitCommitAll" do
       git.commits.first.author_name.should eq(c.author_name)
       # Depending on version of Git used, we may or may not have trailing \n.
       # We don"t really care, so just compare the stripped versions.
-      git.commits.first.message.strip.should eq(c.message.strip)
+      git.commits.first.message.to_s.strip.should eq(c.message.to_s.strip)
 
-      git.commits.first.diffs.map { |d| d.path }.sort.should eq([".gitignore", "README"])
+      git.commits.first.diffs.map { |d| d.path.to_s }.sort.should eq([".gitignore", "README"])
     end
   end
 

@@ -2,28 +2,28 @@ module OhlohScm::Adapters
   class GitAdapter < AbstractAdapter
 
     # Returns the number of commits in the repository following the commit with SHA1 'after'.
-    def commit_count(opts=Hash(Nil,Nil).new)
-      run("#{rev_list_command(opts)} | wc -l").to_i
+    def commit_count(after = nil, up_to = nil, trunk_only = false)
+      run("#{rev_list_command(after, up_to, trunk_only)} | wc -l").to_i
     end
 
     # Returns the SHA1 hash for every commit in the repository following the commit with SHA1 'after'.
-    def commit_tokens(opts=Hash(Nil,Nil).new)
-      run(rev_list_command(opts)).split("\n")
+    def commit_tokens(after = nil, up_to = nil, trunk_only = false)
+      run(rev_list_command(after, up_to, trunk_only)).split("\n", remove_empty: true)
     end
 
     # Yields each commit following the commit with SHA1 'after'.
     # Officially, this method isn't required to provide diffs with these commits,
     # and the Subversion equivalent of this method does not,
     # so if you really require the diffs you should be using each_commit() instead.
-    def commits(opts=Hash(Nil,Nil).new)
-      result = Array(String).new
-      each_commit(opts) { |c| result << c }
+    def commits(after = nil, up_to = nil, trunk_only = false)
+      result = Array(Commit).new
+      each_commit(after, up_to, trunk_only) { |c| result << c }
       result
     end
 
     # Yields each commit in the repository following the commit with SHA1 'after'.
     # These commits are populated with diffs.
-    def each_commit(opts=Hash(Nil,Nil).new)
+    def each_commit(after = nil, up_to = nil, trunk_only = false)
 
       # Bug fix (hack) follows.
       #
@@ -40,7 +40,7 @@ module OhlohScm::Adapters
       # because Ohloh ignores merge diffs anyway.
 
       previous = nil
-      open_log_file(opts) do |io|
+      open_log_file(after, up_to, trunk_only) do |io|
         OhlohScm::Parsers::GitStyledParser.parse(io) do |e|
           yield fixup_null_merge(e) unless previous && previous.token == e.token
           previous = e
@@ -66,21 +66,22 @@ module OhlohScm::Adapters
     # Yes, this is a convoluted, time-wasting hack to address a very rare circumstance. Ultimatley
     # we should stop parsing `git whatchanged` to extract commit data.
     def fixup_null_merge(c)
-      first_parent_token = parent_tokens(c).first
+      tokens = parent_tokens(c)
+      first_parent_token = tokens.first if tokens.try(&.any?)
       if first_parent_token && get_commit_tree(first_parent_token) == get_commit_tree(c.token)
-        c.diffs = Array(Nil).new
+        c.diffs = Array(Diff).new
       end
       c
     end
 
     # Retrieves the git log in the format expected by GitStyledParser.
     # We get the log forward chronological order (oldest first)
-    def log(opts=Hash(Nil,Nil).new)
+    def log(after = nil, up_to = nil, trunk_only = false)
       if has_branch?
-        if opts[:after]? && opts[:after]==self.head_token
+        if after && after == head_token
           "" # Nothing new.
         else
-          run "#{rev_list_command(opts)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder }"
+          run "#{rev_list_command(after, up_to, trunk_only)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder }"
         end
       else
         ""
@@ -90,16 +91,16 @@ module OhlohScm::Adapters
 
     # Same as log() method above, except that it writes the log to
     # a file.
-    def open_log_file(opts=Hash(Nil,Nil).new)
+    def open_log_file(after, up_to, trunk_only)
       if has_branch?
-        if opts[:after]? && opts[:after]==self.head_token
+        if after && after == head_token
           "" # Nothing new.
         else
           begin
-            run "#{rev_list_command(opts)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder } > #{log_filename}"
+            run "#{rev_list_command(after, up_to, trunk_only)} | xargs -n 1 #{OhlohScm::Parsers::GitStyledParser.whatchanged} | #{ string_encoder } > #{log_filename}"
             File.open(log_filename, "r") { |io| yield io }
           ensure
-            File.delete(log_filename) if FileTest.exist?(log_filename)
+            File.delete(log_filename) if File.exists?(log_filename)
           end
         end
       else
@@ -107,15 +108,15 @@ module OhlohScm::Adapters
       end
     end
 
-    def log_filename
+    private def log_filename
       File.join(temp_folder, (self.url).gsub(/\W/,"") + ".log")
     end
 
-    def rev_list_command(opts=Hash(Nil,Nil).new)
-      up_to = opts[:up_to]? || branch_name
-      range = opts[:after]? ? "#{opts[:after]}..#{up_to}" : up_to
+    private def rev_list_command(after, up_to, trunk_only)
+      up_to ||= branch_name
+      range = after.nil? ? up_to : "#{after}..#{up_to}"
 
-      trunk_only = opts[:trunk_only]? ? "--first-parent" : ""
+      trunk_only = trunk_only ? "--first-parent" : ""
 
       "cd '#{url}' && git rev-list --topo-order --reverse #{trunk_only} #{range}"
     end

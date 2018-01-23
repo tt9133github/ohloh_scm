@@ -27,13 +27,13 @@ module OhlohScm::Adapters
       if self.exist?
         begin
           token = run("cd '#{url}' && git cat-file -p `git ls-tree HEAD #{token_filename} | cut -c 13-51`").strip
-        rescue RuntimeError => e
+        rescue e : Exception
           # If the git repository doesn't have a token file yet, it will error out.
           # We want to just quietly return nil.
           if e.message =~ /pathspec "#{token_filename}" did not match any file\(s\) known to git/
             return nil
           else
-            raise
+            raise Exception.new
           end
         end
       end
@@ -43,10 +43,8 @@ module OhlohScm::Adapters
     # Saves the new token in a well-known file.
     # If the passed token is empty, this method silently does nothing.
     def write_token(token)
-      if token && token.to_s.length > 0
-        File.open(token_path, "w") do |f|
-          f.write token.to_s
-        end
+      if token && token.to_s.size > 0
+        File.write(token_path, token.to_s)
       end
     end
   end

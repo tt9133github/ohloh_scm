@@ -85,15 +85,15 @@ HELP
     end
 
 		def parse(parser)
-			self.writer ||= HumanWriter.new(STDOUT)
+			# FIXME: self.writer ||= HumanWriter.new(STDOUT)
 
-			if self.paths.any?
-				self.paths.each do |path|
-					parser.parse File.new(path,"r"), :writer => self.writer
-				end
-			else
-				parser.parse STDIN, :writer => self.writer
-			end
+			# if self.paths.any?
+				# self.paths.each do |path|
+					# parser.parse File.new(path,"r"), :writer => self.writer
+				# end
+			# else
+				# parser.parse STDIN, :writer => self.writer
+			# end
 		end
 
 		def subcommand=(s)

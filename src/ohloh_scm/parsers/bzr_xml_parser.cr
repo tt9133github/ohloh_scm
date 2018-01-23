@@ -25,7 +25,7 @@ module OhlohScm::Parsers
         @action = name
         @state = :collect_files
       when "file"
-        @before_path = attrs["oldpath"]
+        @before_path = attrs["oldpath"]?
       when "merge"
         # This is a merge commit, save it and pop it after all branch commits
         @merge_commit.push(@commit)
@@ -136,7 +136,7 @@ module OhlohScm::Parsers
       diffs.map do |diff|
         diff.action = "M" if diffs.select { |x| x.path == diff.path }.size > 1
         diff
-      end.uniq
+      end.uniq { |diff| diff.path || diff.action }
     end
 
     # Bazaar expects committer/author to be specified in this format

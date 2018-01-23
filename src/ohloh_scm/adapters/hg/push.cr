@@ -1,16 +1,16 @@
 module OhlohScm::Adapters
   class HgAdapter < AbstractAdapter
 
-    def push(to, &block)
+    def push(to)
       raise ArgumentError.new("Cannot push to #{to.inspect}") unless to.is_a?(HgAdapter)
       logger.info { "Pushing to #{to.url}" }
 
-      yield(0,1) if block_given? # Progress bar callback
+      yield(0,1) # Progress bar callback
 
       unless to.exist?
         if to.local?
           # Create a new repo on the same local machine. Just use existing pull code in reverse.
-          to.pull(self)
+          to.pull(self) { |x, y| yield(x, y) }
         else
           run "ssh #{to.hostname} 'mkdir -p #{to.path}'"
           run "scp -rpqB #{hg_path} #{to.hostname}:#{to.path}"
@@ -19,11 +19,11 @@ module OhlohScm::Adapters
         run "cd '#{self.url}' && hg push -f -y '#{to.url}'"
       end
 
-      yield(1,1) if block_given? # Progress bar callback
+      yield(1,1) # Progress bar callback
     end
 
     def local?
-      return true if hostname == Socket.gethostname
+      return true if hostname == System.hostname
       return true if url =~ /^file:\/\//
       return true if url !~ /:/
       false
@@ -40,12 +40,12 @@ module OhlohScm::Adapters
       when /^ssh:\/\/[^\/]+(\/.+)$/
         $1
       when /^[^:]*$/
-        url
+        url unless url.empty?
       end
     end
 
     def hg_path
-      path && File.join(path, ".hg")
+      path && File.join(path.to_s, ".hg")
     end
   end
 end

@@ -5,8 +5,8 @@ module OhlohScm::Parsers
       "bzr"
     end
 
-    def self.internal_parse(buffer, opts)
-      e = nil
+    def self.internal_parse(buffer)
+      e = OhlohScm::NullCommit.new
       state = :data
       action = ""
       indent = "" # Track the level of indentation as we descend into branches
@@ -26,12 +26,12 @@ module OhlohScm::Parsers
         when /^((    )*)-{60,60}$/
           # a new commit begins
           indent = $1
-          if e && block_given?
+          unless e.null?
             e.diffs = remove_dupes(e.diffs)
             yield e
           end
           e = OhlohScm::Commit.new
-          e.diffs = Array(Nil).new
+          e.diffs = Array(Diff).new
           next_state = :data
         when /^#{indent}revno:\s+(\d+)$/
           e.token = $1
@@ -49,7 +49,7 @@ module OhlohScm::Parsers
           e.committer_email = $3
           next_state = :data
         when /^#{indent}timestamp:\s+(.+)/
-          e.committer_date = Time.parse($1)
+          e.committer_date = Time.parse($1, "%a %F %T %z")
           next_state = :data
         when /^#{indent}added:$/
           next_state = :collect_files
@@ -72,16 +72,15 @@ module OhlohScm::Parsers
             line = $1
             # strip the id from the end of the line if it is present
             line = $1 if show_id && line =~ /^(.+?)\s+(\S+)$/
-            parse_diffs(action, line).each { |d| e.diffs << d }
+            parse_diffs(action, line).map { |d| e.diffs << d }
           when :collect_message
-            e.message << $1
-            e.message << "\n"
+            e.message = "#{e.message}#{$1}\n"
           end
         end
 
         state = next_state
       end
-      if e && block_given?
+      unless e.null?
         e.diffs = remove_dupes(e.diffs)
         yield e
       end
@@ -97,32 +96,34 @@ module OhlohScm::Parsers
         #
         # Note that is possible to be renamed to the empty string!
         # This happens when a subdirectory is moved to become the root.
-        before, after = line.scan(/(.+) => ?(.*)/).first
-        [ OhlohScm::Diff.new({:action => "D", :path => before}),
-          OhlohScm::Diff.new({:action => "A", :path => after || "" })]
+        before, after = line.scan(/(.+) => ?(.*)/).first.to_a[1..2]
+        [ OhlohScm::Diff.new(action: "D", path: before),
+          OhlohScm::Diff.new(action: "A", path: after || "")]
       else
-        [OhlohScm::Diff.new({:action => action, :path => line})]
-      end.each do |d|
-        d.path = strip_trailing_asterisk(d.path)
+        [OhlohScm::Diff.new(action: action.to_s, path: line)]
+      end.map do |diff|
+        diff.path = strip_trailing_asterisk(diff.path)
+        diff
       end
     end
 
     def self.strip_trailing_asterisk(path)
-      path[-1..-1] == "*" ? path[0..-2] : path
+      path.to_s.match(/\*$/) ? path.to_s[0..-2] : path
     end
 
     def self.remove_dupes(diffs)
       # Bazaar may report that a file was added and modified in a single commit.
       # Reduce these cases to a single "A" action.
-      diffs.delete_if do |d|
+      diffs.reject! do |d|
         d.action == "M" && diffs.select { |x| x.path == d.path && x.action == "A" }.any?
       end
 
       # Bazaar may report that a file was both deleted and added in a single commit.
       # Reduce these cases to a single "M" action.
-      diffs.each do |d|
-        d.action = "M" if diffs.select { |x| x.path == d.path }.size > 1
-      end.uniq
+      diffs.map do |diff|
+        diff.action = "M" if diffs.select { |x| x.path == diff.path }.size > 1
+        diff
+      end.uniq { |diff| diff.path || diff.action }
     end
   end
 end

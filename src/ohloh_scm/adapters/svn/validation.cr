@@ -10,7 +10,7 @@ module OhlohScm::Adapters
 
     def normalize
       super
-      @url = path_to_file_url(@url)
+      @url = path_to_file_url(@url).to_s
       @url = force_https_if_sourceforge(@url)
       if @branch_name
         clean_branch_name
@@ -23,9 +23,9 @@ module OhlohScm::Adapters
     # Subversion usernames have been relaxed from the abstract rules. We allow email names as usernames.
     def validate_username
       return nil unless @username
-      return nil if @username.length == 0
-      return [:username, "The username must not be longer than 32 characters."] unless @username.length <= 32
-      return [:username, "The username contains illegal characters."] unless @username =~ /^\w[\w@\.\+\-]*$/
+      return nil if @username.to_s.empty?
+      return ["username", "The username must not be longer than 32 characters."] unless @username.to_s.size <= 32
+      return ["username", "The username contains illegal characters."] unless @username =~ /^\w[\w@\.\+\-]*$/
     end
 
     # If the URL is a simple directory path, make sure it is prefixed by file://
@@ -43,15 +43,15 @@ module OhlohScm::Adapters
       return unless valid?
       begin
         if head_token.nil?
-          @errors << [:failed, "The server did not respond to a 'svn info' command. Is the URL correct?"]
-        elsif self.url[0..root.length-1] != root
-          @errors << [:failed, "The URL did not match the Subversion root #{root}. Is the URL correct?"]
+          @errors << ["failed", "The server did not respond to a 'svn info' command. Is the URL correct?"]
+        elsif self.url[0..root.size-1] != root
+          @errors << ["failed", "The URL did not match the Subversion root #{root}. Is the URL correct?"]
         elsif recalc_branch_name && ls.nil?
-          @errors << [:failed, "The server did not respond to a 'svn ls' command. Is the URL correct?"]
+          @errors << ["failed", "The server did not respond to a 'svn ls' command. Is the URL correct?"]
         end
       rescue
-        logger.error { $!.inspect }
-        @errors << [:failed, "An error occured connecting to the server. Check the URL, username, and password."]
+        # FIXME: logger.error { $!.inspect }
+        @errors << ["failed", "An error occured connecting to the server. Check the URL, username, and password."]
       end
     end
 
@@ -59,8 +59,8 @@ module OhlohScm::Adapters
     # The current branch_name is overwritten.
     def recalc_branch_name
       begin
-        @branch_name = @url ? @url[root.length..-1] : @branch_name
-      rescue RuntimeError => exception
+        @branch_name = @url ? @url[root.size..-1] : @branch_name
+      rescue exception : Exception
         @branch_name = "" if exception.message =~ /(svn:*is not a working copy|Unable to open an ra_local session to URL)/ # we have a file system
       end
       clean_branch_name
@@ -79,8 +79,7 @@ module OhlohScm::Adapters
     end
 
     private def clean_branch_name
-      return unless @branch_name
-      @branch_name.chop! if @branch_name.end_with?("/")
+      @branch_name = @branch_name.try &.sub(/\/\Z/, "")
     end
   end
 end

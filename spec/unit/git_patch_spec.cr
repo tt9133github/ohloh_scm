@@ -9,4 +9,3 @@ describe "GitPatch" do
     end
   end
 end
-end

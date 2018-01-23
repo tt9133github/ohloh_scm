@@ -1,40 +1,21 @@
 require "spec"
 require "../src/ohloh_scm"
+require "./ohloh_scm_children_aliases"
 
-def assert_convert(parser, log, expected)
-  result = ""
-  parser.parse File.new(log), {:writer => OhlohScm::Parsers::XmlWriter.new(result)}
-  assert_buffers_equal File.read(expected), result
-end
-
-# assert_equal just dumps the massive strings to the console, which is not helpful.
-# Instead we try to indentify the line of the first error.
-def assert_buffers_equal(expected, actual)
-  return if expected == actual
-
-  expected_lines = expected.split("\n")
-  actual_lines = actual.split("\n")
-
-  expected_lines.each_with_index do |line, i|
-    if line != actual_lines[i]
-      # FIXME: assert_equal line, actual_lines[i], "at line #{i} of the reference buffer"
-    end
-  end
-
-  # We couldnt' find the mismatch. Just bail.
-  expected_lines.should eq(actual_lines)
-end
+TEST_DIR = File.dirname(__FILE__)
+REPO_DIR = File.expand_path(File.join(TEST_DIR, "repositories"))
+DATA_DIR = File.expand_path(File.join(TEST_DIR, "data"))
 
 def with_repository(type, name, branch_name = nil)
   OhlohScm::ScratchDir.new do |dir|
-    if Dir.entries(REPO_DIR).include?(name)
+    if Dir.entries(REPO_DIR).includes?(name)
       `cp -R #{File.join(REPO_DIR, name)} #{dir}`
-    elsif Dir.entries(REPO_DIR).include?(name + ".tgz")
+    elsif Dir.entries(REPO_DIR).includes?(name + ".tgz")
       `tar xzf #{File.join(REPO_DIR, name + ".tgz")} --directory #{dir}`
     else
-      raise RuntimeError.new("Repository archive #{File.join(REPO_DIR, name)} not found.")
+      raise Exception.new("Repository archive #{File.join(REPO_DIR, name)} not found.")
     end
-    yield type.new({:url => File.join(dir, name), branch_name: branch_name}).normalize
+    yield type.new(url: File.join(dir, name), branch_name: branch_name).normalize
   end
 end
 
@@ -57,7 +38,7 @@ end
 def with_svn_repository(name, branch_name="")
   with_repository(OhlohScm::Adapters::SvnAdapter, name) do |svn|
     svn.branch_name = branch_name
-    svn.url = File.join(svn.root, svn.branch_name)
+    svn.url = File.join(svn.root, svn.branch_name.to_s)
     svn.url = svn.url[0..-2] if svn.url[-1..-1] == "/" # Strip trailing /
     yield svn
   end
@@ -66,7 +47,7 @@ end
 def with_svn_chain_repository(name, branch_name="")
   with_repository(OhlohScm::Adapters::SvnChainAdapter, name) do |svn|
     svn.branch_name = branch_name
-    svn.url = File.join(svn.root, svn.branch_name)
+    svn.url = File.join(svn.root, svn.branch_name.to_s)
     svn.url = svn.url[0..-2] if svn.url[-1..-1] == "/" # Strip trailing /
     yield svn
   end
@@ -84,7 +65,9 @@ def with_git_repository(name, branch_name = nil)
 end
 
 def with_hg_repository(name, branch_name = nil)
-  with_repository(OhlohScm::Adapters::HgAdapter, name, branch_name) { |hg| yield hg }
+  with_repository(OhlohScm::Adapters::HgAdapter, name, branch_name) do |hg|
+    yield hg.as(OhlohScm::Adapters::HgAdapter)
+  end
 end
 
 def with_hglib_repository(name)

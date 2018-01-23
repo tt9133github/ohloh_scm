@@ -1,34 +1,31 @@
-require "stringio"
-
 module OhlohScm::Parsers
   class Parser
-    def self.parse(buffer="", opts=Hash(Nil,Nil).new)
-      buffer = StringIO.new(buffer) if buffer.is_a? String
-      opts = opts.merge({:scm => self.scm})
-
-      writer = (opts[:writer] || ArrayWriter.new) unless block_given?
-      writer.write_preamble(opts) if writer
-
-      internal_parse(buffer, opts) do |commit|
-        if commit
-          yield commit if block_given?
-          writer.write_commit(commit) if writer
-        end
-      end
-
-      if writer
-        writer.write_postamble
-        writer.buffer
+    def self.parse(buffer, branch_name = nil)
+      io = build_io(buffer)
+      commits = [] of Commit
+      if branch_name
+        internal_parse(io, branch_name: branch_name) { |commit| commits << commit } # Used by CvsParser.
       else
-        nil
+        internal_parse(io) { |commit| commits << commit }
       end
+      commits
     end
 
-    def self.internal_parse
+    def self.parse(buffer, &block)
+      io = build_io(buffer)
+      internal_parse(io) { |commit| yield commit if commit }
     end
 
-    def self.scm
-      nil
+    def self.internal_parse(_io)
+      raise Exception.new("Abstract method not implemented")
+    end
+
+    def self.internal_parse(_io, branch_name = "", &block)
+      raise Exception.new("Abstract method not implemented")
+    end
+
+    def self.build_io(buffer)
+      buffer.is_a?(String) ? IO::Memory.new(string: buffer) : buffer
     end
   end
 end

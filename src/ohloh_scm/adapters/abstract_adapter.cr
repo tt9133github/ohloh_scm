@@ -1,17 +1,15 @@
 module OhlohScm::Adapters
   class AbstractAdapter
-    property :url, :branch_name, :username, :password, :errors, :public_urls_only
-    setter :temp_folder
+    property :url, :errors, :temp_folder, :public_urls_only
+    property username : StringOrNil
+    property password : StringOrNil
+    property branch_name : StringOrNil
+    property module_name : StringOrNil
+    @url : String
 
-    def initialize(params=Hash(Nil,Nil).new)
-      params.each { |k,v| send(k.to_s + "=", v) if respond_to?(k.to_s + "=") }
-    end
-
-    # Handy for test overrides
-    def metaclass
-      class << self
-        self
-      end
+    def initialize(@url = "", @branch_name = nil, @module_name = nil, @username = nil, @password = nil, @public_urls_only = false)
+      @temp_folder = "/tmp"
+      @errors = [] of Array(String) | Nil
     end
 
     # Returns path to the string_encoder binary.
@@ -20,8 +18,7 @@ module OhlohScm::Adapters
       File.expand_path("../../../../bin/string_encoder", __FILE__)
     end
 
-    def temp_folder
-      @temp_folder || "/tmp"
+    def checkout(rev, dest_dir)
     end
   end
 end

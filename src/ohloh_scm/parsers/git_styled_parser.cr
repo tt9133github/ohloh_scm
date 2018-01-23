@@ -11,17 +11,17 @@ module OhlohScm::Parsers
     end
 
     def self.format
-      "format:"__BEGIN_COMMIT__%nCommit: %H%nAuthor: %an%nAuthorEmail: %ae%nDate: %aD%n__BEGIN_COMMENT__%n%s%n%b%n__END_COMMENT__%n""
+      "format:'__BEGIN_COMMIT__%nCommit: %H%nAuthor: %an%nAuthorEmail: %ae%nDate: %aD%n__BEGIN_COMMENT__%n%s%n%b%n__END_COMMENT__%n'"
     end
 
-    ANONYMOUS = "(no author)" unless defined?(ANONYMOUS)
+    ANONYMOUS = "(no author)"
 
-    def self.internal_parse(io, opts)
-      e = nil
+    def self.internal_parse(io)
+      e = OhlohScm::NullCommit.new
       state = :key_values
 
-      io.each do |line|
-        line.chomp!
+      io.each_line do |line|
+        line = line.chomp
 
         # Kind of a hack: the diffs section is not always present.
         # If we are expecting a line of diffs, but instead find a line
@@ -34,9 +34,8 @@ module OhlohScm::Parsers
         if state == :key_values
           if line =~ /^Commit: ([a-z0-9]+)$/
             sha1 = $1
-            yield e if e
+            yield e unless e.null?
             e = OhlohScm::Commit.new
-            e.diffs = Array(Nil).new
             e.token = sha1
             e.author_name = ANONYMOUS
           elsif line =~ /^Author: (.+)$/
@@ -58,7 +57,7 @@ module OhlohScm::Parsers
             state = :diffs
           elsif line != "<unknown>"
             if e.message
-              e.message << "\n" << line
+              e.message = "#{e.message}\n#{line}"
             else
               e.message = line
             end
@@ -70,26 +69,26 @@ module OhlohScm::Parsers
           elsif line =~ /:([0-9]+) ([0-9]+) ([a-z0-9]+) ([a-z0-9]+) ([A-Z])\t"?(.+[^"])"?$/
             # Submodules have a file mode of '160000', which indicates a "gitlink"
             # We ignore submodules completely.
-            e.diffs << OhlohScm::Diff.new({ :action => $5, :path => $6, :sha1 => $4, :parent_sha1 => $3 }) unless $1=="160000" || $2=="160000"
+            e.diffs << OhlohScm::Diff.new(action: $5, path: $6, sha1: $4, parent_sha1: $3) unless $1=="160000" || $2=="160000"
           elsif line =~ /:([0-9]+) ([0-9]+) ([a-z0-9]+) ([a-z0-9]+) (R[0-9]+)\t"?(.+[^"])"?$/
-                                                old_path, new_path = $6.split("\t")
+            old_path, new_path = $6.split(/\t/)
             unless $1=="160000" || $2=="160000"
-              e.diffs << OhlohScm::Diff.new({ :action => "D", :path => old_path, :sha1 => NULL_SHA1, :parent_sha1 => $3 })
-              e.diffs << OhlohScm::Diff.new({ :action => "A", :path => new_path, :sha1 => $4, :parent_sha1 => NULL_SHA1 })
-                                                end
+              e.diffs << OhlohScm::Diff.new(action: "D", path: old_path, sha1: NULL_SHA1, parent_sha1: $3)
+              e.diffs << OhlohScm::Diff.new(action: "A", path: new_path, sha1: $4, parent_sha1: NULL_SHA1)
+            end
           end
 
         else
-          raise RuntimeError("Unknown parser state #{state.to_s}")
+          raise Exception.new("Unknown parser state #{state.to_s}")
         end
       end
 
-      yield e if e
+      yield e unless e.null?
     end
 
-    def self.parse_date(date)
-      t = Time.rfc2822(date) rescue Time.at(0)
-      t.utc
+    def self.parse_date(string)
+      t = Time.parse(string.strip, "%a, %d %b %Y %T %z") rescue Time.epoch(0)
+      t.to_utc
     end
   end
 end

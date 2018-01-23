@@ -9,12 +9,11 @@ module OhlohScm::Parsers
     # commits (developer/date/message).
     # If a branch_name is specified, only commits along that branch will be returned,
     # otherwise only commits along the head will be returned.
-    def self.internal_parse(io, opts)
-      commits = Hash(String, OhlohScm::Commit).new
-      branch_name = opts[:branch_name]
-      branch_name = nil if branch_name == "HEAD" || branch_name == ""
+    def self.internal_parse(io, branch_name = nil)
+      commits = Hash(String, Array(OhlohScm::Commit)).new
+      module_name = branch_name unless branch_name == "HEAD" || branch_name.to_s.empty?
 
-      read_files(io, branch_name) do |c|
+      read_files(io, module_name) do |c|
         # As commits are yielded by the parser, we sort them into bins.
         #
         # The 'bins' are arrays of timestamps. We keep a separate array of
@@ -29,21 +28,23 @@ module OhlohScm::Parsers
         # a number of separate times, we may end up with several timestamps for
         # that combination.
 
-        key = c.committer_name + ":" + c.message
+        key = "#{c.committer_name}:#{c.message}"
         if commits[key]?
           # We have already seen this developer/message combination
           match = false
           commits[key].each_index do |i|
             # Does the new commit lie near in time to a known one in our list?
-            if near?(commits[key][i].committer_date, c.committer_date)
+            known_committer_date = commits[key][i].committer_date.as(Time)
+            new_committer_date = c.committer_date.as(Time)
+            if near?(known_committer_date, new_committer_date)
               match = true
               # Yes. Choose the most recent timestamp, and add the new
               # directory name to our list.
-              if commits[key][i].committer_date < c.committer_date
-                commits[key][i].committer_date = c.committer_date
+              if known_committer_date < new_committer_date
+                commits[key][i].committer_date = new_committer_date
                 commits[key][i].token = c.token
               end
-              commits[key][i].directories << c.directories[0] unless commits[key][i].directories.include? c.directories[0]
+              commits[key][i].directories << c.directories[0] unless commits[key][i].directories.includes? c.directories[0]
               break
             end
           end
@@ -56,33 +57,31 @@ module OhlohScm::Parsers
         end
       end
       # Pull all of the commits out of the hash and return them as a single sorted list.
-      result = commits.values.flatten.sort! { |a,b| a.committer_date <=> b.committer_date }
+      result = commits.values.flatten.sort! { |a,b| a.committer_date.as(Time) <=> b.committer_date.as(Time) }
 
       # If we have two commits with identical timestamps, arbitrarily choose the first
       (result.size-1).downto(1) do |i|
         result.delete_at(i) if result[i].committer_date == result[i-1].committer_date
       end
 
-      if block_given?
-        result.each { |r| yield r }
-      end
+      result.each { |r| yield r }
     end
 
     # Accepts two dates and determines wether they are close enough together to consider simultaneous.
     def self.near?(a,b)
-      ((a-b).abs < 30*60) # Less than 30 minutes counts as 'near'
+      (a - b).abs.to_i < 30*60 # Less than 30 minutes counts as 'near'
     end
 
-    def self.read_files(io, branch_name, &block)
+    def self.read_files(io, branch_name)
       io.each_line do |l|
         if l =~ /^RCS file: (.*),.$/
           filename = $1
-          read_file(io, branch_name, filename, &block)
+          read_file(io, branch_name, filename) { |c| yield c }
         end
       end
     end
 
-    def self.read_file(io, branch_name, filename, &block)
+    def self.read_file(io, branch_name, filename)
       branch_number = nil
       io.each_line do |l|
         if l =~ /^head: ([\d\.]+)/
@@ -94,7 +93,7 @@ module OhlohScm::Parsers
             branch_number = read_symbolic_names(io, branch_name)
           end
         elsif l =~ /^----------------------------/
-          read_commits(io, branch_number, filename, &block)
+          read_commits(io, branch_number, filename) { |c| yield c }
           return
         end
       end
@@ -111,7 +110,7 @@ module OhlohScm::Parsers
       end
     end
 
-    def self.read_commits(io, branch_number, filename, &block)
+    def self.read_commits(io, branch_number, filename)
       should_yield = nil
       io.each_line do |l|
         if l =~ /^\s$/
@@ -123,7 +122,7 @@ module OhlohScm::Parsers
           else
             should_yield = false
           end
-          read_commit(io, filename, commit_number, should_yield, &block)
+          read_commit(io, filename, commit_number, should_yield) { |c| yield c }
         end
       end
     end
@@ -141,10 +140,10 @@ module OhlohScm::Parsers
           if should_yield
             commit = OhlohScm::Commit.new
             commit.token = committer_date[0..18]
-            commit.committer_date = Time.parse(committer_date[0..18] + " +0000").utc
+            commit.committer_date = parse_time(committer_date[0..18])
             commit.committer_name = committer_name
             commit.message = message
-            commit.directories = [File.dirname(filename).intern]
+            commit.directories = [File.dirname(filename)]
             yield commit
           end
           return
@@ -159,24 +158,26 @@ module OhlohScm::Parsers
         if l =~ /^branches: / && first_line # the first line might be 'branches:', skip it.
           # do nothing
         else
-          l.chomp!
-          if l == "=============================================================================" or
-            l == "----------------------------"
+          l = l.chomp
+          if l == "=============================================================================" || l == "----------------------------"
             return message
           end
-          message += "\n" if message.length != 0
+          message += "\n" if message.size != 0
           message += l
         end
         first_line = false
       end
       message
     end
-  end
 
-  if $0 == __FILE__
-    require File.dirname(__FILE__) + "/../../config/environment"
-    LogParser.parse(STDIN).each do |r|
-      r.pretty_print(STDOUT)
+    def self.parse_time(time_string)
+      if time_string.match(%r(\d{4}/\d{2}/\d{2}))
+        date_format = "%Y/%m/%d"
+      else
+        date_format = "%Y-%m-%d"
+      end
+
+      Time.parse("#{time_string} +0000", "#{date_format} %T %z").to_utc
     end
   end
 end

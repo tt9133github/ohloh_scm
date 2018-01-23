@@ -3,8 +3,8 @@ require "../spec_helper"
 describe "CvsCommits" do
 
   it "commits" do
+    # NOTE: Fails on machines with non UTC system time.
     with_cvs_repository("cvs", "simple") do |cvs|
-
       cvs.commits.map { |c| c.token }.should eq(["2006-06-29 16:21:07",
                                                  "2006-06-29 18:14:47",
                                                  "2006-06-29 18:45:29",
@@ -12,13 +12,13 @@ describe "CvsCommits" do
                                                  "2006-06-29 18:52:23"])
 
       # Make sure we are date format agnostic (2008/01/01 is the same as 2008-01-01)
-      cvs.commits({:after => "2006/06/29 18:45:29"}).map { |c| c.token }.should eq(
+      cvs.commits(after: "2006/06/29 18:45:29").map { |c| c.token }.should eq(
         ["2006-06-29 18:48:54", "2006-06-29 18:52:23"])
 
-      cvs.commits({:after => "2006-06-29 18:45:29"}).map { |c| c.token }.should eq(
+      cvs.commits(after: "2006-06-29 18:45:29").map { |c| c.token }.should eq(
         ["2006-06-29 18:48:54", "2006-06-29 18:52:23"])
 
-      cvs.commits({:after => "2006/06/29 18:52:23"}).map { |c| c.token }.should eq(Array(Nil).new)
+      cvs.commits(after: "2006/06/29 18:52:23").map { |c| c.token }.should eq(Array(Nil).new)
     end
   end
 
@@ -32,8 +32,8 @@ describe "CvsCommits" do
 
   it "open_log_file_encoding" do
     with_cvs_repository("cvs", "invalid_utf8") do |cvs|
-      cvs.open_log_file do |io|
-        io.read.valid_encoding?.should eq(true)
+      cvs.open_log_file(0) do |io|
+        File.read(io.path).valid_encoding?.should eq(true)
       end
     end
   end

@@ -1,15 +1,18 @@
 module OhlohScm::Adapters
   class CvsAdapter
-    def commits(opts=Hash(Nil,Nil).new)
-      after = opts[:after]
+    def commits(after = nil)
       result = Array(String).new
 
-      open_log_file(opts) do |io|
-        result = OhlohScm::Parsers::CvsParser.parse(io, :branch_name => branch_name)
+      open_log_file(after) do |io|
+        result = OhlohScm::Parsers::CvsParser.parse(io, branch_name: branch_name)
       end
 
       # Git converter needs a backpointer to the scm for each commit
-      result.each { |c| c.scm = self }
+      result = result.map do |c|
+        commit = c.as(Commit)
+        commit.scm = self
+        commit
+      end
 
       return result if result.size == 0 # Nothing found; we're done here.
       return result if after.to_s == "" # We requested everything, so just return everything.
@@ -25,12 +28,12 @@ module OhlohScm::Adapters
       # I want to string-compare timestamps without converting to dates objects (I think it's faster).
       # Some CVS servers print dates as 2006/01/02 03:04:05, others as 2006-01-02 03:04:05.
       # To work around this, we'll build a regex that matches either date format.
-      re = Regexp.new(after.gsub(/[\/-]/, "."))
+      re = Regex.new(after.to_s.gsub(/[\/-]/, "."))
 
       result.each_index do |i|
         if result[i].token =~ re # We found the match for after
           if i == result.size-1
-            return Array(Nil).new # There aren't any new commits.
+            return Array(Commit).new # There aren't any new commits.
           else
             return result[i+1..-1]
           end
@@ -47,7 +50,7 @@ module OhlohScm::Adapters
       # There's no work around for this condition here in the code, but there are some things
       # you can try manually to fix the problem. Typically, you can try throwing way the
       # commit associated with 'after' and fetching it again (git reset --hard HEAD^).
-      raise RuntimeError.new("token '#{after}' not found in rlog.")
+      raise Exception.new("token '#{after}' not found in rlog.")
     end
 
     # Gets the rlog of the repository and saves it in a temporary file.
@@ -59,8 +62,7 @@ module OhlohScm::Adapters
     # In any case, to be sure not to miss any commits, this method subtracts 10 seconds from the provided timestamp.
     # This means that the returned log might actually contain a few revisions that predate the requested time.
     # That's better than missing revisions completely! Just be sure to check for duplicates.
-    def open_log_file(opts=Hash(Nil,Nil).new)
-      after = opts[:after]
+    def open_log_file(after = nil)
       begin
         ensure_host_key
         run "cvsnt -d #{self.url} rlog #{opt_branch} #{opt_time(after)} '#{self.module_name}' | #{ string_encoder } > #{rlog_filename}"
@@ -68,14 +70,14 @@ module OhlohScm::Adapters
           yield file
         end
       ensure
-        File.delete rlog_filename if FileTest.exists?(rlog_filename)
+        File.delete rlog_filename if File.exists?(rlog_filename)
       end
     end
 
     def opt_time(after=nil)
       if after
-        most_recent_time = parse_time(after) - 10
-        %( -d '#{most_recent_time.strftime("%Y-%m-%d %H:%M:%S")}Z<#{Time.now.utc.strftime("%Y-%m-%d %H:%M:%S")}Z' )
+        most_recent_time = parse_time(after) - 10.seconds
+        %( -d '#{most_recent_time.to_s("%Y-%m-%d %H:%M:%S")}Z<#{Time.now.to_utc.to_s("%Y-%m-%d %H:%M:%S")}Z' )
       else
         ""
       end
@@ -89,7 +91,9 @@ module OhlohScm::Adapters
     def parse_time(token)
       case token
       when /(\d\d\d\d).(\d\d).(\d\d) (\d\d):(\d\d):(\d\d)/
-        Time.gm( $1.to_i, $2.to_i, $3.to_i, $4.to_i, $5.to_i, $6.to_i )
+        Time.utc( $1.to_i, $2.to_i, $3.to_i, $4.to_i, $5.to_i, $6.to_i )
+      else
+        Time.epoch(0)
       end
     end
   end

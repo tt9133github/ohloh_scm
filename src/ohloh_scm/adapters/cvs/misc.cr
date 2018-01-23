@@ -1,5 +1,7 @@
 module OhlohScm::Adapters
   class CvsAdapter
+    @host : StringOrNil
+
     # Returns an array of file and directory names from the remote server.
     # Directory names will end with a trailing '/' character.
     #
@@ -22,7 +24,7 @@ module OhlohScm::Adapters
         s = $1 + "/" if s =~ /^D\/(.*)\/\/\/\/$/
         s = $1 if s =~ /^\/(.*)\/.*\/.*\/.*\/$/
         next if s == "CVSROOT/"
-        files << s if s && s.length > 0
+        files << s if s && s.size > 0
       end
 
       # Some of the cvs 'errors' are just harmless problems with some directories.
@@ -34,7 +36,7 @@ module OhlohScm::Adapters
 
         ignored_error_messages = [
           /Listing modules on server/,
-          /Listing module: #{Regexp.escape(path.to_s)}/,
+          /Listing module: #{Regex.escape(path.to_s)}/,
           /-m wrapper option is not supported remotely; ignored/,
           /cannot open directory .* No such file or directory/,
           /ignoring module/,
@@ -47,9 +49,9 @@ module OhlohScm::Adapters
           /Terminated with fatal signal 11/
         ]
 
-        if s.length == 0
+        if s.size == 0
           error_handled = true
-        elsif s =~ /cvs server: New directory `(#{Regexp.escape(path.to_s)}\/)?(.*)' -- ignored/
+        elsif s =~ /cvs server: New directory `(#{Regex.escape(path.to_s)}\/)?(.*)' -- ignored/
           files << "#{$2}/"
           error_handled = true
         end
@@ -78,11 +80,11 @@ module OhlohScm::Adapters
       opt_D = r.token ? "-D'#{r.token}Z'" : ""
 
       ensure_host_key
-      if FileTest.exists?(local_directory + "/CVS/Root")
+      if File.exists?("#{local_directory}/CVS/Root")
         # We already have a local enlistment, so do a quick update.
         if r.directories.size > 0
           build_ordered_directory_list(r.directories).each do |d|
-            if d.length == 0
+            if d.size == 0
               run "cd #{local_directory} && cvsnt update -d -l -C #{opt_D} ."
             else
               run "cd #{local_directory} && cvsnt update -d -l -C #{opt_D} '#{d}'"
@@ -96,8 +98,9 @@ module OhlohScm::Adapters
       else
         # We do not have a local enlistment, so do a slow checkout to create one.
         # Silly cvsnt won't accept an absolute path. We'll have to play some games and cd to the parent directory.
-        parent_path, checkout_dir = File.split(local_directory)
-        FileUtils.mkdir_p(parent_path) unless FileTest.exist?(parent_path)
+        match_data = local_directory.to_s.match(/\A(.+)\/([^\/]+)\Z/)
+        parent_path, checkout_dir = match_data[1], match_data[2] if match_data
+        FileUtils.mkdir_p(parent_path.to_s) unless File.exists?(parent_path.to_s)
         run "cd #{parent_path} && cvsnt -d #{self.url} checkout #{opt_D} -A -d'#{checkout_dir}' '#{self.module_name}'"
       end
     end
@@ -112,22 +115,22 @@ module OhlohScm::Adapters
       # then return an empty string (ie, the default root directory) if so.
       return [""] if self.url =~ /^\//
 
-        list = Array(String).new
-      directories.map{ |a| trim_directory(a.to_s).to_s }.each do |d|
+      list = Array(String).new
+      directories.map { |a| trim_directory(a.to_s).to_s }.each do |d|
         # We always ignore Attic directories, which just contain deleted files
         # Update the parent directory of the Attic instead.
         if d =~ /^(.*)Attic$/
           d = $1
-          d = d[0..-2] if d.length > 0 && d[-1,1]=="/"
+          d = d[0..-2] if d.size > 0 && d[-1,1]=="/"
         end
 
-        unless list.include? d
+        unless list.includes? d
           list << d
           # We also need to include every parent directory of the directory
           # we are interested in, all the way up to the root.
-          while d.rindex("/") && d.rindex("/") > 0 do
-            d = d[0..(d.rindex("/")-1)]
-            if list.include? d
+          while d.rindex("/").try &.>(0)
+            d = d[0..(d.rindex("/").as(Int32)-1)]
+            if list.includes? d
               break
             else
               list << d
@@ -136,7 +139,7 @@ module OhlohScm::Adapters
         end
       end
       # Sort the list by length because we need to update parent directories before children
-      list.sort! { |a,b| a.length <=> b.length }
+      list.sort_by { |a| a.size }
     end
 
     def trim_directory(d)
@@ -147,7 +150,9 @@ module OhlohScm::Adapters
       # For example, if url = ':pserver:anonymous:@moodle.cvs.sourceforge.net:/cvsroot/moodle'
       # and module = 'contrib', then the directory prefix = '/cvsroot/moodle/contrib/'
       if root
-        d[root.length..-1]
+        root_size = root.to_s.size
+        return "" if root_size > d.size
+        d[root_size..-1]
       else
         d # If not remote, just leave the directory name as-is
       end
@@ -158,7 +163,7 @@ module OhlohScm::Adapters
     end
 
     def opt_branch
-      if branch_name != nil && branch_name.length > 0 && branch_name != "HEAD"
+      if branch_name && branch_name.to_s.size > 0 && branch_name != "HEAD"
     "-r'#{branch_name}'"
       else
     "-b -r1:"
@@ -193,7 +198,7 @@ module OhlohScm::Adapters
     end
 
     def tags
-      tag_strings = run("cvs -Q -d #{ url } rlog -h #{ module_name } | awk -F\"[.:]\" '/^\\t/&&$(NF-1)!=0'").split(/\n/)
+      tag_strings = run("cvs -Q -d #{ url } rlog -h #{ module_name } | awk -F\"[.:]\" '/^\\t/&&$(NF-1)!=0'").split(/\n/, remove_empty: true)
       tag_strings.map do |tag_string|
         tag_name, version = tag_string.split(":")
         [tag_name.gsub(/\t/, ""), version.strip]

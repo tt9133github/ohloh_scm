@@ -16,8 +16,8 @@ module OhlohScm::Parsers
       File.expand_path(File.join(File.dirname(__FILE__), "hg_style"))
     end
 
-    def self.internal_parse(buffer, opts)
-      e = nil
+    def self.internal_parse(buffer)
+      e = OhlohScm::NullCommit.new
       state = :data
 
       buffer.each_line do |l|
@@ -26,35 +26,34 @@ module OhlohScm::Parsers
           case l
           when /^changeset:\s+([0-9a-f]+)/
             e = OhlohScm::Commit.new
-            e.diffs = Array(Nil).new
+            e.diffs = Array(Diff).new
             e.token = $1
           when /^user:\s+(.+?)(\s+<(.+)>)?$/
             e.committer_name = $1
-            e.committer_email = $3
-          when /^date:\s+([\d\.]+)/
-            e.committer_date = Time.at($1.to_f).utc
-          when "__BEGIN_FILES__\n"
+            e.committer_email = $3?
+          when /^date:\s+(.+)$/
+            e.committer_date = Time.epoch($1.sub(/\..+$/, "").to_i)
+          when /^__BEGIN_FILES__$/
             next_state = :files
-          when "__BEGIN_COMMENT__\n"
+          when /^__BEGIN_COMMENT__$/
             next_state = :long_comment
-          when "__END_COMMIT__\n"
-            yield e if block_given?
-            e = nil
+          when /^__END_COMMIT__$/
+            yield e unless e.null?
+            e = OhlohScm::NullCommit.new
           end
 
         elsif state == :files
-          if l == "__END_FILES__\n"
+          if l =~ /^__END_FILES__$/
             next_state = :data
           elsif l =~ /^([MAD]) (.+)$/
-            e.diffs << OhlohScm::Diff.new({:action => $1, :path => $2})
+            e.diffs << OhlohScm::Diff.new(action: $1, path: $2)
           end
 
         elsif state == :long_comment
-          if l == "__END_COMMENT__\n"
+          if l =~ /^__END_COMMENT__$/
             next_state = :data
           else
-            e.message ||= ""
-            e.message << l
+            e.message = "#{e.message}#{l}"
           end
         end
         state = next_state

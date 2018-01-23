@@ -2,10 +2,6 @@ require "../spec_helper"
 
 describe "SvnXmlParser" do
 
-  it "basic" do
-    assert_convert(SvnXmlParser, DATA_DIR + "/simple.svn_xml_log", DATA_DIR + "/simple.ohlog")
-  end
-
   it "empty_array" do
     SvnXmlParser.parse("").should eq(Array(Nil).new)
   end
@@ -19,14 +15,14 @@ describe "SvnXmlParser" do
     <?xml version="1.0"?>
     <log>
     <logentry
-     revision="8">
+       revision="8">
     <author>robin</author>
     <date>2009-02-05T13:40:46.386190Z</date>
     <paths>
     <path
-     copyfrom-path="/branches/development"
-     copyfrom-rev="7"
-     action="A">/trunk</path>
+       copyfrom-path="/branches/development"
+       copyfrom-rev="7"
+       action="A">/trunk</path>
     </paths>
     <msg>the branch becomes the new trunk</msg>
     </logentry>

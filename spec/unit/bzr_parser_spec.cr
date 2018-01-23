@@ -1,28 +1,27 @@
 require "../spec_helper"
 
 describe "BzrParser" do
-
   it "empty_array" do
     BzrParser.parse("").should eq(Array(Nil).new)
   end
 
   it "default_log_parser" do
-sample_log = <<SAMPLE
-------------------------------------------------------------
-revno: 2
-committer: Robin <robin@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:49:42 +0100
-message:
-Second Revision
-------------------------------------------------------------
-revno: 1
-committer: Jason <jason@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:25:40 +0100
-message:
-Initial Revision
-SAMPLE
+    sample_log = <<-SAMPLE
+    ------------------------------------------------------------
+    revno: 2
+    committer: Robin <robin@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:49:42 +0100
+    message:
+      Second Revision
+    ------------------------------------------------------------
+    revno: 1
+    committer: Jason <jason@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:25:40 +0100
+    message:
+      Initial Revision
+    SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
@@ -45,29 +44,29 @@ SAMPLE
   end
 
   it "verbose_log_parser" do
-sample_log = <<SAMPLE
-------------------------------------------------------------
-revno: 2
-committer: Robin <robin@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:49:42 +0100
-message:
-Second Revision
-removed:
-file1.txt
-modified:
-file2.txt
-------------------------------------------------------------
-revno: 1
-committer: Jason <jason@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:25:40 +0100
-message:
-Initial Revision
-added:
-file1.txt
-file2.txt
-SAMPLE
+    sample_log = <<-SAMPLE
+    ------------------------------------------------------------
+    revno: 2
+    committer: Robin <robin@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:49:42 +0100
+    message:
+      Second Revision
+    removed:
+      file1.txt
+    modified:
+      file2.txt
+    ------------------------------------------------------------
+    revno: 1
+    committer: Jason <jason@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:25:40 +0100
+    message:
+      Initial Revision
+    added:
+      file1.txt
+      file2.txt
+    SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
@@ -100,33 +99,33 @@ SAMPLE
   end
 
   it "verbose_log_parser_with_show_id" do
-sample_log = <<SAMPLE
-------------------------------------------------------------
-revno: 2
-revision-id: info@ohloh.net-20090204004942-73rnw0izen42f154
-parent: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
-committer: Robin <robin@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:49:42 +0100
-message:
-Second Revision
-removed:
-file1.txt                      file1.txt-20090204002338-awfasrgh9nuzc53d-1
-modified:
-file2.txt                      file2.txt-20090204002419-s025jc9k05dghk6d-1
-------------------------------------------------------------
-revno: 1
-revision-id: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
-parent: info@ohloh.net-20090204002518-yb0x153oa6mhoodu
-committer: Jason <jason@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:25:40 +0100
-message:
-Initial Revision
-added:
-file1.txt                      file1.txt-20090204002338-awfasrgh9nuzc53d-1
-file2.txt                      file2.txt-20090204002419-s025jc9k05dghk6d-1
-SAMPLE
+    sample_log = <<-SAMPLE
+    ------------------------------------------------------------
+    revno: 2
+    revision-id: info@ohloh.net-20090204004942-73rnw0izen42f154
+    parent: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
+    committer: Robin <robin@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:49:42 +0100
+    message:
+      Second Revision
+    removed:
+      file1.txt                      file1.txt-20090204002338-awfasrgh9nuzc53d-1
+    modified:
+      file2.txt                      file2.txt-20090204002419-s025jc9k05dghk6d-1
+    ------------------------------------------------------------
+    revno: 1
+    revision-id: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
+    parent: info@ohloh.net-20090204002518-yb0x153oa6mhoodu
+    committer: Jason <jason@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:25:40 +0100
+    message:
+      Initial Revision
+    added:
+      file1.txt                      file1.txt-20090204002338-awfasrgh9nuzc53d-1
+      file2.txt                      file2.txt-20090204002419-s025jc9k05dghk6d-1
+    SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
@@ -159,19 +158,19 @@ SAMPLE
   end
 
   it "verbose_log_parser_very_long_filename_with_show_id" do
-sample_log = <<SAMPLE
-------------------------------------------------------------
-revno: 1
-revision-id: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
-parent: info@ohloh.net-20090204002518-yb0x153oa6mhoodu
-committer: Jason <jason@ohloh.net>
-branch nick: bzr
-timestamp: Wed 2009-02-04 01:25:40 +0100
-message:
-Initial Revision
-added:
-a very long filename with space intended to cause log parsing problems averylongfilenamewit-20090205232320-4fl43j6djs9pfnn4-1
-SAMPLE
+    sample_log = <<-SAMPLE
+    ------------------------------------------------------------
+    revno: 1
+    revision-id: info@ohloh.net-20090204002540-gmana8tk5f9gboq9
+    parent: info@ohloh.net-20090204002518-yb0x153oa6mhoodu
+    committer: Jason <jason@ohloh.net>
+    branch nick: bzr
+    timestamp: Wed 2009-02-04 01:25:40 +0100
+    message:
+      Initial Revision
+    added:
+      a very long filename with space intended to cause log parsing problems averylongfilenamewit-20090205232320-4fl43j6djs9pfnn4-1
+    SAMPLE
 
     commits = BzrParser.parse(sample_log)
 
@@ -190,53 +189,53 @@ SAMPLE
   end
 
   it "verbose_log_with_nested_merge_commits" do
-sample_log = <<SAMPLE
-------------------------------------------------------------
-revno: 16
-revision-id: robin@ohloh.net-20080629125019-qxk9qma8esphwwus
-parent: robin@ohloh.net-20080629121849-2le5txjj7tkdq54f
-parent: robin@ohloh.net-20080630050459-ox7a50k5qi6tg2z2
-committer: robin <robin@ohloh.net>
-branch nick: ohloh
-timestamp: Sun 2008-06-29 05:50:19 -0700
-message:
-Committing merge
-removed:
-goodbye_world.c                goodbye_world.c-20080625052902-61bbthtf22shh0p6-293
-  ------------------------------------------------------------
-  revno: 12.1.2
-  revision-id: robin@ohloh.net-20080629214643-5ru67mh04j09cmiz
-  parent: robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm
-  committer: robin <robin@ohloh.net>
-  branch nick: ohloh
-  timestamp: Sun 2008-06-29 14:46:43 -0700
-  message:
-    Second commit on branch
-  modified:
-    hello_world.c                  hello_world.c-20080625052902-61bbthtf22shh0p6-447
-  ------------------------------------------------------------
-  revno: 12.1.1
-  revision-id: robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm
-  parent: robin@ohloh.net-20080629191920-ioqljg6ihntzcz9y
-  committer: robin <robin@ohloh.net>
-  branch nick: ohloh
-  timestamp: Sun 2008-06-29 13:10:28 -0700
-  message:
-    First commit on branch
-  added:
-    goodbye_world.c                goodbye_world.c-20080625052902-61bbthtf22shh0p6-422
-------------------------------------------------------------
-revno: 15
-revision-id: robin@ohloh.net-20080629121849-2le5txjj7tkdq54f
-parent: robin@ohloh.net-20080629092342-7jfxn10e2qchi931
-committer: robin <robin@ohloh.net>
-branch nick: ohloh
-timestamp: Sun 2008-06-29 05:18:49 -0700
-message:
-First commit on trunk
-modified:
-hello_world.c                  hello_world.c-20080625052902-61bbthtf22shh0p6-293
-SAMPLE
+    sample_log = <<-SAMPLE
+    ------------------------------------------------------------
+    revno: 16
+    revision-id: robin@ohloh.net-20080629125019-qxk9qma8esphwwus
+    parent: robin@ohloh.net-20080629121849-2le5txjj7tkdq54f
+    parent: robin@ohloh.net-20080630050459-ox7a50k5qi6tg2z2
+    committer: robin <robin@ohloh.net>
+    branch nick: ohloh
+    timestamp: Sun 2008-06-29 05:50:19 -0700
+    message:
+      Committing merge
+    removed:
+      goodbye_world.c                goodbye_world.c-20080625052902-61bbthtf22shh0p6-293
+        ------------------------------------------------------------
+        revno: 12.1.2
+        revision-id: robin@ohloh.net-20080629214643-5ru67mh04j09cmiz
+        parent: robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm
+        committer: robin <robin@ohloh.net>
+        branch nick: ohloh
+        timestamp: Sun 2008-06-29 14:46:43 -0700
+        message:
+          Second commit on branch
+        modified:
+          hello_world.c                  hello_world.c-20080625052902-61bbthtf22shh0p6-447
+        ------------------------------------------------------------
+        revno: 12.1.1
+        revision-id: robin@ohloh.net-20080629201028-923bdzz0qcjmd6cm
+        parent: robin@ohloh.net-20080629191920-ioqljg6ihntzcz9y
+        committer: robin <robin@ohloh.net>
+        branch nick: ohloh
+        timestamp: Sun 2008-06-29 13:10:28 -0700
+        message:
+          First commit on branch
+        added:
+          goodbye_world.c                goodbye_world.c-20080625052902-61bbthtf22shh0p6-422
+    ------------------------------------------------------------
+    revno: 15
+    revision-id: robin@ohloh.net-20080629121849-2le5txjj7tkdq54f
+    parent: robin@ohloh.net-20080629092342-7jfxn10e2qchi931
+    committer: robin <robin@ohloh.net>
+    branch nick: ohloh
+    timestamp: Sun 2008-06-29 05:18:49 -0700
+    message:
+      First commit on trunk
+    modified:
+      hello_world.c                  hello_world.c-20080625052902-61bbthtf22shh0p6-293
+    SAMPLE
     commits = BzrParser.parse(sample_log)
 
     commits.should be_truthy
@@ -270,7 +269,7 @@ SAMPLE
   end
 
   it "parse_diffs_rename" do
-    diffs = BzrParser.parse_diffs(:rename, { "helloworld.c => goodbyeworld.c" })
+    diffs = BzrParser.parse_diffs(:rename, "helloworld.c => goodbyeworld.c")
     diffs.size.should eq(2)
     diffs.first.action.should eq("D")
     diffs.first.path.should eq("helloworld.c")
@@ -280,14 +279,14 @@ SAMPLE
 
   it "rename" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 2
-committer: info <info@ohloh.net>
-timestamp: Wed 2005-09-14 21:27:20 +1000
-message:
-rename a file
-renamed:
-helloworld.c => goodbyeworld.c
+    ------------------------------------------------------------
+    revno: 2
+    committer: info <info@ohloh.net>
+    timestamp: Wed 2005-09-14 21:27:20 +1000
+    message:
+      rename a file
+    renamed:
+      helloworld.c => goodbyeworld.c
     SAMPLE
 
     commits = BzrParser.parse(log)
@@ -304,8 +303,8 @@ helloworld.c => goodbyeworld.c
   end
 
   it "remove_dupes_add_remove" do
-    diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new({:action => "A", :path => "foo"}),
-                                      OhlohScm::Diff.new({:action => "D", :path => "foo"}) ])
+    diffs = BzrParser.remove_dupes([ OhlohScm::Diff.new(action: "A", path: "foo"),
+                                     OhlohScm::Diff.new(action: "D", path: "foo") ])
     diffs.size.should eq(1)
     diffs.first.action.should eq("M")
     diffs.first.path.should eq("foo")
@@ -321,22 +320,22 @@ helloworld.c => goodbyeworld.c
   #
   it "complex_rename" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 147.1.24
-committer: info <info@ohloh.net>
-timestamp: Wed 2005-09-14 21:27:20 +1000
-message:
-rename a file to replace an existing one, then modify it!
-removed:
-helloworld.c
-renamed:
-goodbyeworld.c => helloworld.c
-modified:
-helloworld.c
+    ------------------------------------------------------------
+    revno: 147.1.24
+    committer: info <info@ohloh.net>
+    timestamp: Wed 2005-09-14 21:27:20 +1000
+    message:
+      rename a file to replace an existing one, then modify it!
+    removed:
+      helloworld.c
+    renamed:
+      goodbyeworld.c => helloworld.c
+    modified:
+      helloworld.c
     SAMPLE
 
     diffs = BzrParser.parse(log).first.diffs
-    diffs.sort! { |a,b| a.path <=> b.path }
+    diffs.sort! { |a,b| a.path.to_s <=> b.path.to_s }
 
     diffs.size.should eq(2)
     diffs.first.action.should eq("D")
@@ -347,20 +346,20 @@ helloworld.c
 
   it "strip_trailing_asterisk_from_executables" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 1
-committer: info <info@ohloh.net>
-timestamp: Wed 2005-09-14 21:27:20 +1000
-message:
-added an executable, also renamed an executable
-added:
-script*
-renamed:
-helloworld* => goodbyeworld*
+    ------------------------------------------------------------
+    revno: 1
+    committer: info <info@ohloh.net>
+    timestamp: Wed 2005-09-14 21:27:20 +1000
+    message:
+      added an executable, also renamed an executable
+    added:
+      script*
+    renamed:
+      helloworld* => goodbyeworld*
     SAMPLE
 
     diffs = BzrParser.parse(log).first.diffs
-    diffs.sort! { |a,b| a.path <=> b.path }
+    diffs.sort! { |a,b| a.path.to_s <=> b.path.to_s }
 
     diffs[0].path.should eq("goodbyeworld")
     diffs[1].path.should eq("helloworld")
@@ -369,28 +368,28 @@ helloworld* => goodbyeworld*
 
   it "comment_that_contains_dashes" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 2
-committer: info <info@ohloh.net>
-timestamp: Wed 2005-09-14 21:27:20 +1000
-message:
-This is a tricky commit message to confirm fix
-to Ticket 5. We"re including a line of dashes in
-the message that resembles a log delimiter.
+    ------------------------------------------------------------
+    revno: 2
+    committer: info <info@ohloh.net>
+    timestamp: Wed 2005-09-14 21:27:20 +1000
+    message:
+      This is a tricky commit message to confirm fix
+      to Ticket 5. We're including a line of dashes in
+      the message that resembles a log delimiter.
 
-------------------------------------------------------------
+      ------------------------------------------------------------
 
-Happy parsing!
-added:
-goodbyeworld.c
-------------------------------------------------------------
-revno: 1
-committer: info <info@ohloh.net>
-timestamp: Wed 2005-09-14 21:27:20 +1000
-message:
-Initial Revision
-added:
-helloworld.c
+      Happy parsing!
+    added:
+      goodbyeworld.c
+    ------------------------------------------------------------
+    revno: 1
+    committer: info <info@ohloh.net>
+    timestamp: Wed 2005-09-14 21:27:20 +1000
+    message:
+      Initial Revision
+    added:
+      helloworld.c
     SAMPLE
 
     commits = BzrParser.parse(log)
@@ -409,17 +408,17 @@ helloworld.c
   # This shows in the log as being renamed to an empty string.
   it "directory_renamed_to_root" do
     log = <<-SAMPLE
-      ------------------------------------------------------------
-      revno: 220.90.1
-      revision-id: info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk
-      parent: info@ohloh.net-20081002200737-pjao1idjcrxpk4n4
-      committer: Ohloh <info@ohloh.net>
-      branch nick: subvertpy
-      timestamp: Thu 2008-10-02 22:11:09 +0200
-      message:
-        Promote the test directory to the root.
-      renamed:
-        test =>  test-20081002184530-hz9mrr3wqq4l8qdx-1
+    ------------------------------------------------------------
+    revno: 220.90.1
+    revision-id: info@ohloh.net-20081002201109-j4z0r2c8nsgbm2vk
+    parent: info@ohloh.net-20081002200737-pjao1idjcrxpk4n4
+    committer: Ohloh <info@ohloh.net>
+    branch nick: subvertpy
+    timestamp: Thu 2008-10-02 22:11:09 +0200
+    message:
+      Promote the test directory to the root.
+    renamed:
+      test =>  test-20081002184530-hz9mrr3wqq4l8qdx-1
     SAMPLE
 
     commits = BzrParser.parse(log)
@@ -438,14 +437,14 @@ helloworld.c
   # should see a simple DELETE from the old location and an ADD to the new location.
   it "rename_and_modify_in_one_commit" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 1
-message:
-Changed the directory structure
-renamed:
-oldname => newname
-modified:
-newname
+    ------------------------------------------------------------
+    revno: 1
+    message:
+      Changed the directory structure
+    renamed:
+      oldname => newname
+    modified:
+      newname
     SAMPLE
 
     commits = BzrParser.parse(log)
@@ -460,14 +459,14 @@ newname
 
   it "different_author_and_committer" do
     log = <<-SAMPLE
-------------------------------------------------------------
-revno: 200
-author: Jason Allen <jason@ohloh.net>
-committer: Robin Luckey <robin@ohloh.net>
-branch nick: foo
-timestamp: Wed 2009-06-24 19:47:37 +0200
-message:
-  Just a message
+    ------------------------------------------------------------
+    revno: 200
+    author: Jason Allen <jason@ohloh.net>
+    committer: Robin Luckey <robin@ohloh.net>
+    branch nick: foo
+    timestamp: Wed 2009-06-24 19:47:37 +0200
+    message:
+        Just a message
     SAMPLE
 
     commits = BzrParser.parse(log)

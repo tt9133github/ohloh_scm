@@ -1,13 +1,11 @@
 require "../spec_helper"
-require "socket"
 
 describe "SvnPush" do
-
   it "basic_push_using_svnsync" do
     with_svn_repository("svn") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
 
-        dest = SvnAdapter.new({:url => dest_dir}).normalize
+        dest = SvnAdapter.new(url: dest_dir).normalize
         dest.exist?.should be_falsey
 
         src.push(dest)
@@ -24,7 +22,7 @@ describe "SvnPush" do
     with_svn_repository("svn") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
 
-        dest = SvnAdapter.new({:url => "svn+ssh://#{Socket.gethostname}#{File.expand_path(dest_dir)}"}).normalize
+        dest = SvnAdapter.new(url: "svn+ssh://#{System.hostname}#{File.expand_path(dest_dir)}").normalize
         dest.exist?.should be_falsey
 
         src.push(dest)

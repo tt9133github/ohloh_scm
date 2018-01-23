@@ -5,10 +5,10 @@ describe "CvsConvert" do
   it "basic_convert" do
     with_cvs_repository("cvs", "simple") do |src|
       OhlohScm::ScratchDir.new do |dest_dir|
-        dest = GitAdapter.new({:url => dest_dir}).normalize
+        dest = GitAdapter.new(url: dest_dir).normalize
         dest.exist?.should be_falsey
 
-        dest.pull(src)
+        dest.pull(src) {}
         dest.exist?.should be_truthy
 
         dest_commits = dest.commits
@@ -20,7 +20,7 @@ describe "CvsConvert" do
 
           # Depending upon version of Git used, we may or may not have a trailing \n.
           # We don"t really care, so just compare the stripped versions.
-          dest_commits[i].message.strip.should eq(c.message.strip)
+          dest_commits[i].message.to_s.strip.should eq(c.message.to_s.strip)
         end
       end
     end

@@ -3,7 +3,7 @@ require "socket"
 module OhlohScm::Adapters
   class GitAdapter < AbstractAdapter
 
-    COMMITTER_NAME = "ohloh_slave" unless defined?(COMMITTER_NAME)
+    COMMITTER_NAME = "ohloh_slave"
 
     def push(to)
       logger.info { "Pushing to #{to.url}" }
@@ -14,7 +14,7 @@ module OhlohScm::Adapters
       else
         if to.local?
           # Create a new repo on the same local machine. Just use existing pull code in reverse.
-          to.pull(self)
+          to.pull(self) { |x, y| yield(x, y) }
         else
           run "ssh #{to.hostname} 'mkdir -p #{to.path}'"
           run "scp -rpqB #{git_path} #{to.hostname}:#{to.path}"
@@ -23,7 +23,7 @@ module OhlohScm::Adapters
     end
 
     def local?
-      return true if hostname == Socket.gethostname
+      return true if hostname == System.hostname
       return false if url =~ /:/
       true
     end

@@ -1,5 +1,7 @@
 module OhlohScm::Parsers
   class BranchNumber
+    @a : Array(Int32)
+
     def initialize(s)
       @a = s.split(".").map { |i| i.to_i }
       # Accomodate CVS magic branch numbers by swapping the magic zero

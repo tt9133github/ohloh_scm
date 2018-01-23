@@ -1,10 +1,13 @@
 module OhlohScm
 end
 
+require "./ohloh_scm/aliases"
 require "./ohloh_scm/shellout"
 require "./ohloh_scm/scratch_dir"
 require "./ohloh_scm/commit"
+require "./ohloh_scm/null_commit"
 require "./ohloh_scm/diff"
+require "./ohloh_scm/xml_streamer"
 
 require "./ohloh_scm/adapters/abstract_adapter"
 require "./ohloh_scm/adapters/cvs_adapter"

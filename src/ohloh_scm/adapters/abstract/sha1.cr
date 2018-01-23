@@ -1,6 +1,6 @@
 require "digest/sha1"
 
-NULL_SHA1 = "0000000000000000000000000000000000000000" unless defined?(NULL_SHA1)
+NULL_SHA1 = "0000000000000000000000000000000000000000"
 
 module OhlohScm::Adapters
   class AbstractAdapter
@@ -11,7 +11,7 @@ module OhlohScm::Adapters
     # that match those generated natively by Git.
 
     def compute_sha1(blob)
-      blob.to_s == "" ? NULL_SHA1 : Digest::SHA1.hexdigest("blob #{blob.length}\0#{blob}")
+      blob && !blob.empty? ? Digest::SHA1.hexdigest("blob #{blob.size}\0#{blob}") : NULL_SHA1
     end
 
     # Populates the SHA1 values for each diff in a commit.

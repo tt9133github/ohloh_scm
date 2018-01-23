@@ -5,48 +5,48 @@ describe "SvnChain" do
   it "chained_commit_tokens" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.commit_tokens.should eq([1,2,4,5,8,9,11])
-      svn.commit_tokens({:after => 1}).should eq([2,4,5,8,9,11])
-      svn.commit_tokens({:after => 2}).should eq([4,5,8,9,11])
-      svn.commit_tokens({:after => 3}).should eq([4,5,8,9,11])
-      svn.commit_tokens({:after => 4}).should eq([5,8,9,11])
-      svn.commit_tokens({:after => 5}).should eq([8,9,11])
-      svn.commit_tokens({:after => 6}).should eq([8,9,11])
-      svn.commit_tokens({:after => 7}).should eq([8,9,11])
-      svn.commit_tokens({:after => 8}).should eq([9,11])
-      svn.commit_tokens({:after => 9}).should eq([11])
-      svn.commit_tokens({:after => 11}).should eq(Array(Nil).new)
+      svn.commit_tokens(after: 1).should eq([2,4,5,8,9,11])
+      svn.commit_tokens(after: 2).should eq([4,5,8,9,11])
+      svn.commit_tokens(after: 3).should eq([4,5,8,9,11])
+      svn.commit_tokens(after: 4).should eq([5,8,9,11])
+      svn.commit_tokens(after: 5).should eq([8,9,11])
+      svn.commit_tokens(after: 6).should eq([8,9,11])
+      svn.commit_tokens(after: 7).should eq([8,9,11])
+      svn.commit_tokens(after: 8).should eq([9,11])
+      svn.commit_tokens(after: 9).should eq([11])
+      svn.commit_tokens(after: 11).should eq(Array(Nil).new)
     end
   end
 
   it "chained_commit_count" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.commit_count.should eq(7)
-      svn.commit_count({:after => 1}).should eq(6)
-      svn.commit_count({:after => 2}).should eq(5)
-      svn.commit_count({:after => 3}).should eq(5)
-      svn.commit_count({:after => 4}).should eq(4)
-      svn.commit_count({:after => 5}).should eq(3)
-      svn.commit_count({:after => 6}).should eq(3)
-      svn.commit_count({:after => 7}).should eq(3)
-      svn.commit_count({:after => 8}).should eq(2)
-      svn.commit_count({:after => 9}).should eq(1)
-      svn.commit_count({:after => 11}).should eq(0)
+      svn.commit_count(after: 1).should eq(6)
+      svn.commit_count(after: 2).should eq(5)
+      svn.commit_count(after: 3).should eq(5)
+      svn.commit_count(after: 4).should eq(4)
+      svn.commit_count(after: 5).should eq(3)
+      svn.commit_count(after: 6).should eq(3)
+      svn.commit_count(after: 7).should eq(3)
+      svn.commit_count(after: 8).should eq(2)
+      svn.commit_count(after: 9).should eq(1)
+      svn.commit_count(after: 11).should eq(0)
     end
   end
 
   it "chained_commits" do
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
-      svn.commits.map { |c| c.token }.should eq([1,2,4,5,8,9,11])
-      svn.commits({:after => 1}).map { |c| c.token }.should eq([2,4,5,8,9,11])
-      svn.commits({:after => 2}).map { |c| c.token }.should eq([4,5,8,9,11])
-      svn.commits({:after => 3}).map { |c| c.token }.should eq([4,5,8,9,11])
-      svn.commits({:after => 4}).map { |c| c.token }.should eq([5,8,9,11])
-      svn.commits({:after => 5}).map { |c| c.token }.should eq([8,9,11])
-      svn.commits({:after => 6}).map { |c| c.token }.should eq([8,9,11])
-      svn.commits({:after => 7}).map { |c| c.token }.should eq([8,9,11])
-      svn.commits({:after => 8}).map { |c| c.token }.should eq([9,11])
-      svn.commits({:after => 9}).map { |c| c.token }.should eq([11])
-      svn.commits({:after => 11}).map { |c| c.token }.should eq(Array(Nil).new)
+      svn.commits.map { |c| c.token }.should eq(%w[1 2 4 5 8 9 11])
+      svn.commits(after: 1).map { |c| c.token }.should eq(%w[2 4 5 8 9 11])
+      svn.commits(after: 2).map { |c| c.token }.should eq(%w[4 5 8 9 11])
+      svn.commits(after: 3).map { |c| c.token }.should eq(%w[4 5 8 9 11])
+      svn.commits(after: 4).map { |c| c.token }.should eq(%w[5 8 9 11])
+      svn.commits(after: 5).map { |c| c.token }.should eq(%w[8 9 11])
+      svn.commits(after: 6).map { |c| c.token }.should eq(%w[8 9 11])
+      svn.commits(after: 7).map { |c| c.token }.should eq(%w[8 9 11])
+      svn.commits(after: 8).map { |c| c.token }.should eq(%w[9 11])
+      svn.commits(after: 9).map { |c| c.token }.should eq(%w[11])
+      svn.commits(after: 11).map { |c| c.token }.should eq(Array(Nil).new)
     end
   end
 
@@ -56,7 +56,7 @@ describe "SvnChain" do
   # point of view the code is unchanged; only the base directory
   # has moved.
   it "chained_each_commit" do
-    commits = Array(Nil).new
+    commits = Array(Commit).new
     with_svn_chain_repository("svn_with_branching", "/trunk") do |svn|
       svn.each_commit do |c|
         c.scm.should be_truthy # To support checkout of chained commits, the
@@ -65,7 +65,7 @@ describe "SvnChain" do
       end
     end
 
-    commits.map { |c| c.token }.should eq([1,2,4,5,8,9,11])
+    commits.map { |c| c.token }.should eq(%w[1 2 4 5 8 9 11])
 
     # This repository spends a lot of energy moving directories around.
     # File edits actually occur in just 3 commits.
@@ -125,11 +125,11 @@ describe "SvnChain" do
   # "/myproject" is not an exact match for "/myproject/trunk".
   it "tree_move" do
     with_svn_chain_repository("svn_with_tree_move", "/myproject/trunk") do |svn|
-      svn.root + "/myproject/trunk".should eq(svn.url)
+      "#{svn.root}/myproject/trunk".should eq(svn.url)
       "/myproject/trunk".should eq(svn.branch_name)
 
-      p = svn.parent_svn
-      svn.root + "/all/myproject/trunk".should eq(p.url)
+      p = svn.parent_svn.as(SvnChainAdapter)
+      "#{svn.root}/all/myproject/trunk".should eq(p.url)
       "/all/myproject/trunk".should eq(p.branch_name)
       1.should eq(p.final_token)
 
@@ -143,32 +143,32 @@ describe "SvnChain" do
       c = svn.verbose_commit(9)
       c.message.should eq("modified helloworld.c")
       c.diffs.map { |d| d.path }.should eq(["/helloworld.c"])
-      c.scm.branch_name.should eq("/trunk")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(8)
       c.diffs.should eq(Array(Nil).new)
-      c.scm.branch_name.should eq("/trunk")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/trunk")
 
       # Reaching these commits requires chaining
       c = svn.verbose_commit(5)
       c.message.should eq("add a new branch, with goodbyeworld.c")
       c.diffs.map { |d| d.path }.should eq(["/goodbyeworld.c"])
-      c.scm.branch_name.should eq("/branches/development")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/branches/development")
 
       # Reaching these commits requires chaining twice
       c = svn.verbose_commit(4)
       c.diffs.should eq(Array(Nil).new)
-      c.scm.branch_name.should eq("/trunk")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/trunk")
 
       # And now a fourth chain (to skip over /trunk deletion in rev 3)
       c = svn.verbose_commit(2)
       c.message.should eq("Added helloworld.c to trunk")
       c.diffs.map { |d| d.path }.should eq(["/helloworld.c"])
-      c.scm.branch_name.should eq("/trunk")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/trunk")
 
       c = svn.verbose_commit(1)
       c.diffs.should eq(Array(Nil).new)
-      c.scm.branch_name.should eq("/trunk")
+      c.scm.as(SvnChainAdapter).branch_name.should eq("/trunk")
     end
   end
 end

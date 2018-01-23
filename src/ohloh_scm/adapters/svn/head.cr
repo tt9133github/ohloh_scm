@@ -1,7 +1,7 @@
 module OhlohScm::Adapters
   class SvnAdapter < AbstractAdapter
     def head_token
-      self.info =~ /^Revision: (\d+)$/ ? $1.to_i : nil
+      self.info =~ /^Revision: (\d+)$/m ? $1.to_i : nil
     end
 
     def head
