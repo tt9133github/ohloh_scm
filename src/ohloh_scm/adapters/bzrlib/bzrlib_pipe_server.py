@@ -78,10 +78,6 @@ def command_loop():
       tokens = "|".join(tokens)
       send_success(len(tokens))
       send_data(tokens)
-    elif cmd.get_action() == "QUIT":
-      commander.cleanup()
-      send_success()
-      exit_delayed(status=0)
     else:
       error = "Invalid Command - %s" % cmd.get_action()
       send_error(len(error))
