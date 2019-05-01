@@ -8,4 +8,5 @@ group :development do
   gem 'rubocop', '~> 0.67'
   gem 'rubocop-performance'
   gem 'simplecov'
+  gem 'rake'
 end
