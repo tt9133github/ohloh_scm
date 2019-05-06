@@ -19,7 +19,7 @@ module OhlohScm
     end
 
     def logger
-      self.class.logger
+      System.logger
     end
 
     class << self

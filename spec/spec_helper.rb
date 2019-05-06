@@ -11,12 +11,16 @@ end
 require 'ohloh_scm'
 require 'minitest'
 require 'minitest/autorun'
+require 'mocha/minitest'
+require 'shellwords'
 require 'helpers/repository_helper'
+require 'helpers/assert_helper'
 
 FIXTURES_DIR = File.expand_path('raw_fixtures', __dir__)
 
 module Minitest
   class Test
     include RepositoryHelper
+    include AssertHelper
   end
 end

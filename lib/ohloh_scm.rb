@@ -21,4 +21,8 @@ require_relative 'ohloh_scm/git_scm'
 require_relative 'ohloh_scm/git_activity'
 require_relative 'ohloh_scm/git_status'
 
+require_relative 'ohloh_scm/git_svn_scm'
+require_relative 'ohloh_scm/git_svn_activity'
+require_relative 'ohloh_scm/git_svn_status'
+
 require_relative 'ohloh_scm/factory'

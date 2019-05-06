@@ -12,5 +12,9 @@ module OhlohScm
     def write_commit(commit)
       @buffer << commit
     end
+
+    def write_preamble(opts = {}); end
+
+    def write_postamble; end
   end
 end

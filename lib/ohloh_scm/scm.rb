@@ -5,7 +5,7 @@ module OhlohScm
     include OhlohScm::System
     extend Forwardable
     def_delegators :@base, :status, :activity
-    attr_reader :url, :branch_name, :username, :password
+    attr_reader :url, :branch_name, :username, :password, :base
 
     def initialize(base:, url:, branch_name: nil, username: nil, password: nil)
       @base = base

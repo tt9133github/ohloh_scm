@@ -5,8 +5,8 @@ module RepositoryHelper
     with_repository(:git, name, branch_name) { |git| yield git }
   end
 
-  def with_git_svn_repository(name)
-    with_repository(:git_svn, name) { |svn| yield svn }
+  def with_git_svn_repository(name, branch_name = nil)
+    with_repository(:git_svn, name, branch_name) { |svn| yield svn }
   end
 
   def with_cvs_repository(name, module_name = '')
