@@ -11,6 +11,8 @@ end
 require 'ohloh_scm'
 require 'minitest'
 require 'minitest/autorun'
+require 'mocha/minitest'
+require 'shellwords'
 require 'helpers/repository_helper'
 require 'helpers/system_helper'
 require 'helpers/generic_helper'

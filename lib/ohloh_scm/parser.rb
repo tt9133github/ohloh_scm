@@ -25,3 +25,4 @@ module OhlohScm
 end
 
 require_relative 'parser/git_parser'
+require_relative 'parser/svn_parser'
