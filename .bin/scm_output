@@ -1,0 +1,82 @@
+#! /usr/bin/env ruby
+# Usage:
+# $ .bin/scm_output git /home/user/projects/ohcount branch_name
+#
+# The output is written to /tmp/scm_output/...
+# This is based off the v3 branch. To run it against master,
+#   copy this file somewhere else, then checkout to master and copy it back to .bin/scm_output.
+
+$LOAD_PATH << 'lib'
+require 'ohloh_scm'
+require 'ohloh_scm/version'
+require 'yaml'
+
+class ScmOutput
+  FUNCTIONS = %i[tags commits commit_tokens head head_token]
+
+  def initialize(scm_type, url, branch_name)
+    check_ruby_version
+    @scm_type = scm_type
+    @url = url
+    @branch_name = branch_name
+    set_scm_and_out_path
+  end
+
+  def produce
+    clean_output_dir
+    capture_function_outputs
+    capture_diff
+  end
+
+  private
+
+  def capture_function_outputs
+    FUNCTIONS.each do |fn_name|
+      File.write("#{@out_path}/#{fn_name}.yml", @scm.send(fn_name).to_yaml)
+    end
+
+    verbose_commits = @scm.commits.map { |commit| @scm.verbose_commit(commit.token)  }
+    File.write("#{@out_path}/verbose_commits.yml", verbose_commits.to_yaml)
+  end
+
+  def capture_diff
+    if Dir.exists?("#{@project_path}/master") && Dir.exists?("#{@project_path}/v3")
+      FileUtils.mkdir_p("#{@project_path}/diff")
+      FUNCTIONS.push(:verbose_commits).each do |name|
+        `diff #{@project_path}/master/#{name}.yml #{@project_path}/v3/#{name}.yml > #{@project_path}/diff/#{name}`
+      end
+    end
+  end
+
+  def set_scm_and_out_path
+    if OhlohScm::Version::STRING =~ /2\.\d\.\d/
+      @scm = OhlohScm::Adapters.const_get("#{camelize(@scm_type)}Adapter").new(url: @url.dup, branch_name: @branch_name).normalize
+      ohloh_scm_branch = :master
+    else
+      @scm = OhlohScm::Factory.get_core(scm_type: @scm_type, url: @url, branch_name: @branch_name).activity
+      ohloh_scm_branch = :v3
+    end
+
+    project_name = @url.split('/').last
+    @project_path = "/tmp/scm_output/#{@scm_type}/#{project_name}"
+    @out_path = "#{@project_path}/#{ohloh_scm_branch}"
+  end
+
+  def check_ruby_version
+    return if RUBY_VERSION =~ /2.[5-9].\d/
+
+    puts 'Please use ruby >= v2.5. The YAML implementation in v2.3 outputs unquoted commit hash'
+    exit
+  end
+
+  def camelize(string)
+    string.split('_').map(&:capitalize).join
+  end
+
+  def clean_output_dir
+    FileUtils.rm_rf(@out_path)
+    FileUtils.mkdir_p(@out_path)
+  end
+end
+
+ScmOutput.new(ARGV[0], ARGV[1], ARGV[2]).produce
