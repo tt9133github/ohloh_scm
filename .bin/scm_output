@@ -1,8 +1,8 @@
 #! /usr/bin/env ruby
 # Usage:
-# $ .bin/scm_output git /home/user/projects/ohcount branch_name
+# $ .bin/scm_output git <cvs_url> <cvs_module_name>
 #
-# The output is written to /tmp/scm_output/...
+# The output is written to /tmp/scm_output/git/...
 # This is based off the v3 branch. To run it against master,
 #   copy this file somewhere else, then checkout to master and copy it back to .bin/scm_output.
 
@@ -14,11 +14,11 @@ require 'yaml'
 class ScmOutput
   FUNCTIONS = %i[tags commits commit_tokens head head_token]
 
-  def initialize(scm_type, url, branch_name)
+  def initialize(scm_type, scm_url, branch_name)
     check_ruby_version
     @scm_type = scm_type
-    @url = url
     @branch_name = branch_name
+    @url = clone_repository(scm_url)
     set_scm_and_out_path
   end
 
@@ -29,6 +29,15 @@ class ScmOutput
   end
 
   private
+
+  def clone_repository(scm_url)
+    local_url = "/tmp/#{scm_url.slice(/[^\/]+$/)}"
+    git_scm = OhlohScm::Factory.get_core(scm_type: :git, url: local_url).scm
+    cvs_scm = OhlohScm::Factory.get_core(scm_type: :cvs, url: scm_url, branch_name: @branch_name).scm
+    callback = Struct.new(:_) { def update(_,_); end }.new
+    git_scm.pull(cvs_scm, callback)
+    local_url
+  end
 
   def capture_function_outputs
     FUNCTIONS.each do |fn_name|
@@ -50,10 +59,10 @@ class ScmOutput
 
   def set_scm_and_out_path
     if OhlohScm::Version::STRING =~ /2\.\d\.\d/
-      @scm = OhlohScm::Adapters.const_get("#{camelize(@scm_type)}Adapter").new(url: @url.dup, branch_name: @branch_name).normalize
+      @scm = OhlohScm::Adapters.const_get("#{camelize(@scm_type)}Adapter").new(url: @url.dup).normalize
       ohloh_scm_branch = :master
     else
-      @scm = OhlohScm::Factory.get_core(scm_type: @scm_type, url: @url, branch_name: @branch_name).activity
+      @scm = OhlohScm::Factory.get_core(scm_type: @scm_type, url: @url).activity
       ohloh_scm_branch = :v3
     end
 
