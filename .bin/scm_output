@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 # Usage:
-# $ .bin/scm_output git <cvs_url> <cvs_module_name>
+# $ .bin/scm_output git_svn <svn_url> <svn_module_name>
 #
 # The output is written to /tmp/scm_output/git/...
 # This is based off the v3 branch. To run it against master,
@@ -12,7 +12,7 @@ require 'ohloh_scm/version'
 require 'yaml'
 
 class ScmOutput
-  FUNCTIONS = %i[tags commits commit_tokens head head_token]
+  FUNCTIONS = %i[tags commits commit_tokens head_token]
 
   def initialize(scm_type, scm_url, branch_name)
     check_ruby_version
@@ -31,11 +31,11 @@ class ScmOutput
   private
 
   def clone_repository(scm_url)
-    local_url = "/tmp/#{scm_url.slice(/[^\/]+$/)}"
-    git_scm = OhlohScm::Factory.get_core(scm_type: :git, url: local_url).scm
-    cvs_scm = OhlohScm::Factory.get_core(scm_type: :cvs, url: scm_url, branch_name: @branch_name).scm
+    local_url = "/tmp/#{URI.encode(scm_url).slice(/[^\/]+$/)}"
+    local_scm = OhlohScm::Factory.get_core(scm_type: :git_svn, url: local_url).scm
+    source_scm = OhlohScm::Factory.get_core(scm_type: :svn, url: scm_url, branch_name: @branch_name).scm
     callback = Struct.new(:_) { def update(_,_); end }.new
-    git_scm.pull(cvs_scm, callback)
+    local_scm.pull(source_scm, callback)
     local_url
   end
 
@@ -43,9 +43,6 @@ class ScmOutput
     FUNCTIONS.each do |fn_name|
       File.write("#{@out_path}/#{fn_name}.yml", @scm.send(fn_name).to_yaml)
     end
-
-    verbose_commits = @scm.commits.map { |commit| @scm.verbose_commit(commit.token)  }
-    File.write("#{@out_path}/verbose_commits.yml", verbose_commits.to_yaml)
   end
 
   def capture_diff
