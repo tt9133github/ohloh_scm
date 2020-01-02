@@ -42,29 +42,8 @@ module OhlohScm
         result
       end
 
-      # Yields each commit in the repository following the commit with SHA1 'after'.
-      # These commits are populated with diffs.
       def each_commit(opts = {})
-        # Bug fix (hack) follows.
-        #
-        # git-whatchanged emits a merge commit multiple times, once for each parent, giving the
-        # delta to each parent in turn.
-        #
-        # This causes us to emit too many commits, with repeated merge commits.
-        #
-        # To fix this, we track the previous commit, and emit a new commit only if it is distinct
-        # from the previous.
-        #
-        # This means that the diffs for a merge commit yielded by this method will be the diffs
-        # vs. the first parent only, and diffs vs. other parents are lost.
-        # For OpenHub, this is fine because OpenHub ignores merge diffs anyway.
-        previous = nil
-        safe_open_log_file(opts) do |io|
-          OhlohScm::GitParser.parse(io) do |e|
-            yield fixup_null_merge(e) unless previous && previous.token == e.token
-            previous = e
-          end
-        end
+        CommitFactory.new(url, scm.branch_name).commits
       end
 
       # Returns a single commit, including its diffs

@@ -7,6 +7,7 @@ require 'time'
 require 'tmpdir'
 require 'forwardable'
 require 'nokogiri'
+require 'rugged'
 
 require 'ohloh_scm/string_extensions'
 require 'ohloh_scm/version'
@@ -27,6 +28,9 @@ require 'ohloh_scm/bzr'
 require 'ohloh_scm/cvs'
 require 'ohloh_scm/svn'
 require 'ohloh_scm/git_svn'
+
+require 'ohloh_scm/git/commit_converter'
+require 'ohloh_scm/git/commit_factory'
 
 require 'ohloh_scm/factory'
 

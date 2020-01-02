@@ -10,5 +10,6 @@ group :development do
   gem 'rake'
   gem 'rubocop', '~> 0.67'
   gem 'rubocop-performance'
+  gem 'rugged'
   gem 'simplecov'
 end
