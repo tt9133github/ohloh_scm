@@ -22,7 +22,6 @@ module OhlohScm
 
     def validate_server_connection; end
 
-    # rubocop:disable Metrics/AbcSize
     def validate_attributes
       @errors = []
       @errors << url_errors
@@ -31,7 +30,6 @@ module OhlohScm
       @errors << password_errors if scm.password
       @errors.compact!
     end
-    # rubocop:enable Metrics/AbcSize
 
     # rubocop:disable Metrics/AbcSize
     def url_errors
